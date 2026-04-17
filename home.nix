@@ -3,7 +3,7 @@
 let
   myScripts = import "${self}/pkgs/scripts" { inherit (pkgs) writeShellScriptBin; };
   _ = builtins.trace "myScripts type: ${builtins.typeOf myScripts}" null;
-  dotfiles = "${config.home.homeDirectory}/nixos/config";
+  dotfiles = "${config.home.homeDirectory}/nixos-config/config";
   create_symlink = path: config.lib.file.mkOutOfStoreSymlink path;
   configs = {
     nvim = "nvim";
@@ -80,8 +80,6 @@ in
     tmux
     fish
     rofi
-    bun
-    opencodePkg
     bat
     fastfetch
     tailscale
