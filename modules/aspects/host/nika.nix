@@ -7,6 +7,7 @@
       self.modules.nixos.openlinkhub
       self.modules.nixos.openssh
       self.modules.nixos.niri
+      self.modules.nixos."niri-dp1-1080p"
       self.modules.nixos.workstation
     ];
 

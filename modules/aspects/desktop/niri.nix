@@ -6,16 +6,20 @@
     };
   };
 
+  flake.modules.nixos."niri-dp1-1080p" = { lib, pkgs, ... }: {
+    programs.niri.package = lib.mkForce self.packages.${pkgs.stdenv.hostPlatform.system}.myNiriDp11080p;
+  };
+
   perSystem = { pkgs, lib, self', ... }: {
-    packages.myNiri =
+    packages =
       let
         heliumNoKeyring = pkgs.writeShellScriptBin "helium-no-keyring" ''
           exec ${lib.getExe self'.packages.helium-no-keyring} "$@"
         '';
-      in
-      inputs.wrapper-modules.wrappers.niri.wrap {
-        inherit pkgs;
-        settings = {
+        mkNiri = settings: inputs.wrapper-modules.wrappers.niri.wrap {
+          inherit pkgs settings;
+        };
+        baseSettings = {
           spawn-at-startup = [
             (lib.getExe self'.packages.noctalia-shell)
             (lib.getExe pkgs.ghostty)
@@ -84,10 +88,16 @@
             "Super+Shift+9"."move-column-to-workspace" = 9;
           };
         };
+      in {
+        myNiri = mkNiri baseSettings;
+        myNiriDp11080p = mkNiri (baseSettings // {
+          outputs = baseSettings.outputs // {
+            "DP-1".mode = "1920x1080";
+          };
+        });
+        helium-no-keyring = pkgs.writeShellScriptBin "helium-no-keyring" ''
+          exec ${lib.getExe inputs.helium.packages.${pkgs.stdenv.hostPlatform.system}.default} --password-store=basic "$@"
+        '';
       };
-
-    packages.helium-no-keyring = pkgs.writeShellScriptBin "helium-no-keyring" ''
-      exec ${lib.getExe inputs.helium.packages.${pkgs.stdenv.hostPlatform.system}.default} --password-store=basic "$@"
-    '';
   };
 }
