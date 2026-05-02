@@ -40,6 +40,8 @@
           };
 
           input = {
+            focus-follows-mouse = _: { };
+
             keyboard.xkb = {
               layout = "dk";
               options = "caps:escape";
