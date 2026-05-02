@@ -58,6 +58,8 @@
             focus-ring.off = _: { };
           };
 
+          screenshot-path = "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png";
+
           hotkey-overlay.skip-at-startup = _: { };
 
           window-rule = [ ];
@@ -66,6 +68,15 @@
             "Mod+Return".spawn = "ghostty";
             "Mod+T".spawn = "ghostty";
             "Mod+B".spawn = lib.getExe heliumNoKeyring;
+            "Print".screenshot = _: { };
+            "Ctrl+Print"."screenshot-screen" = _: {
+              props.write-to-disk = false;
+            };
+            "Ctrl+Shift+Print"."screenshot-screen" = _: { };
+            "Alt+Print"."screenshot-window" = _: {
+              props.write-to-disk = false;
+            };
+            "Alt+Shift+Print"."screenshot-window" = _: { };
             "Mod+Q".close-window = _: { };
             "Mod+Shift+H".focus-monitor-left = _: { };
             "Mod+Shift+L".focus-monitor-right = _: { };
