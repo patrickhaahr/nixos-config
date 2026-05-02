@@ -4,6 +4,7 @@
       self.modules.nixos.nika-hardware
       self.modules.nixos.home-manager
       self.modules.nixos.identity-ph
+      self.modules.nixos.openlinkhub
       self.modules.nixos.openssh
       self.modules.nixos.niri
       self.modules.nixos.workstation
