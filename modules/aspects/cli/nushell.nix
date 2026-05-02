@@ -7,7 +7,7 @@
           vi = "nvim";
           vim = "nvim";
           nano = "nvim";
-          code = "opencode";
+          code = "opencode -c";
           cd = "z";
           c = "clear";
           ".." = "cd ..";
