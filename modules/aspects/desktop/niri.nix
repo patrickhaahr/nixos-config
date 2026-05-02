@@ -39,9 +39,16 @@
             };
           };
 
-          input.keyboard.xkb = {
-            layout = "dk";
-            options = "caps:escape";
+          input = {
+            keyboard.xkb = {
+              layout = "dk";
+              options = "caps:escape";
+            };
+
+            mouse = {
+              accel-profile = "flat";
+              accel-speed = -0.6;
+            };
           };
 
           layout = {
