@@ -24,8 +24,6 @@
     environment.systemPackages = with pkgs; [
       openssh
       cascadia-code
-      nodejs
-      bun
       nushell
       bitwarden-cli
       fzf
