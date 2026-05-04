@@ -3,7 +3,7 @@
     services.openssh = {
       enable = true;
       settings = {
-        AllowUsers = [ "ph" "patrickhaahr" ];
+        AllowUsers = [ "ph" ];
         PasswordAuthentication = false;
         KbdInteractiveAuthentication = false;
         PermitRootLogin = "no";
@@ -36,7 +36,7 @@
       matchBlocks."github.com" = {
         hostname = "github.com";
         user = "git";
-        identityFile = "~/.ssh/id_ed25519_github";
+        identityFile = "~/.ssh/id_ed25519";
         identitiesOnly = true;
       };
     };
