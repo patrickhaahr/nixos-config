@@ -1,5 +1,5 @@
 { inputs, ... }: {
-  flake.modules.homeManager.spicetify = { pkgs, ... }:
+  flake.modules.homeManager.spicetify = { lib, pkgs, ... }:
     let
       spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.stdenv.hostPlatform.system};
       # Snapcraft downloads currently fail here; fetch the current .deb directly
@@ -19,6 +19,9 @@
           runHook preUnpack
           dpkg-deb -x "$src" .
           runHook postUnpack
+        '';
+        postFixup = ''
+          wrapProgram "$out/bin/spotify" --add-flags "--password-store=basic"
         '';
       });
     in {

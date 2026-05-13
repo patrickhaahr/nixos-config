@@ -18,14 +18,34 @@
         heliumNoKeyring = pkgs.writeShellScriptBin "helium-no-keyring" ''
           exec ${lib.getExe self'.packages.helium-no-keyring} "$@"
         '';
+        spotifyAutoplay = pkgs.writeShellScriptBin "spotify-autoplay" ''
+          spotify &
+
+          for _ in $(seq 1 60); do
+            if ${lib.getExe pkgs.playerctl} -p spotify status >/dev/null 2>&1; then
+              exec ${lib.getExe pkgs.playerctl} -p spotify play
+            fi
+
+            sleep 1
+          done
+        '';
         mkNiri = settings: inputs.wrapper-modules.wrappers.niri.wrap {
           inherit pkgs settings;
         };
         baseSettings = {
+          prefer-no-csd = true;
+
+          workspaces = {
+            "1" = { };
+            "2" = { };
+          };
+
           spawn-at-startup = [
             (lib.getExe self'.packages.noctalia-shell)
             (lib.getExe pkgs.ghostty)
             (lib.getExe heliumNoKeyring)
+            "signal-desktop"
+            (lib.getExe spotifyAutoplay)
           ];
 
           xwayland-satellite.path = lib.getExe pkgs.xwayland-satellite;
@@ -64,7 +84,44 @@
 
           hotkey-overlay.skip-at-startup = _: { };
 
-          window-rule = [ ];
+          window-rules = [
+            {
+              matches = [
+                {
+                  app-id = "^com\\.mitchellh\\.ghostty$";
+                  at-startup = true;
+                }
+              ];
+              open-on-workspace = "1";
+            }
+            {
+              matches = [
+                {
+                  app-id = "^helium$";
+                  at-startup = true;
+                }
+              ];
+              open-on-workspace = "1";
+            }
+            {
+              matches = [
+                {
+                  app-id = "^signal$";
+                  at-startup = true;
+                }
+              ];
+              open-on-workspace = "2";
+            }
+            {
+              matches = [
+                {
+                  app-id = "^spotify$";
+                  at-startup = true;
+                }
+              ];
+              open-on-workspace = "2";
+            }
+          ];
 
           binds = {
             "Mod+Return".spawn = "ghostty";
