@@ -33,6 +33,15 @@ in {
       if pkgs.stdenvNoCC.isDarwin then "/Users/${userName}" else "/home/${userName}"
     );
     home.stateVersion = lib.mkDefault "25.11";
+    dconf.settings."org/gnome/desktop/interface" = {
+      color-scheme = "prefer-dark";
+      gtk-theme = "Adwaita-dark";
+    };
+    gtk = {
+      enable = true;
+      gtk3.extraConfig.gtk-application-prefer-dark-theme = 1;
+      gtk4.extraConfig.gtk-application-prefer-dark-theme = 1;
+    };
     home.file."tmp/vj-noctalia-cache/wallpapers.json".text = builtins.toJSON {
       defaultWallpaper = "/home/ph/nixos-config/wallpaper/a_woman_holding_a_sword.jpg";
       wallpapers = {
