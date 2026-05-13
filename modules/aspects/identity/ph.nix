@@ -17,6 +17,7 @@ in {
       self.modules.homeManager.identity-ph
       self.modules.homeManager.direnv
       self.modules.homeManager.git
+      self.modules.homeManager.lumen
       self.modules.homeManager.openssh
       self.modules.homeManager.neovim
       self.modules.homeManager.nushell
