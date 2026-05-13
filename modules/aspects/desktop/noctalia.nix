@@ -10,7 +10,7 @@
       };
       colors = {
         mError = "#fb4934";
-        mHover = "#83a598";
+        mHover = "#fe8019";
         mOnError = "#282828";
         mOnHover = "#282828";
         mOnPrimary = "#282828";
@@ -19,12 +19,12 @@
         mOnSurfaceVariant = "#ebdbb2";
         mOnTertiary = "#282828";
         mOutline = "#57514e";
-        mPrimary = "#b8bb26";
-        mSecondary = "#fabd2f";
+        mPrimary = "#fe8019";
+        mSecondary = "#fb4934";
         mShadow = "#282828";
         mSurface = "#282828";
         mSurfaceVariant = "#3c3836";
-        mTertiary = "#83a598";
+        mTertiary = "#d65d0e";
       };
       settings = {
         appLauncher = {
@@ -237,7 +237,7 @@
           allowPanelsOnScreenWithoutBar = true;
           animationDisabled = false;
           animationSpeed = 1;
-          avatarImage = "";
+          avatarImage = "${../../../wallpaper/profile.jpeg}";
           boxRadiusRatio = 1;
           compactLockScreen = false;
           dimmerOpacity = 0.15;
@@ -266,8 +266,10 @@
           wallpaperChange = "";
         };
         location = {
+          autoLocate = false;
           analogClockInCalendar = false;
           firstDayOfWeek = -1;
+          name = "Copenhagen, Denmark";
           showCalendarEvents = true;
           showCalendarWeather = true;
           showWeekNumberInCalendar = false;
