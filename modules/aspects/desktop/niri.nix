@@ -93,6 +93,7 @@
 
             keyboard.xkb = {
               layout = "dk";
+              variant = "nodeadkeys";
               options = "caps:escape";
             };
 
