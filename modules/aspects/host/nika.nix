@@ -24,6 +24,7 @@
     };
     services.blueman.enable = true;
     networking.hostName = "nika";
+    home-manager.users.ph.imports = [ self.modules.homeManager.spicetify ];
     system.stateVersion = "25.11";
   };
 }
