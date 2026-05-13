@@ -137,7 +137,7 @@
         };
         brightness = {
           brightnessStep = 5;
-          enableDdcSupport = false;
+          enableDdcSupport = true;
           enforceMinimum = true;
         };
         calendar.cards = [

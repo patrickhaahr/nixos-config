@@ -1,5 +1,7 @@
 { self, inputs, ... }: {
   flake.modules.nixos.niri = { pkgs, ... }: {
+    hardware.i2c.enable = true;
+
     programs.niri = {
       enable = true;
       package = self.packages.${pkgs.stdenv.hostPlatform.system}.myNiri;
@@ -87,6 +89,9 @@
             "Mod+Space".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call launcher toggle";
             "Mod+E".spawn = "nautilus";
             "Super+F"."maximize-window-to-edges" = _: { };
+            "Mod+F9".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call brightness decrease";
+            "Mod+Shift+F9".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call brightness increase";
+            "Mod+Alt+F10".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call nightLight toggle";
           } // {
             "Super+1"."focus-workspace" = 1;
             "Super+2"."focus-workspace" = 2;
