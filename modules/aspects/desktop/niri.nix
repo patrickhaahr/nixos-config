@@ -80,6 +80,16 @@
             };
             "Alt+Shift+Print"."screenshot-window" = _: { };
             "Mod+Q".close-window = _: { };
+            "Mod+H".focus-column-left = _: { };
+            "Mod+L".focus-column-right = _: { };
+            "Mod+Ctrl+H".move-column-left = _: { };
+            "Mod+Ctrl+L".move-column-right = _: { };
+            "Mod+J".focus-window-down = _: { };
+            "Mod+K".focus-window-up = _: { };
+            "Mod+Ctrl+J".move-window-down = _: { };
+            "Mod+Ctrl+K".move-window-up = _: { };
+            "Mod+Alt+H"."consume-or-expel-window-left" = _: { };
+            "Mod+Alt+L"."consume-or-expel-window-right" = _: { };
             "Mod+Shift+H".focus-monitor-left = _: { };
             "Mod+Shift+L".focus-monitor-right = _: { };
             "Mod+Ctrl+Shift+H".move-column-to-monitor-left = _: { };
