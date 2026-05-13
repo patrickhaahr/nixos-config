@@ -136,7 +136,7 @@
               props.write-to-disk = false;
             };
             "Alt+Shift+Print"."screenshot-window" = _: { };
-            "Mod+Q".close-window = _: { };
+            "Mod+C".close-window = _: { };
             "Mod+H".focus-column-left = _: { };
             "Mod+L".focus-column-right = _: { };
             "Mod+Ctrl+H".move-column-left = _: { };
