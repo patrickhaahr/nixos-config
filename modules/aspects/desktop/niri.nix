@@ -29,6 +29,13 @@
             sleep 1
           done
         '';
+        openhomeIr = command: ''
+          OPENHOME_TOKEN="$(<"$HOME/.config/secrets/openhome")"
+          ${lib.getExe pkgs.curl} -X POST https://openhome.haahr.me/api/ir/send \
+            -H "Authorization: Bearer $OPENHOME_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '${builtins.toJSON { inherit command; }}'
+        '';
         mkNiri = settings: inputs.wrapper-modules.wrappers.niri.wrap {
           inherit pkgs settings;
         };
@@ -156,6 +163,11 @@
             "Mod+Space".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call launcher toggle";
             "Mod+E".spawn = "nautilus";
             "Super+F"."maximize-window-to-edges" = _: { };
+            "Super+M".spawn-sh = openhomeIr "mute";
+            "Super+Left".spawn-sh = openhomeIr "bluetooth";
+            "Super+Right".spawn-sh = openhomeIr "optical";
+            "Super+Up".spawn-sh = openhomeIr "volume-up";
+            "Super+Down".spawn-sh = openhomeIr "volume-down";
             "Mod+F9".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call brightness decrease";
             "Mod+Shift+F9".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call brightness increase";
             "Mod+Alt+F10".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call nightLight toggle";
