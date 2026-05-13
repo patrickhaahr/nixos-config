@@ -29,6 +29,24 @@
             sleep 1
           done
         '';
+        focusWorkspace2 = pkgs.writeShellScriptBin "focus-workspace-2" ''
+          for _ in $(seq 1 10); do
+            if ${lib.getExe pkgs.niri} msg action focus-workspace 2 >/dev/null 2>&1; then
+              exit 0
+            fi
+
+            sleep 1
+          done
+        '';
+        focusWorkspace1 = pkgs.writeShellScriptBin "focus-workspace-1" ''
+          for _ in $(seq 1 10); do
+            if ${lib.getExe pkgs.niri} msg action focus-workspace 1 >/dev/null 2>&1; then
+              exit 0
+            fi
+
+            sleep 1
+          done
+        '';
         openhomeIr = command: ''
           OPENHOME_TOKEN="$(<"$HOME/.config/secrets/openhome")"
           ${lib.getExe pkgs.curl} -X POST https://openhome.haahr.me/api/ir/send \
@@ -48,11 +66,13 @@
           };
 
           spawn-at-startup = [
+            (lib.getExe focusWorkspace2)
+            "signal-desktop"
+            (lib.getExe spotifyAutoplay)
+            (lib.getExe focusWorkspace1)
             (lib.getExe self'.packages.noctalia-shell)
             (lib.getExe pkgs.ghostty)
             (lib.getExe heliumNoKeyring)
-            "signal-desktop"
-            (lib.getExe spotifyAutoplay)
           ];
 
           xwayland-satellite.path = lib.getExe pkgs.xwayland-satellite;
@@ -118,15 +138,17 @@
                 }
               ];
               open-on-workspace = "2";
+              open-focused = false;
             }
             {
               matches = [
                 {
-                  app-id = "^spotify$";
+                  app-id = "^Spotify$";
                   at-startup = true;
                 }
               ];
               open-on-workspace = "2";
+              open-focused = false;
             }
           ];
 
