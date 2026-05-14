@@ -1,6 +1,6 @@
 ---
 name: code-standards-rust
-description: Rust coding standards for production code
+description: Rust coding standards for production code. Invoke this skill always when working in Rust language.
 ---
 
 ### Patterns

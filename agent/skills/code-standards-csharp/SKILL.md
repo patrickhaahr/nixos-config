@@ -1,6 +1,6 @@
 ---
 name: code-standards-csharp
-description: C# 14 coding standards
+description: C# 14 coding standards. Invoke this skill always when working in C# language.
 ---
 
 - Use `extension` blocks for multiple related extension members; keep `this` methods for single helpers

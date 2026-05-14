@@ -142,3 +142,4 @@ WebFetch fails/irrelevant?
 - [opensrc Code Examples](references/opensrc-examples.md)
 - [GitHub Linking Patterns](references/linking.md)
 - [Mermaid Diagram Patterns](references/diagrams.md)
+

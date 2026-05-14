@@ -1,10 +1,6 @@
 # Global Agent Guidelines
 
-This file contains guidelines for AI coding agents working across all projects.
-
-## General Guidelines
-
-### Philosophy
+## Philosophy
 This codebase will outlive you. Every shortcut you take becomes
 someone else's burden. Every hack compounds into technical debt
 that slows the whole team down.
@@ -15,57 +11,35 @@ you cut will be cut again.
 
 Fight entropy. Leave the codebase better than you found it.
 
-### Bug fixing
-When I report a bug, don't start by trying to fix it.
-Instead, start by writing a test that reproduces the bug.
-Then, have subagents try to fix the bug and prove it with a passing test.
+## Rules
 
-### Code Style
-- Follow existing project conventions (check for .editorconfig, .prettierrc, eslintrc files)
-- Use consistent indentation (detect from existing files)
-- Use descriptive variable/function names (avoid single letters except loop counters)
-- Design for testability using "functional core, imperative shell": keep pure business logic separate from code that does IO
+### 1. Think Before Coding
+Don't assume. Don't hide confusion. If multiple interpretations exist, present them — don't pick silently. If a simpler approach exists, say so and push back when warranted.
 
-### Imports
-- Group imports: external packages first, then internal modules
-- Remove unused imports
-- Use absolute imports when configured in the project
+### 2. Goal-Driven
+Transform every task into verifiable success criteria.
+- Bug? Write a failing test first, then fix it.
+- Feature? Define "done" before writing code.
+- Refactor? Tests pass before and after.
 
-### Error Handling
-- Always handle errors explicitly (no silent failures)
-- Use try-catch for async operations
-- Log errors with context
-- Return meaningful error messages
+### 3. Surgical Changes
+Touch only what you must. Match existing style, even if you'd do it differently. Don't "improve" adjacent code. Remove only the imports, variables, or functions that *your* changes made unused.
 
-### Testing
-**Quality over Quantity**: You should prefer 40% coverage with extremely well thought through tests over 100% coverage.
-- Write tests for new features
-- Run tests before completing tasks
-- Focus on meaningful coverage rather than arbitrary coverage targets
-- Design tests following "functional core, imperative shell" patterns. 
-- **Functional core**: Test pure logic independent of IO
-- Common test commands: `bun test`, `cargo test`
+### 4. Simplicity First
+Minimum code that solves the problem. Nothing speculative. No abstractions for single-use code. No configurability that wasn't requested. If a senior engineer would call it overcomplicated, simplify.
 
-### File Operations
-- Always read files before editing
-- Preserve existing formatting and style
-- Never create files unnecessarily - prefer editing existing ones
-- Don't create documentation unless explicitly requested
+### 5. Testing & Quality
+Prefer 40% coverage with meaningful tests over 100% shallow coverage. Design for testability: keep pure business logic separate from IO.
+- Write tests for new features.
+- Run tests before completing tasks.
 
-## Project-Specific
-Check for project-specific agent instructions in:
-- `AGENTS.md` in project root
+### 6. Respect the Codebase
+- Read files before editing. Preserve existing formatting and conventions.
+- Handle errors explicitly; no silent failures.
+- Never create files unnecessarily — edit existing ones.
+- Don't create documentation unless explicitly requested.
 
-## Navigation Strategy
-For ANY task involving file discovery or codebase exploration, use the `explore` subagent:
-- Finding files by pattern (route*, *api*, handlers, etc.)
-- Searching for code related to features, routes, endpoints
-- Exploring directory structure or module organization
-- Any task that would require multiple glob/grep calls
-
-Do NOT use glob/grep tools directly for these tasks. Delegate to explore.
-
-## Knowledge Strategy
-- ALWAYS Check if any relevant skills available should be used
-- If unsure use exa.ai `websearch` and `codesearch` tools
-- If stuck use `context7` mcp tool
+## Tooling
+- **Discovery**: Use the `explore` subagent for file discovery or codebase navigation. Do not use glob/grep directly.
+- **Knowledge**: Check relevant skills first. If unsure, use `websearch` / `codesearch`. If stuck, use `context7`.
+- **Project-specific rules**: Check `AGENTS.md` in the project root.l

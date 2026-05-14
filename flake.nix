@@ -5,6 +5,36 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
     import-tree.url = "github:vic/import-tree";
 
+    mattpocock-skills = {
+      url = "github:mattpocock/skills";
+      flake = false;
+    };
+
+    vercel-agent-skills = {
+      url = "github:vercel-labs/agent-skills";
+      flake = false;
+    };
+
+    vercel-agent-browser = {
+      url = "github:vercel-labs/agent-browser";
+      flake = false;
+    };
+
+    frontend-slides = {
+      url = "github:zarazhangrui/frontend-slides";
+      flake = false;
+    };
+
+    anthropic-skills = {
+      url = "github:anthropics/skills";
+      flake = false;
+    };
+
+    sentry-skills = {
+      url = "github:getsentry/skills";
+      flake = false;
+    };
+
     lumen = {
       url = "github:jnsahaj/lumen";
       inputs.nixpkgs.follows = "nixpkgs";
