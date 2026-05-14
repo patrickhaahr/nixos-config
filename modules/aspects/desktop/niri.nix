@@ -187,6 +187,7 @@
             "Mod+E".spawn = "nautilus";
             "Super+F"."maximize-window-to-edges" = _: { };
             "Super+M".spawn-sh = openhomeIr "mute";
+            "Super+O".spawn = "toggle-audio-output";
             "Super+Left".spawn-sh = openhomeIr "bluetooth";
             "Super+Right".spawn-sh = openhomeIr "optical";
             "Super+Up".spawn-sh = openhomeIr "volume-up";
