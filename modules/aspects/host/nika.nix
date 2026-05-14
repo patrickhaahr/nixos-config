@@ -4,6 +4,7 @@
       self.modules.nixos.nika-hardware
       self.modules.nixos.home-manager
       self.modules.nixos.identity-ph
+      self.modules.nixos.openhome
       self.modules.nixos.openlinkhub
       self.modules.nixos.openssh
       self.modules.nixos.tailscale
@@ -22,7 +23,6 @@
       enable = true;
       powerOnBoot = true;
     };
-    services.blueman.enable = true;
     networking.hostName = "nika";
     home-manager.users.ph.imports = [ self.modules.homeManager.spicetify ];
     system.stateVersion = "25.11";
