@@ -3,8 +3,9 @@
 ## Source Of Truth
 - This repo is a `flake-parts` flake with `import-tree ./modules` in `flake.nix`. Every `.nix` file under `modules/` is loaded automatically; do not add scratch files there.
 - New files are invisible to `nix flake` evaluation until Git tracks them. If you add a file that must participate in `nix eval`, `nix flake check`, or `nix build`, stage it with `git add <path>` before running verification commands.
-- The active config is the dendritic tree under `modules/aspects/`. Prefer editing those files over anything in `modules/hosts/` except `modules/hosts/tester/default.nix`.
+- The active config is the dendritic tree under `modules/aspects/`. Prefer editing those files over anything in `modules/hosts/` except the host entrypoint you are wiring.
 - `modules/hosts/tester/configuration.nix` and `modules/hosts/tester/hardware.nix` are currently empty stubs. Do not put real config back there.
+- `nixosConfigurations.nika` is the primary host. `tester` remains in the repo only as a secondary/scratch host and should not be treated as the default target for fixes, checks, or verification unless the user explicitly asks for it.
 
 ## Dendritic Rules
 - Keep modules aspect-oriented. Add to an existing aspect before creating a new one.
@@ -30,9 +31,10 @@
 ## Verification
 - Always run both after changes:
 - `nix flake check`
-- `nix build .#nixosConfigurations.tester.config.system.build.toplevel --dry-run`
+- `nix build .#nixosConfigurations.nika.config.system.build.toplevel --dry-run`
 
 ## Known Wiring
-- The only exported NixOS host is `nixosConfigurations.tester` from `modules/hosts/tester/default.nix`.
-- `modules/aspects/host/tester.nix` currently imports `tester-hardware`, `home-manager`, `identity-ph`, `niri`, and `workstation`.
-- `modules/aspects/identity/ph.nix` is also the standalone Home Manager entrypoint via `flake.homeConfigurations.ph`.
+- The primary exported NixOS host is `nixosConfigurations.nika` from `modules/hosts/nika/default.nix`.
+- `modules/aspects/host/nika.nix` currently imports `nika-hardware`, `audio-output`, `home-manager`, `identity-ph`, `handy`, `openhome`, `openlinkhub`, `openssh`, `tailscale`, `niri`, `niri-dp1-1080p`, `workstation`, and related desktop aspects.
+- `modules/aspects/host/tester.nix` still exists, but it is not the default host target.
+- `modules/aspects/identity/ph.nix` wires the `ph` user through Home Manager inside the NixOS hosts.
