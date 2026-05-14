@@ -48,17 +48,23 @@ let
 
         systemd.services.openhome-optical-at-shutdown = {
           description = "Send OpenHome optical request at shutdown";
-          wantedBy = [ "multi-user.target" ];
-          wants = [ "network-online.target" ];
-          after = [ "network-online.target" ];
-          before = [ "network.target" ];
+          wantedBy = [
+            "halt.target"
+            "poweroff.target"
+            "reboot.target"
+          ];
+          after = [ "network.target" ];
+          before = [
+            "halt.target"
+            "poweroff.target"
+            "reboot.target"
+          ];
+          unitConfig.DefaultDependencies = false;
           serviceConfig = {
             Type = "oneshot";
-            RemainAfterExit = true;
             User = userName;
-            ExecStart = "${pkgs.coreutils}/bin/true";
-            ExecStop = mkOpenhomeIrRetryScript "openhome-optical-at-shutdown" "optical";
-            TimeoutStopSec = 35;
+            ExecStart = mkOpenhomeIrRetryScript "openhome-optical-at-shutdown" "optical";
+            TimeoutStartSec = 35;
           };
         };
       };
@@ -77,21 +83,14 @@ in {
       };
       opticalShutdownService = openhomeEval.config.systemd.services.openhome-optical-at-shutdown;
     in {
-      checks = lib.optionalAttrs pkgs.stdenv.isLinux {
-        openhome-optical-shutdown-wiring = pkgs.runCommand "openhome-optical-shutdown-wiring" { } ''
-          test '${builtins.toJSON opticalShutdownService.wantedBy}' = '["multi-user.target"]'
-          test '${builtins.toJSON opticalShutdownService.wants}' = '["network-online.target"]'
-          test '${builtins.toJSON opticalShutdownService.after}' = '["network-online.target"]'
-          test '${builtins.toJSON opticalShutdownService.before}' = '["network.target"]'
-          test '${builtins.toJSON opticalShutdownService.serviceConfig.RemainAfterExit}' = 'true'
-          test '${builtins.toJSON opticalShutdownService.serviceConfig.TimeoutStopSec}' = '35'
-          case '${opticalShutdownService.serviceConfig.ExecStart}' in
-            */bin/true) ;;
-            *)
-              exit 1
-              ;;
-          esac
-          case '${opticalShutdownService.serviceConfig.ExecStop}' in
+        checks = lib.optionalAttrs pkgs.stdenv.isLinux {
+          openhome-optical-shutdown-wiring = pkgs.runCommand "openhome-optical-shutdown-wiring" { } ''
+            test '${builtins.toJSON opticalShutdownService.wantedBy}' = '["halt.target","poweroff.target","reboot.target"]'
+            test '${builtins.toJSON opticalShutdownService.after}' = '["network.target"]'
+            test '${builtins.toJSON opticalShutdownService.before}' = '["halt.target","poweroff.target","reboot.target"]'
+            test '${builtins.toJSON opticalShutdownService.unitConfig.DefaultDependencies}' = 'false'
+            test '${builtins.toJSON opticalShutdownService.serviceConfig.TimeoutStartSec}' = '35'
+            case '${opticalShutdownService.serviceConfig.ExecStart}' in
             *openhome-optical-at-shutdown*) ;;
             *)
               exit 1
