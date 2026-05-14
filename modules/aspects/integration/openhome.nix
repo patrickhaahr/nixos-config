@@ -7,6 +7,8 @@ let
       mkOpenhomeIr = command: pkgs.writeShellScriptBin "openhome-ir-${command}" ''
         OPENHOME_TOKEN="$(<"/home/${userName}/.config/secrets/openhome")"
         exec ${lib.getExe pkgs.curl} -X POST https://openhome.haahr.me/api/ir/send \
+          --connect-timeout 5 \
+          --max-time 10 \
           -H "Authorization: Bearer $OPENHOME_TOKEN" \
           -H "Content-Type: application/json" \
           -d '${builtins.toJSON { inherit command; }}'
@@ -43,6 +45,7 @@ let
             Type = "oneshot";
             User = userName;
             ExecStart = mkOpenhomeIrRetryScript "openhome-bluetooth-at-boot" "bluetooth";
+            TimeoutStartSec = 35;
           };
         };
 
@@ -81,9 +84,28 @@ in {
           }
         ];
       };
+      bluetoothBootService = openhomeEval.config.systemd.services.openhome-bluetooth-at-boot;
       opticalShutdownService = openhomeEval.config.systemd.services.openhome-optical-at-shutdown;
+      bluetoothIrPackage = builtins.elemAt openhomeEval.config.environment.systemPackages 1;
     in {
         checks = lib.optionalAttrs pkgs.stdenv.isLinux {
+          openhome-bluetooth-boot-wiring = pkgs.runCommand "openhome-bluetooth-boot-wiring" { } ''
+            test '${builtins.toJSON bluetoothBootService.wantedBy}' = '["multi-user.target"]'
+            test '${builtins.toJSON bluetoothBootService.wants}' = '["network-online.target"]'
+            test '${builtins.toJSON bluetoothBootService.after}' = '["network-online.target"]'
+            test '${builtins.toJSON bluetoothBootService.serviceConfig.TimeoutStartSec}' = '35'
+            case '${bluetoothBootService.serviceConfig.ExecStart}' in
+            *openhome-bluetooth-at-boot*) ;;
+            *)
+              exit 1
+              ;;
+            esac
+            grep -F -- '--connect-timeout 5' '${bluetoothIrPackage}/bin/openhome-ir-bluetooth'
+            grep -F -- '--max-time 10' '${bluetoothIrPackage}/bin/openhome-ir-bluetooth'
+
+            touch "$out"
+          '';
+
           openhome-optical-shutdown-wiring = pkgs.runCommand "openhome-optical-shutdown-wiring" { } ''
             test '${builtins.toJSON opticalShutdownService.wantedBy}' = '["halt.target","poweroff.target","reboot.target"]'
             test '${builtins.toJSON opticalShutdownService.after}' = '["network.target"]'
