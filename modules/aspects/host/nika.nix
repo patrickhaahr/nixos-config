@@ -5,6 +5,7 @@
       self.modules.nixos.audio-output
       self.modules.nixos.home-manager
       self.modules.nixos.identity-ph
+      self.modules.nixos.handy
       self.modules.nixos.openhome
       self.modules.nixos.openlinkhub
       self.modules.nixos.openssh

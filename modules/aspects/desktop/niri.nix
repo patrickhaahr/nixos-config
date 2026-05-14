@@ -4,6 +4,9 @@
       openhomeEnabled = if builtins.hasAttr "services" config && builtins.hasAttr "openhome" config.services
         then config.services.openhome.enable
         else false;
+      handyEnabled = if builtins.hasAttr "programs" config && builtins.hasAttr "handy" config.programs
+        then config.programs.handy.enable
+        else false;
     in {
     hardware.i2c.enable = true;
 
@@ -11,6 +14,7 @@
       enable = true;
       package = self.packages.${pkgs.stdenv.hostPlatform.system}.myNiri.override {
         inherit openhomeEnabled;
+        inherit handyEnabled;
       };
     };
   };
@@ -19,6 +23,9 @@
     programs.niri.package = lib.mkForce (self.packages.${pkgs.stdenv.hostPlatform.system}.myNiriDp11080p.override {
       openhomeEnabled = if builtins.hasAttr "services" config && builtins.hasAttr "openhome" config.services
         then config.services.openhome.enable
+        else false;
+      handyEnabled = if builtins.hasAttr "programs" config && builtins.hasAttr "handy" config.programs
+        then config.programs.handy.enable
         else false;
     });
   };
@@ -58,10 +65,10 @@
             sleep 1
           done
         '';
-        mkNiri = { settings, openhomeEnabled ? false }: inputs.wrapper-modules.wrappers.niri.wrap {
+        mkNiri = { settings, openhomeEnabled ? false, handyEnabled ? false }: inputs.wrapper-modules.wrappers.niri.wrap {
           inherit pkgs settings;
         };
-        mkSettings = openhomeEnabled: {
+        mkSettings = { openhomeEnabled, handyEnabled ? false }: {
           prefer-no-csd = true;
 
           workspaces = {
@@ -194,6 +201,11 @@
             "Mod+F9".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call brightness decrease";
             "Mod+Shift+F9".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call brightness increase";
             "Mod+Alt+F10".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call nightLight toggle";
+          } // lib.optionalAttrs handyEnabled {
+            "Ctrl+Space" = _: {
+              props.repeat = false;
+              content.spawn-sh = "${lib.getExe' pkgs.procps "pkill"} -USR2 -n handy";
+            };
           } // lib.optionalAttrs openhomeEnabled {
             "Super+M".spawn = "openhome-ir-mute";
             "Super+Left".spawn = "openhome-ir-bluetooth";
@@ -222,14 +234,16 @@
           };
         };
       in {
-        myNiri = lib.makeOverridable ({ openhomeEnabled ? false }: mkNiri {
+        myNiri = lib.makeOverridable ({ openhomeEnabled ? false, handyEnabled ? false }: mkNiri {
           inherit openhomeEnabled;
-          settings = mkSettings openhomeEnabled;
+          inherit handyEnabled;
+          settings = mkSettings { inherit openhomeEnabled handyEnabled; };
         }) { };
-        myNiriDp11080p = lib.makeOverridable ({ openhomeEnabled ? false }: let
-          baseSettings = mkSettings openhomeEnabled;
+        myNiriDp11080p = lib.makeOverridable ({ openhomeEnabled ? false, handyEnabled ? false }: let
+          baseSettings = mkSettings { inherit openhomeEnabled handyEnabled; };
         in mkNiri {
           inherit openhomeEnabled;
+          inherit handyEnabled;
           settings = baseSettings // {
             outputs = baseSettings.outputs // {
               "DP-1".mode = "1920x1080";
