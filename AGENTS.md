@@ -2,6 +2,7 @@
 
 ## Source Of Truth
 - This repo is a `flake-parts` flake with `import-tree ./modules` in `flake.nix`. Every `.nix` file under `modules/` is loaded automatically; do not add scratch files there.
+- New files are invisible to `nix flake` evaluation until Git tracks them. If you add a file that must participate in `nix eval`, `nix flake check`, or `nix build`, stage it with `git add <path>` before running verification commands.
 - The active config is the dendritic tree under `modules/aspects/`. Prefer editing those files over anything in `modules/hosts/` except `modules/hosts/tester/default.nix`.
 - `modules/hosts/tester/configuration.nix` and `modules/hosts/tester/hardware.nix` are currently empty stubs. Do not put real config back there.
 
