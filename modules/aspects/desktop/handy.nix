@@ -65,6 +65,7 @@ in {
         nativeBuildInputs = [ pkgs.makeWrapper ];
         postBuild = ''
           wrapProgram "$out/bin/handy" \
+            --add-flags "--start-hidden" \
             --set ALSA_CONFIG_PATH "${alsaConfig}" \
             --set ALSA_PLUGIN_DIR "${combinedAlsaPlugins}" \
             --set WEBKIT_DISABLE_DMABUF_RENDERER 1
