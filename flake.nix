@@ -35,6 +35,11 @@
       flake = false;
     };
 
+    dotnet-skillz = {
+      url = "github:davidfowl/dotnet-skillz";
+      flake = false;
+    };
+
     lumen = {
       url = "github:jnsahaj/lumen";
       inputs.nixpkgs.follows = "nixpkgs";

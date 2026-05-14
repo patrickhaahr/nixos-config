@@ -42,6 +42,22 @@
         "type": "github"
       }
     },
+    "dotnet-skillz": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1771666054,
+        "narHash": "sha256-IfWn+jDqODMLyA309TeOnpTLFdjk8ehFxKWu5XqXylE=",
+        "owner": "davidfowl",
+        "repo": "dotnet-skillz",
+        "rev": "ca19e87d1118484e8259e59468c71f8982b2a090",
+        "type": "github"
+      },
+      "original": {
+        "owner": "davidfowl",
+        "repo": "dotnet-skillz",
+        "type": "github"
+      }
+    },
     "fenix": {
       "inputs": {
         "nixpkgs": [
@@ -329,6 +345,7 @@
     "root": {
       "inputs": {
         "anthropic-skills": "anthropic-skills",
+        "dotnet-skillz": "dotnet-skillz",
         "flake-parts": "flake-parts",
         "frontend-slides": "frontend-slides",
         "handy": "handy",
