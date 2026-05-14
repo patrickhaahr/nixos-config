@@ -2,7 +2,10 @@
 let
   userName = "ph";
 in {
-  flake.modules.nixos.identity-ph = { pkgs, ... }: {
+  flake.modules.nixos.identity-ph = { lib, pkgs, config, ... }:
+    let
+      handyConfigured = builtins.hasAttr "programs" config && builtins.hasAttr "handy" config.programs;
+    in {
     users.users.${userName} = {
       isNormalUser = true;
       description = userName;
@@ -13,18 +16,26 @@ in {
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKHug5lTw2U4y3umUuePSqFJH+t7dEEvlqDUroVIpPKF patrickhaahr@archbtw"
       ];
     };
-    home-manager.users.${userName}.imports = [
-      self.modules.homeManager.identity-ph
-      self.modules.homeManager.direnv
-      self.modules.homeManager.git
-      self.modules.homeManager.lumen
-      self.modules.homeManager.openssh
-      self.modules.homeManager.neovim
-      self.modules.homeManager.nushell
-      self.modules.homeManager.opencode
-      self.modules.homeManager.ghostty
-      self.modules.homeManager.cursor
-    ];
+    home-manager.users.${userName} = {
+      imports = [
+        self.modules.homeManager.identity-ph
+        self.modules.homeManager.direnv
+        self.modules.homeManager.git
+        self.modules.homeManager.handy
+        self.modules.homeManager.lumen
+        self.modules.homeManager.openssh
+        self.modules.homeManager.neovim
+        self.modules.homeManager.nushell
+        self.modules.homeManager.opencode
+        self.modules.homeManager.ghostty
+        self.modules.homeManager.cursor
+      ];
+
+      services.handy = lib.mkIf (handyConfigured && config.programs.handy.autostart) {
+        enable = true;
+        package = config.programs.handy.package;
+      };
+    };
   };
 
   flake.modules.homeManager.identity-ph = { lib, pkgs, ... }: {

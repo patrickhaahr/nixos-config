@@ -12,7 +12,7 @@ let
     };
   };
 in {
-  flake.modules.nixos.handy = { pkgs, ... }:
+  flake.modules.nixos.handy = { lib, pkgs, ... }:
     let
       system = pkgs.stdenv.hostPlatform.system;
       release = releases.${system} or (throw "Handy is not packaged for ${system}");
@@ -74,12 +74,20 @@ in {
     in {
       imports = [ "${inputs.handy}/nix/module.nix" ];
 
-      programs.handy = {
-        enable = true;
-        inherit package;
+      options.programs.handy.autostart = lib.mkEnableOption "start Handy automatically for the configured user";
+
+      config = {
+        programs.handy = {
+          enable = true;
+          autostart = lib.mkDefault false;
+          inherit package;
+        };
+
+        environment.systemPackages = [ pkgs.wtype ];
       };
-
-      environment.systemPackages = [ pkgs.wtype ];
-
     };
+
+  flake.modules.homeManager.handy = { ... }: {
+    imports = [ inputs.handy.homeManagerModules.default ];
+  };
 }

@@ -1,5 +1,10 @@
 { inputs, ... }: {
-  flake.modules.nixos.workstation = { pkgs, ... }: {
+  flake.modules.nixos.workstation = { pkgs, config, lib, ... }:
+    let
+      niriEnabled = if builtins.hasAttr "programs" config && builtins.hasAttr "niri" config.programs
+        then config.programs.niri.enable
+        else false;
+    in {
     nix.settings.experimental-features = [ "nix-command" "flakes" ];
     networking.networkmanager.enable = true;
     time.timeZone = "Europe/Copenhagen";
@@ -38,7 +43,10 @@
       opencode
     ];
     services.greetd.enable = true;
-    services.greetd.settings.default_session.command = "${pkgs.niri}/bin/niri-session";
+    services.greetd.settings.default_session.command =
+      if niriEnabled
+      then lib.getExe' config.programs.niri.package "niri-session"
+      else "${pkgs.niri}/bin/niri-session";
     services.greetd.settings.default_session.user = "ph";
   };
 }

@@ -35,6 +35,7 @@
     };
     networking.hostName = "nika";
     home-manager.users.ph.imports = [ self.modules.homeManager.spicetify ];
+    programs.handy.autostart = true;
     system.stateVersion = "25.11";
   };
 }

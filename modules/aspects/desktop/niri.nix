@@ -10,14 +10,14 @@
     in {
     hardware.i2c.enable = true;
 
-    programs.niri = {
-      enable = true;
-      package = self.packages.${pkgs.stdenv.hostPlatform.system}.myNiri.override {
-        inherit openhomeEnabled;
-        inherit handyEnabled;
+      programs.niri = {
+        enable = true;
+        package = self.packages.${pkgs.stdenv.hostPlatform.system}.myNiri.override {
+          inherit openhomeEnabled;
+          inherit handyEnabled;
+        };
       };
     };
-  };
 
   flake.modules.nixos."niri-dp1-1080p" = { lib, pkgs, config, ... }: {
     programs.niri.package = lib.mkForce (self.packages.${pkgs.stdenv.hostPlatform.system}.myNiriDp11080p.override {
@@ -72,8 +72,6 @@
         (lib.getExe self'.packages.noctalia-shell)
         (lib.getExe pkgs.ghostty)
         (lib.getExe heliumNoKeyring)
-      ] ++ lib.optionals handyEnabled [
-        "handy"
       ];
       mkNiri = { settings, openhomeEnabled ? false, handyEnabled ? false }: inputs.wrapper-modules.wrappers.niri.wrap {
         inherit pkgs settings;
@@ -238,19 +236,26 @@
     in {
       checks = lib.optionalAttrs pkgs.stdenv.isLinux {
         niri-handy-startup-wiring = pkgs.runCommand "niri-handy-startup-wiring" { } ''
-          case '${builtins.toJSON (startupApps { handyEnabled = true; })}' in
-            *'"handy"'*) ;;
-            *)
-              exit 1
-              ;;
-          esac
+          test '${builtins.toJSON self.nixosConfigurations.nika.config.home-manager.users.ph.services.handy.enable}' = 'true'
 
-          case '${builtins.toJSON (startupApps { handyEnabled = false; })}' in
+          test '${self.nixosConfigurations.nika.config.home-manager.users.ph.services.handy.package}/bin/handy' = \
+            '${self.nixosConfigurations.nika.config.programs.handy.package}/bin/handy'
+
+          case '${builtins.toJSON (startupApps { handyEnabled = true; })}' in
             *'"handy"'*)
               exit 1
               ;;
             *) ;;
           esac
+
+          touch "$out"
+        '';
+
+        niri-nika-enables-handy = pkgs.runCommand "niri-nika-enables-handy" { } ''
+          test '${builtins.toJSON self.nixosConfigurations.nika.config.programs.handy.enable}' = 'true'
+
+          test '${self.nixosConfigurations.nika.config.services.greetd.settings.default_session.command}' = \
+            '${self.nixosConfigurations.nika.config.programs.niri.package}/bin/niri-session'
 
           touch "$out"
         '';
