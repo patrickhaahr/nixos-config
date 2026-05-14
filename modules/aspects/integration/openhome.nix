@@ -1,8 +1,7 @@
-{ ... }:
+{ inputs, ... }:
 let
   userName = "ph";
-in {
-  flake.modules.nixos.openhome = { lib, pkgs, config, ... }:
+  openhomeModule = { lib, pkgs, config, ... }:
     let
       cfg = config.services.openhome;
       mkOpenhomeIr = command: pkgs.writeShellScriptBin "openhome-ir-${command}" ''
@@ -11,6 +10,17 @@ in {
           -H "Authorization: Bearer $OPENHOME_TOKEN" \
           -H "Content-Type: application/json" \
           -d '${builtins.toJSON { inherit command; }}'
+      '';
+      mkOpenhomeIrRetryScript = name: command: pkgs.writeShellScript name ''
+        for _ in $(seq 1 30); do
+          if ${lib.getExe (mkOpenhomeIr command)} >/dev/null 2>&1; then
+            exit 0
+          fi
+
+          sleep 1
+        done
+
+        exit 1
       '';
     in {
       options.services.openhome.enable = lib.mkEnableOption "OpenHome integration";
@@ -32,33 +42,66 @@ in {
           serviceConfig = {
             Type = "oneshot";
             User = userName;
-            ExecStart = pkgs.writeShellScript "openhome-bluetooth-at-boot" ''
-              for _ in $(seq 1 30); do
-                if ${lib.getExe (mkOpenhomeIr "bluetooth")} \
-                  >/dev/null 2>&1; then
-                  exit 0
-                fi
-
-                sleep 1
-              done
-
-              exit 1
-            '';
+            ExecStart = mkOpenhomeIrRetryScript "openhome-bluetooth-at-boot" "bluetooth";
           };
         };
 
         systemd.services.openhome-optical-at-shutdown = {
           description = "Send OpenHome optical request at shutdown";
-          wantedBy = [ "poweroff.target" ];
-          before = [ "poweroff.target" ];
+          wantedBy = [ "multi-user.target" ];
+          wants = [ "network-online.target" ];
+          after = [ "network-online.target" ];
+          before = [ "network.target" ];
           serviceConfig = {
             Type = "oneshot";
+            RemainAfterExit = true;
             User = userName;
-            ExecStart = pkgs.writeShellScript "openhome-optical-at-shutdown" ''
-              exec ${lib.getExe (mkOpenhomeIr "optical")} >/dev/null 2>&1
-            '';
+            ExecStart = "${pkgs.coreutils}/bin/true";
+            ExecStop = mkOpenhomeIrRetryScript "openhome-optical-at-shutdown" "optical";
+            TimeoutStopSec = 35;
           };
         };
       };
     };
+in {
+  perSystem = { lib, pkgs, system, ... }:
+    let
+      openhomeEval = inputs.nixpkgs.lib.nixosSystem {
+        inherit system;
+        modules = [
+          openhomeModule
+          {
+            services.openhome.enable = true;
+          }
+        ];
+      };
+      opticalShutdownService = openhomeEval.config.systemd.services.openhome-optical-at-shutdown;
+    in {
+      checks = lib.optionalAttrs pkgs.stdenv.isLinux {
+        openhome-optical-shutdown-wiring = pkgs.runCommand "openhome-optical-shutdown-wiring" { } ''
+          test '${builtins.toJSON opticalShutdownService.wantedBy}' = '["multi-user.target"]'
+          test '${builtins.toJSON opticalShutdownService.wants}' = '["network-online.target"]'
+          test '${builtins.toJSON opticalShutdownService.after}' = '["network-online.target"]'
+          test '${builtins.toJSON opticalShutdownService.before}' = '["network.target"]'
+          test '${builtins.toJSON opticalShutdownService.serviceConfig.RemainAfterExit}' = 'true'
+          test '${builtins.toJSON opticalShutdownService.serviceConfig.TimeoutStopSec}' = '35'
+          case '${opticalShutdownService.serviceConfig.ExecStart}' in
+            */bin/true) ;;
+            *)
+              exit 1
+              ;;
+          esac
+          case '${opticalShutdownService.serviceConfig.ExecStop}' in
+            *openhome-optical-at-shutdown*) ;;
+            *)
+              exit 1
+              ;;
+          esac
+
+          touch "$out"
+        '';
+      };
+    };
+
+  flake.modules.nixos.openhome = openhomeModule;
 }
