@@ -30,45 +30,55 @@
     });
   };
 
-  perSystem = { pkgs, lib, self', ... }: {
-    packages =
-      let
-        heliumNoKeyring = pkgs.writeShellScriptBin "helium-no-keyring" ''
-          exec ${lib.getExe self'.packages.helium-no-keyring} "$@"
-        '';
-        spotifyAutoplay = pkgs.writeShellScriptBin "spotify-autoplay" ''
-          spotify &
+  perSystem = { pkgs, lib, self', ... }:
+    let
+      heliumNoKeyring = pkgs.writeShellScriptBin "helium-no-keyring" ''
+        exec ${lib.getExe self'.packages.helium-no-keyring} "$@"
+      '';
+      spotifyAutoplay = pkgs.writeShellScriptBin "spotify-autoplay" ''
+        spotify &
 
-          for _ in $(seq 1 60); do
-            if ${lib.getExe pkgs.playerctl} -p spotify status >/dev/null 2>&1; then
-              exec ${lib.getExe pkgs.playerctl} -p spotify play
-            fi
+        for _ in $(seq 1 60); do
+          if ${lib.getExe pkgs.playerctl} -p spotify status >/dev/null 2>&1; then
+            exec ${lib.getExe pkgs.playerctl} -p spotify play
+          fi
 
-            sleep 1
-          done
-        '';
-        focusWorkspace2 = pkgs.writeShellScriptBin "focus-workspace-2" ''
-          for _ in $(seq 1 10); do
-            if ${lib.getExe pkgs.niri} msg action focus-workspace 2 >/dev/null 2>&1; then
-              exit 0
-            fi
+          sleep 1
+        done
+      '';
+      focusWorkspace2 = pkgs.writeShellScriptBin "focus-workspace-2" ''
+        for _ in $(seq 1 10); do
+          if ${lib.getExe pkgs.niri} msg action focus-workspace 2 >/dev/null 2>&1; then
+            exit 0
+          fi
 
-            sleep 1
-          done
-        '';
-        focusWorkspace1 = pkgs.writeShellScriptBin "focus-workspace-1" ''
-          for _ in $(seq 1 10); do
-            if ${lib.getExe pkgs.niri} msg action focus-workspace 1 >/dev/null 2>&1; then
-              exit 0
-            fi
+          sleep 1
+        done
+      '';
+      focusWorkspace1 = pkgs.writeShellScriptBin "focus-workspace-1" ''
+        for _ in $(seq 1 10); do
+          if ${lib.getExe pkgs.niri} msg action focus-workspace 1 >/dev/null 2>&1; then
+            exit 0
+          fi
 
-            sleep 1
-          done
-        '';
-        mkNiri = { settings, openhomeEnabled ? false, handyEnabled ? false }: inputs.wrapper-modules.wrappers.niri.wrap {
-          inherit pkgs settings;
-        };
-        mkSettings = { openhomeEnabled, handyEnabled ? false }: {
+          sleep 1
+        done
+      '';
+      startupApps = { handyEnabled ? false }: [
+        (lib.getExe focusWorkspace2)
+        "signal-desktop"
+        (lib.getExe spotifyAutoplay)
+        (lib.getExe focusWorkspace1)
+        (lib.getExe self'.packages.noctalia-shell)
+        (lib.getExe pkgs.ghostty)
+        (lib.getExe heliumNoKeyring)
+      ] ++ lib.optionals handyEnabled [
+        "handy"
+      ];
+      mkNiri = { settings, openhomeEnabled ? false, handyEnabled ? false }: inputs.wrapper-modules.wrappers.niri.wrap {
+        inherit pkgs settings;
+      };
+      mkSettings = { openhomeEnabled, handyEnabled ? false }: {
           prefer-no-csd = true;
 
           workspaces = {
@@ -76,15 +86,7 @@
             "2" = { };
           };
 
-          spawn-at-startup = [
-            (lib.getExe focusWorkspace2)
-            "signal-desktop"
-            (lib.getExe spotifyAutoplay)
-            (lib.getExe focusWorkspace1)
-            (lib.getExe self'.packages.noctalia-shell)
-            (lib.getExe pkgs.ghostty)
-            (lib.getExe heliumNoKeyring)
-          ];
+          spawn-at-startup = startupApps { inherit handyEnabled; };
 
           xwayland-satellite.path = lib.getExe pkgs.xwayland-satellite;
 
@@ -233,7 +235,28 @@
             "Super+Shift+9"."move-column-to-workspace" = 9;
           };
         };
-      in {
+    in {
+      checks = lib.optionalAttrs pkgs.stdenv.isLinux {
+        niri-handy-startup-wiring = pkgs.runCommand "niri-handy-startup-wiring" { } ''
+          case '${builtins.toJSON (startupApps { handyEnabled = true; })}' in
+            *'"handy"'*) ;;
+            *)
+              exit 1
+              ;;
+          esac
+
+          case '${builtins.toJSON (startupApps { handyEnabled = false; })}' in
+            *'"handy"'*)
+              exit 1
+              ;;
+            *) ;;
+          esac
+
+          touch "$out"
+        '';
+      };
+
+      packages = {
         myNiri = lib.makeOverridable ({ openhomeEnabled ? false, handyEnabled ? false }: mkNiri {
           inherit openhomeEnabled;
           inherit handyEnabled;
@@ -254,5 +277,5 @@
           exec ${lib.getExe inputs.helium.packages.${pkgs.stdenv.hostPlatform.system}.default} --password-store=basic "$@"
         '';
       };
-  };
+    };
 }

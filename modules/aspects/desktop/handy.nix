@@ -81,10 +81,5 @@ in {
 
       environment.systemPackages = [ pkgs.wtype ];
 
-      home-manager.users.ph.imports = [ "${inputs.handy}/nix/hm-module.nix" ];
-      home-manager.users.ph.services.handy = {
-        enable = true;
-        inherit package;
-      };
     };
 }
