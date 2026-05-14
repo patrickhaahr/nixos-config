@@ -13,9 +13,10 @@ description: Rust coding standards for production code
 ### Ownership
 - `&str` > `String`, `&[T]` > `Vec<T>`, `&Path` > `PathBuf` for parameters
 - Question every `.clone()`; prefer borrowing
+- `Arc` is not cheap; do not wrap everything in `Arc` without a concrete shared-ownership need
 - Use `.as_ref()` to convert `&Option<T>` → `Option<&T>`
 - Move with `into_iter()` over `iter().cloned()`
-- Keep borrows short-lived; avoid `Rc<RefCell<T>>` unless shared mutability is required
+- Keep borrows short-lived; avoid `Rc<RefCell<T>>`; it is a design smell and should be used only when shared mutability is truly required
 
 ### API Design
 - Make illegal states unrepresentable (enums > bool flags)
@@ -39,6 +40,8 @@ description: Rust coding standards for production code
 ### Anti-patterns
 - Nested `if let` chains → early returns
 - `Vec<T>` parameters where `&[T]` suffices
+- Wrapping everything in `Arc` instead of choosing the simplest ownership model
+- Reaching for `Rc<RefCell<T>>` instead of fixing ownership and lifetime design
 - Public mutable fields
 - Deep mixing of I/O, logic, and parsing in one function
 - `unsafe` without documented invariants
