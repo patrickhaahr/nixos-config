@@ -1,15 +1,26 @@
 { self, inputs, ... }: {
-  flake.modules.nixos.niri = { pkgs, ... }: {
+  flake.modules.nixos.niri = { pkgs, config, ... }:
+    let
+      openhomeEnabled = if builtins.hasAttr "services" config && builtins.hasAttr "openhome" config.services
+        then config.services.openhome.enable
+        else false;
+    in {
     hardware.i2c.enable = true;
 
     programs.niri = {
       enable = true;
-      package = self.packages.${pkgs.stdenv.hostPlatform.system}.myNiri;
+      package = self.packages.${pkgs.stdenv.hostPlatform.system}.myNiri.override {
+        inherit openhomeEnabled;
+      };
     };
   };
 
-  flake.modules.nixos."niri-dp1-1080p" = { lib, pkgs, ... }: {
-    programs.niri.package = lib.mkForce self.packages.${pkgs.stdenv.hostPlatform.system}.myNiriDp11080p;
+  flake.modules.nixos."niri-dp1-1080p" = { lib, pkgs, config, ... }: {
+    programs.niri.package = lib.mkForce (self.packages.${pkgs.stdenv.hostPlatform.system}.myNiriDp11080p.override {
+      openhomeEnabled = if builtins.hasAttr "services" config && builtins.hasAttr "openhome" config.services
+        then config.services.openhome.enable
+        else false;
+    });
   };
 
   perSystem = { pkgs, lib, self', ... }: {
@@ -47,17 +58,10 @@
             sleep 1
           done
         '';
-        openhomeIr = command: ''
-          OPENHOME_TOKEN="$(<"$HOME/.config/secrets/openhome")"
-          ${lib.getExe pkgs.curl} -X POST https://openhome.haahr.me/api/ir/send \
-            -H "Authorization: Bearer $OPENHOME_TOKEN" \
-            -H "Content-Type: application/json" \
-            -d '${builtins.toJSON { inherit command; }}'
-        '';
-        mkNiri = settings: inputs.wrapper-modules.wrappers.niri.wrap {
+        mkNiri = { settings, openhomeEnabled ? false }: inputs.wrapper-modules.wrappers.niri.wrap {
           inherit pkgs settings;
         };
-        baseSettings = {
+        mkSettings = openhomeEnabled: {
           prefer-no-csd = true;
 
           workspaces = {
@@ -153,7 +157,7 @@
             }
           ];
 
-          binds = {
+          binds = ({
             "Mod+Return".spawn = "ghostty";
             "Mod+T".spawn = "ghostty";
             "Mod+B".spawn = lib.getExe heliumNoKeyring;
@@ -186,16 +190,17 @@
             "Mod+Space".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call launcher toggle";
             "Mod+E".spawn = "nautilus";
             "Super+F"."maximize-window-to-edges" = _: { };
-            "Super+M".spawn-sh = openhomeIr "mute";
             "Super+O".spawn = "toggle-audio-output";
-            "Super+Left".spawn-sh = openhomeIr "bluetooth";
-            "Super+Right".spawn-sh = openhomeIr "optical";
-            "Super+Up".spawn-sh = openhomeIr "volume-up";
-            "Super+Down".spawn-sh = openhomeIr "volume-down";
             "Mod+F9".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call brightness decrease";
             "Mod+Shift+F9".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call brightness increase";
             "Mod+Alt+F10".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call nightLight toggle";
-          } // {
+          } // lib.optionalAttrs openhomeEnabled {
+            "Super+M".spawn = "openhome-ir-mute";
+            "Super+Left".spawn = "openhome-ir-bluetooth";
+            "Super+Right".spawn = "openhome-ir-optical";
+            "Super+Up".spawn = "openhome-ir-volume-up";
+            "Super+Down".spawn = "openhome-ir-volume-down";
+          }) // {
             "Super+1"."focus-workspace" = 1;
             "Super+2"."focus-workspace" = 2;
             "Super+3"."focus-workspace" = 3;
@@ -217,12 +222,20 @@
           };
         };
       in {
-        myNiri = mkNiri baseSettings;
-        myNiriDp11080p = mkNiri (baseSettings // {
-          outputs = baseSettings.outputs // {
-            "DP-1".mode = "1920x1080";
+        myNiri = lib.makeOverridable ({ openhomeEnabled ? false }: mkNiri {
+          inherit openhomeEnabled;
+          settings = mkSettings openhomeEnabled;
+        }) { };
+        myNiriDp11080p = lib.makeOverridable ({ openhomeEnabled ? false }: let
+          baseSettings = mkSettings openhomeEnabled;
+        in mkNiri {
+          inherit openhomeEnabled;
+          settings = baseSettings // {
+            outputs = baseSettings.outputs // {
+              "DP-1".mode = "1920x1080";
+            };
           };
-        });
+        }) { };
         helium-no-keyring = pkgs.writeShellScriptBin "helium-no-keyring" ''
           exec ${lib.getExe inputs.helium.packages.${pkgs.stdenv.hostPlatform.system}.default} --password-store=basic "$@"
         '';

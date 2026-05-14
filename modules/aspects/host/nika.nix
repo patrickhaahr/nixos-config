@@ -23,6 +23,8 @@
       speaker = "bluez_output.FC_E8_06_72_4E_85.1";
     };
 
+    services.openhome.enable = true;
+
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
     boot.kernelPackages = pkgs.linuxPackages_latest;
