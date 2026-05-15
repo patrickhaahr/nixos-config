@@ -5,8 +5,19 @@
       .local_secrets
     '';
 
+    xdg.configFile."git/config-work".text = ''
+      [user]
+        email = pqh@timengo.com
+    '';
+
     programs.git = {
       enable = true;
+      includes = [
+        {
+          condition = "gitdir:~/dev/work/";
+          path = "~/.config/git/config-work";
+        }
+      ];
       settings = {
         user = {
           name = "patrickhaahr";
