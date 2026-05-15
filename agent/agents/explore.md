@@ -2,7 +2,7 @@
 name: explore
 description: Fast agent specialized for exploring codebases. Use this when you need to quickly find files by patterns, search code for keywords, or answer questions about the codebase. Adapt search depth to the requested thoroughness level.
 mode: subagent
-model: github-copilot/grok-code-fast-1
+model: github-copilot/claude-haiku-4.5
 hidden: true
 permission:
   "*": deny
