@@ -3,6 +3,7 @@
     imports = [
       self.modules.nixos.nika-hardware
       self.modules.nixos.audio-output
+      self.modules.nixos.containers
       self.modules.nixos.home-manager
       self.modules.nixos.identity-ph
       self.modules.nixos.handy
