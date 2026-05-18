@@ -20,6 +20,7 @@ in {
       imports = [
         self.modules.homeManager.identity-ph
         self.modules.homeManager.direnv
+        self.modules.homeManager.gh
         self.modules.homeManager.git
         self.modules.homeManager.handy
         self.modules.homeManager.lumen

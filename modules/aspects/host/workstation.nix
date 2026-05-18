@@ -28,6 +28,7 @@
     nixpkgs.config.allowUnfree = true;
     environment.systemPackages = with pkgs; [
       openssh
+      gh
       cascadia-code
       nushell
       bitwarden-cli
