@@ -40,6 +40,11 @@
       flake = false;
     };
 
+    claude-skill-typst = {
+      url = "github:lucifer1004/claude-skill-typst";
+      flake = false;
+    };
+
     lumen = {
       url = "github:jnsahaj/lumen";
       inputs.nixpkgs.follows = "nixpkgs";
