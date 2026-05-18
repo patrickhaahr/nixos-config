@@ -11,6 +11,7 @@
       self.modules.nixos.openssh
       self.modules.nixos.tailscale
       self.modules.nixos.niri
+      self.modules.nixos.poweroff-scheduler
       self.modules.nixos.signal
       self.modules.nixos.steam
       self.modules.nixos.sunshine
