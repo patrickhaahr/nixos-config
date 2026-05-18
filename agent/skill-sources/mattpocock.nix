@@ -7,6 +7,7 @@ in {
   diagnose = engineering "diagnose";
   grill-with-docs = engineering "grill-with-docs";
   improve-codebase-architecture = engineering "improve-codebase-architecture";
+  prototype = engineering "prototype";
   tdd = engineering "tdd";
   to-issues = engineering "to-issues";
   to-prd = engineering "to-prd";
