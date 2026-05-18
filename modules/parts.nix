@@ -5,6 +5,15 @@
   ];
 
   config = {
+    perSystem = { system, ... }: {
+      _module.args.pkgs = import inputs.nixpkgs {
+        inherit system;
+        config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+          "replace"
+        ];
+      };
+    };
+
     systems = [
       "x86_64-linux"
       "x86_64-darwin"
