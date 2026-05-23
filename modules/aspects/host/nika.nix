@@ -4,6 +4,7 @@
       self.modules.nixos.nika-hardware
       self.modules.nixos.audio-output
       self.modules.nixos.containers
+      #self.modules.nixos.hacking
       self.modules.nixos.home-manager
       self.modules.nixos.identity-ph
       self.modules.nixos.handy
@@ -36,6 +37,7 @@
       powerOnBoot = true;
     };
     networking.hostName = "nika";
+    #networking.extraHosts = ''    '';
     home-manager.users.ph.imports = [ self.modules.homeManager.spicetify ];
     programs.handy.autostart = true;
     system.stateVersion = "25.11";
