@@ -32,6 +32,7 @@
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
     boot.kernelPackages = pkgs.linuxPackages_latest;
+    security.lockKernelModules = true;
     hardware.bluetooth = {
       enable = true;
       powerOnBoot = true;
