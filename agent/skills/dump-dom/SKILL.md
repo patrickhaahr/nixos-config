@@ -1,6 +1,6 @@
 ---
 name: dump-dom
-description: Use `helium-browser --dump-dom` to inspect the fully rendered DOM after JavaScript execution. For debugging layout/scrolling issues and scraping dynamic pages.
+description: Use `chromium --dump-dom` to inspect the fully rendered DOM after JavaScript execution. For debugging layout/scrolling issues and scraping dynamic pages.
 ---
 
 ## Overview
@@ -8,7 +8,7 @@ Get the actual browser-rendered DOM after JS runs. Unlike static HTML, this show
 
 ## Usage
 ```bash
-helium-browser --headless --no-sandbox --disable-gpu --virtual-time-budget=8000 --dump-dom <url>
+chromium --headless --no-sandbox --disable-gpu --virtual-time-budget=8000 --dump-dom <url>
 ```
 
 ## When to Use

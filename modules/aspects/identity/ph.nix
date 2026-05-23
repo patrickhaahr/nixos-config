@@ -19,6 +19,7 @@ in {
     home-manager.users.${userName} = {
       imports = [
         self.modules.homeManager.identity-ph
+        self.modules.homeManager.agent-browser
         self.modules.homeManager.direnv
         self.modules.homeManager.gh
         self.modules.homeManager.git
