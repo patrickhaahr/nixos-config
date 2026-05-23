@@ -2,6 +2,7 @@
   imports = [
     inputs.home-manager.flakeModules.home-manager
     inputs.flake-parts.flakeModules.modules
+    ./aspects/hacking/default.nix
   ];
 
   config = {

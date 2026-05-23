@@ -22,6 +22,7 @@ in {
         self.modules.homeManager.direnv
         self.modules.homeManager.gh
         self.modules.homeManager.git
+        self.modules.homeManager.hacking
         self.modules.homeManager.handy
         self.modules.homeManager.lumen
         self.modules.homeManager.openssh
