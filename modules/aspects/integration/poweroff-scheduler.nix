@@ -1,21 +1,8 @@
 { ... }: {
   flake.modules.nixos.poweroff-scheduler = { pkgs, ... }:
     let
-      userName = "ph";
-      userId = 1000;
-      runtimeDir = "/run/user/${toString userId}";
       fiveMinuteWarning = pkgs.writeShellScript "poweroff-warning-five-minutes" ''
-        set -eu
-
-        if [ ! -S "${runtimeDir}/bus" ]; then
-          exit 0
-        fi
-
-        export XDG_RUNTIME_DIR="${runtimeDir}"
-        export DBUS_SESSION_BUS_ADDRESS="unix:path=${runtimeDir}/bus"
-
-        exec /run/wrappers/bin/sudo -u ${userName} \
-          ${pkgs.libnotify}/bin/notify-send \
+        exec ${pkgs.libnotify}/bin/notify-send \
           --app-name "systemd" \
           --urgency=critical \
           --expire-time=300000 \
@@ -24,17 +11,7 @@
       '';
 
       oneMinuteWarning = pkgs.writeShellScript "poweroff-warning-one-minute" ''
-        set -eu
-
-        if [ ! -S "${runtimeDir}/bus" ]; then
-          exit 0
-        fi
-
-        export XDG_RUNTIME_DIR="${runtimeDir}"
-        export DBUS_SESSION_BUS_ADDRESS="unix:path=${runtimeDir}/bus"
-
-        exec /run/wrappers/bin/sudo -u ${userName} \
-          ${pkgs.libnotify}/bin/notify-send \
+        exec ${pkgs.libnotify}/bin/notify-send \
           --app-name "systemd" \
           --urgency=critical \
           --expire-time=60000 \
@@ -42,7 +19,7 @@
           "This PC will power off at 23:00 in 1 minute."
       '';
     in {
-      systemd.services.poweroff-warning-five-minutes = {
+      systemd.user.services.poweroff-warning-five-minutes = {
         description = "Send 5-minute poweroff warning";
         serviceConfig = {
           Type = "oneshot";
@@ -50,7 +27,7 @@
         };
       };
 
-      systemd.timers.poweroff-warning-five-minutes = {
+      systemd.user.timers.poweroff-warning-five-minutes = {
         description = "Daily 5-minute warning before poweroff";
         wantedBy = [ "timers.target" ];
         timerConfig = {
@@ -60,7 +37,7 @@
         };
       };
 
-      systemd.services.poweroff-warning-one-minute = {
+      systemd.user.services.poweroff-warning-one-minute = {
         description = "Send 1-minute poweroff warning";
         serviceConfig = {
           Type = "oneshot";
@@ -68,7 +45,7 @@
         };
       };
 
-      systemd.timers.poweroff-warning-one-minute = {
+      systemd.user.timers.poweroff-warning-one-minute = {
         description = "Daily 1-minute warning before poweroff";
         wantedBy = [ "timers.target" ];
         timerConfig = {
