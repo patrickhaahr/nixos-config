@@ -13,6 +13,7 @@
       heliumCommand = if heliumEnabled then lib.getExe' config.programs.helium.launcherPackage "helium" else null;
     in {
     hardware.i2c.enable = true;
+    services.gnome.gnome-keyring.enable = lib.mkForce false;
 
       programs.niri = {
         enable = true;
