@@ -204,6 +204,14 @@
             };
             "Mod+Alt+H"."consume-or-expel-window-left" = _: { };
             "Mod+Alt+L"."consume-or-expel-window-right" = _: { };
+            "Mod+Alt+WheelScrollUp" = _: {
+              props.cooldown-ms = 150;
+              content."consume-or-expel-window-left" = _: { };
+            };
+            "Mod+Alt+WheelScrollDown" = _: {
+              props.cooldown-ms = 150;
+              content."consume-or-expel-window-right" = _: { };
+            };
             "Mod+Shift+H".focus-monitor-left = _: { };
             "Mod+Shift+L".focus-monitor-right = _: { };
             "Mod+Ctrl+Shift+H".move-column-to-monitor-left = _: { };
