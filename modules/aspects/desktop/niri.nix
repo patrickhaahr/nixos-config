@@ -285,7 +285,7 @@
         '';
       };
 
-      packages = {
+      packages = lib.optionalAttrs pkgs.stdenv.isLinux {
         myNiri = lib.makeOverridable ({ openhomeEnabled ? false, handyEnabled ? false }: mkNiri {
           inherit openhomeEnabled;
           inherit handyEnabled;
