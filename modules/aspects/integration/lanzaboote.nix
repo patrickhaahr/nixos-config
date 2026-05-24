@@ -6,6 +6,7 @@
     boot.loader.efi.canTouchEfiVariables = true;
     boot.lanzaboote = {
       enable = true;
+      configurationLimit = 20;
       pkiBundle = "/var/lib/sbctl";
       autoGenerateKeys.enable = true;
       autoEnrollKeys.enable = true;
