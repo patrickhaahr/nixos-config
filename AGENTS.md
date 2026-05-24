@@ -15,6 +15,7 @@
 - Put WM-specific logic in `modules/aspects/desktop/<wm>.nix`. `niri` is the current selected WM; a future `hyprland.nix` should be a parallel module, not mixed into `niri.nix`.
 - Keep shared desktop tools separate from the WM module when they are reusable across WMs.
 - `modules/parts.nix` imports flake-parts' `modules` extra. `nix flake check` warns `unknown flake output 'modules'`; this is expected here.
+- After every implementation, ask: is the dendritic pattern implemented correctly? If not, redo the implementation.
 
 ## Dendritic References
 - `https://dendrix.oeiuwq.com/Dendritic.html`
