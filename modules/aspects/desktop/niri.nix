@@ -10,7 +10,7 @@
       heliumEnabled = if builtins.hasAttr "programs" config && builtins.hasAttr "helium" config.programs
         then config.programs.helium.enable
         else false;
-      heliumCommand = if heliumEnabled then lib.getExe config.programs.helium.launcherPackage else null;
+      heliumCommand = if heliumEnabled then lib.getExe' config.programs.helium.launcherPackage "helium" else null;
     in {
     hardware.i2c.enable = true;
 
@@ -33,7 +33,7 @@
         then config.programs.handy.enable
         else false;
       heliumCommand = if builtins.hasAttr "programs" config && builtins.hasAttr "helium" config.programs && config.programs.helium.enable
-        then lib.getExe config.programs.helium.launcherPackage
+        then lib.getExe' config.programs.helium.launcherPackage "helium"
         else null;
     });
   };

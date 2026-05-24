@@ -39,9 +39,14 @@
         };
       };
 
-      config = lib.mkIf cfg.enable {
-        programs.helium.launcherPackage = launcherPackage;
-        environment.systemPackages = [ launcherPackage ];
-      };
+      config = lib.mkMerge [
+        {
+          programs.helium.enable = lib.mkDefault true;
+        }
+        (lib.mkIf cfg.enable {
+          programs.helium.launcherPackage = launcherPackage;
+          environment.systemPackages = [ launcherPackage ];
+        })
+      ];
     };
 }
