@@ -1,11 +1,12 @@
-{ self, ... }: {
-  flake.modules.nixos.nika = { pkgs, ... }: {
+{ self, inputs, ... }: {
+  flake.modules.nixos.nika = { lib, pkgs, ... }: {
     imports = [
       self.modules.nixos.nika-hardware
       self.modules.nixos.audio-output
       self.modules.nixos.containers
       #self.modules.nixos.hacking
       self.modules.nixos.home-manager
+      self.modules.nixos.lanzaboote
       self.modules.nixos.identity-ph
       self.modules.nixos.handy
       self.modules.nixos.openhome
@@ -29,8 +30,6 @@
 
     services.openhome.enable = true;
 
-    boot.loader.systemd-boot.enable = true;
-    boot.loader.efi.canTouchEfiVariables = true;
     boot.kernelPackages = pkgs.linuxPackages_latest;
     security.lockKernelModules = true;
     hardware.bluetooth = {
