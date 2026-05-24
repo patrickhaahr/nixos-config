@@ -184,8 +184,24 @@
             "Mod+Ctrl+L".move-column-right = _: { };
             "Mod+J".focus-window-down = _: { };
             "Mod+K".focus-window-up = _: { };
+            "Mod+WheelScrollUp" = _: {
+              props.cooldown-ms = 150;
+              content.focus-column-left = _: { };
+            };
+            "Mod+WheelScrollDown" = _: {
+              props.cooldown-ms = 150;
+              content.focus-column-right = _: { };
+            };
             "Mod+Ctrl+J".move-window-down = _: { };
             "Mod+Ctrl+K".move-window-up = _: { };
+            "Mod+Ctrl+WheelScrollUp" = _: {
+              props.cooldown-ms = 150;
+              content.move-column-left = _: { };
+            };
+            "Mod+Ctrl+WheelScrollDown" = _: {
+              props.cooldown-ms = 150;
+              content.move-column-right = _: { };
+            };
             "Mod+Alt+H"."consume-or-expel-window-left" = _: { };
             "Mod+Alt+L"."consume-or-expel-window-right" = _: { };
             "Mod+Shift+H".focus-monitor-left = _: { };
