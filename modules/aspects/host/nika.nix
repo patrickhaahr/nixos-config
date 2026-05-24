@@ -6,6 +6,7 @@
       self.modules.nixos.containers
       #self.modules.nixos.hacking
       self.modules.nixos.home-manager
+      self.modules.nixos.helium
       self.modules.nixos.lanzaboote
       self.modules.nixos.nix-maintenance
       self.modules.nixos.identity-ph

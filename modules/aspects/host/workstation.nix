@@ -40,7 +40,6 @@
       starship
       carapace
       nautilus
-      inputs.helium.packages.${pkgs.stdenv.hostPlatform.system}.default
       opencode
     ];
     services.greetd.enable = true;

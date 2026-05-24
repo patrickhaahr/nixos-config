@@ -1,5 +1,5 @@
 { self, inputs, ... }: {
-  flake.modules.nixos.niri = { pkgs, config, ... }:
+  flake.modules.nixos.niri = { lib, pkgs, config, ... }:
     let
       openhomeEnabled = if builtins.hasAttr "services" config && builtins.hasAttr "openhome" config.services
         then config.services.openhome.enable
@@ -7,6 +7,10 @@
       handyEnabled = if builtins.hasAttr "programs" config && builtins.hasAttr "handy" config.programs
         then config.programs.handy.enable
         else false;
+      heliumEnabled = if builtins.hasAttr "programs" config && builtins.hasAttr "helium" config.programs
+        then config.programs.helium.enable
+        else false;
+      heliumCommand = if heliumEnabled then lib.getExe config.programs.helium.launcherPackage else null;
     in {
     hardware.i2c.enable = true;
 
@@ -15,6 +19,7 @@
         package = self.packages.${pkgs.stdenv.hostPlatform.system}.myNiri.override {
           inherit openhomeEnabled;
           inherit handyEnabled;
+          inherit heliumCommand;
         };
       };
     };
@@ -27,14 +32,14 @@
       handyEnabled = if builtins.hasAttr "programs" config && builtins.hasAttr "handy" config.programs
         then config.programs.handy.enable
         else false;
+      heliumCommand = if builtins.hasAttr "programs" config && builtins.hasAttr "helium" config.programs && config.programs.helium.enable
+        then lib.getExe config.programs.helium.launcherPackage
+        else null;
     });
   };
 
   perSystem = { pkgs, lib, self', ... }:
     let
-      heliumNoKeyring = pkgs.writeShellScriptBin "helium-no-keyring" ''
-        exec ${lib.getExe self'.packages.helium-no-keyring} "$@"
-      '';
       spotifyAutoplay = pkgs.writeShellScriptBin "spotify-autoplay" ''
         spotify &
 
@@ -64,19 +69,18 @@
           sleep 1
         done
       '';
-      startupApps = { handyEnabled ? false }: [
+      startupApps = { handyEnabled ? false, heliumCommand ? null }: [
         (lib.getExe focusWorkspace2)
         "signal-desktop"
         (lib.getExe spotifyAutoplay)
         (lib.getExe focusWorkspace1)
         (lib.getExe self'.packages.noctalia-shell)
         (lib.getExe pkgs.ghostty)
-        (lib.getExe heliumNoKeyring)
-      ];
+      ] ++ lib.optional (heliumCommand != null) heliumCommand;
       mkNiri = { settings, openhomeEnabled ? false, handyEnabled ? false }: inputs.wrapper-modules.wrappers.niri.wrap {
         inherit pkgs settings;
       };
-      mkSettings = { openhomeEnabled, handyEnabled ? false }: {
+      mkSettings = { openhomeEnabled, handyEnabled ? false, heliumCommand ? null }: {
           prefer-no-csd = true;
 
           workspaces = {
@@ -84,7 +88,7 @@
             "2" = { };
           };
 
-          spawn-at-startup = startupApps { inherit handyEnabled; };
+          spawn-at-startup = startupApps { inherit handyEnabled heliumCommand; };
 
           xwayland-satellite.path = lib.getExe pkgs.xwayland-satellite;
 
@@ -167,7 +171,6 @@
           binds = ({
             "Mod+Return".spawn = "ghostty";
             "Mod+T".spawn = "ghostty";
-            "Mod+B".spawn = lib.getExe heliumNoKeyring;
             "Print".screenshot = _: { };
             "Ctrl+Print"."screenshot-screen" = _: {
               props.write-to-disk = false;
@@ -225,6 +228,8 @@
             "Mod+F9".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call brightness decrease";
             "Mod+Shift+F9".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call brightness increase";
             "Mod+Alt+F10".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call nightLight toggle";
+          } // lib.optionalAttrs (heliumCommand != null) {
+            "Mod+B".spawn = heliumCommand;
           } // lib.optionalAttrs handyEnabled {
             "Ctrl+Space" = _: {
               props.repeat = false;
@@ -286,13 +291,13 @@
       };
 
       packages = lib.optionalAttrs pkgs.stdenv.isLinux {
-        myNiri = lib.makeOverridable ({ openhomeEnabled ? false, handyEnabled ? false }: mkNiri {
+        myNiri = lib.makeOverridable ({ openhomeEnabled ? false, handyEnabled ? false, heliumCommand ? null }: mkNiri {
           inherit openhomeEnabled;
           inherit handyEnabled;
-          settings = mkSettings { inherit openhomeEnabled handyEnabled; };
+          settings = mkSettings { inherit openhomeEnabled handyEnabled heliumCommand; };
         }) { };
-        myNiriDp11080p = lib.makeOverridable ({ openhomeEnabled ? false, handyEnabled ? false }: let
-          baseSettings = mkSettings { inherit openhomeEnabled handyEnabled; };
+        myNiriDp11080p = lib.makeOverridable ({ openhomeEnabled ? false, handyEnabled ? false, heliumCommand ? null }: let
+          baseSettings = mkSettings { inherit openhomeEnabled handyEnabled heliumCommand; };
         in mkNiri {
           inherit openhomeEnabled;
           inherit handyEnabled;
@@ -302,9 +307,6 @@
             };
           };
         }) { };
-        helium-no-keyring = pkgs.writeShellScriptBin "helium-no-keyring" ''
-          exec ${lib.getExe inputs.helium.packages.${pkgs.stdenv.hostPlatform.system}.default} --password-store=basic "$@"
-        '';
       };
     };
 }
