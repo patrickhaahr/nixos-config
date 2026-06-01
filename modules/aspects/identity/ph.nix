@@ -9,7 +9,7 @@ in {
     users.users.${userName} = {
       isNormalUser = true;
       description = userName;
-      extraGroups = [ "networkmanager" "wheel" "i2c" ];
+      extraGroups = [ "networkmanager" "wheel" "i2c" "docker" ];
       shell = pkgs.nushell;
       packages = with pkgs; [ ];
       openssh.authorizedKeys.keys = [

@@ -33,6 +33,8 @@
     services.openhome.enable = true;
 
     boot.kernelPackages = pkgs.linuxPackages_latest;
+    # Docker needs these netfilter modules available before kernel module locking kicks in.
+    boot.kernelModules = [ "ip_tables" "iptable_nat" "overlay" "xt_addrtype" ];
     security.lockKernelModules = true;
     hardware.bluetooth = {
       enable = true;
