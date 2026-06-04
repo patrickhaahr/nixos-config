@@ -16,6 +16,8 @@ Fight entropy. Leave the codebase better than you found it.
 ### 1. Think Before Coding
 Don't assume. Don't hide confusion. If multiple interpretations exist, present them — don't pick silently. If a simpler approach exists, say so and push back when warranted.
 
+Before implementation, look for opportunities to *prefactor* the code to make the implementation easier. "Make the change easy, then make the easy change."
+
 ### 2. Goal-Driven
 Transform every task into verifiable success criteria.
 - Bug? Write a failing test first, then fix it.
