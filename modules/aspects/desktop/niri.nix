@@ -172,6 +172,7 @@
           binds = ({
             "Mod+Return".spawn = "ghostty";
             "Mod+T".spawn = "ghostty";
+            "Mod+Print".spawn-sh = lib.getExe self'.packages.niriOcrScreenshot;
             "Print".screenshot = _: { };
             "Ctrl+Print"."screenshot-screen" = _: {
               props.write-to-disk = false;
