@@ -5,6 +5,7 @@
       self.modules.nixos.audio-output
       self.modules.nixos.containers
       #self.modules.nixos.hacking
+      self.modules.nixos.screenshot-ocr
       self.modules.nixos.home-manager
       self.modules.nixos.helium
       self.modules.nixos.lanzaboote
