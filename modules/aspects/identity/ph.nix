@@ -33,6 +33,7 @@ in {
         self.modules.homeManager.ghostty
         self.modules.homeManager.cursor
         self.modules.homeManager.jj
+        self.modules.homeManager.steam-hm
       ];
 
       services.handy = lib.mkIf (handyConfigured && config.programs.handy.autostart) {
