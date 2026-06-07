@@ -32,6 +32,7 @@ in {
         self.modules.homeManager.opencode
         self.modules.homeManager.ghostty
         self.modules.homeManager.cursor
+        self.modules.homeManager.jj
       ];
 
       services.handy = lib.mkIf (handyConfigured && config.programs.handy.autostart) {
