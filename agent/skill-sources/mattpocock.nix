@@ -2,6 +2,7 @@
 let
   repo = inputs.mattpocock-skills;
   engineering = name: repo + "/skills/engineering/${name}";
+  inProgress = name: repo + "/skills/in-progress/${name}";
   productivity = name: repo + "/skills/productivity/${name}";
 in {
   diagnose = engineering "diagnose";
@@ -15,5 +16,6 @@ in {
   caveman = productivity "caveman";
   grill-me = productivity "grill-me";
   handoff = productivity "handoff";
+  teach = inProgress "teach";
   write-a-skill = productivity "write-a-skill";
 }
