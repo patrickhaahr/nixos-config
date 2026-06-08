@@ -74,7 +74,7 @@
             { key = "<leader>re"; mode = "n"; action = "<cmd>restart<cr>"; desc = "Restart config :restart)"; }
             { key = "<leader>f"; mode = "n"; lua = true; action = "vim.lsp.buf.format"; desc = "Format Local buffer"; }
             { key = "df"; mode = "n"; lua = true; action = "vim.diagnostic.open_float"; desc = "Show line diagnostics"; }
-            { key = "<leader>u"; mode = "n"; lua = true; action = ''function() require("undotree").toggle() end''; desc = "Toggle Builtin Undotree"; }
+            { key = "<leader>u"; mode = "n"; action = "<cmd>UndotreeToggle<CR>"; desc = "Toggle Builtin Undotree"; }
             { key = "-"; mode = "n"; lua = true; action = ''function() require("mini.files").open() end''; desc = "Toggle mini file explorer"; }
             { key = "<leader>-"; mode = "n"; lua = true; action = ''function() local MiniFiles = require("mini.files"); MiniFiles.open(vim.api.nvim_buf_get_name(0), false); MiniFiles.reveal_cwd() end''; desc = "Toggle into currently opened file"; }
             { key = "<leader>pf"; mode = "n"; lua = true; action = ''function() require("mini.pick").builtin.files() end''; desc = "Mini File Picker"; }
