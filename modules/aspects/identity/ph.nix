@@ -27,7 +27,7 @@ in {
         self.modules.homeManager.handy
         self.modules.homeManager.lumen
         self.modules.homeManager.openssh
-        self.modules.homeManager.neovim
+        self.modules.homeManager.nvf
         self.modules.homeManager.nushell
         self.modules.homeManager.opencode
         self.modules.homeManager.ghostty
