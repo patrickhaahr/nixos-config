@@ -4,8 +4,6 @@
       nushell = {
         enable = true;
         shellAliases = {
-          vi = "nvim";
-          vim = "nvim";
           nano = "nvim";
           code = "opencode -c";
           cd = "z";
