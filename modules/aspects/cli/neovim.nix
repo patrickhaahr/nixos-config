@@ -27,12 +27,18 @@
                 })
               '';
             };
-            mini-cmdline = {
-              package = pkgs.vimPlugins.mini-cmdline;
+           mini-cmdline = {
+             package = pkgs.vimPlugins.mini-cmdline;
+             setup = ''
+               require("mini.cmdline").setup({
+                 autocorrect = { enable = true },
+               })
+             '';
+           };
+            supermaven = {
+              package = pkgs.vimPlugins.supermaven-nvim;
               setup = ''
-                require("mini.cmdline").setup({
-                  autocorrect = { enable = false },
-                })
+                require("supermaven-nvim").setup({})
               '';
             };
           };
