@@ -57,8 +57,8 @@
             colorcolumn = "0";
           };
           keymaps = [
-            { key = "p"; mode = "x"; action = "[[_dP]]"; desc = "Paste over selection without losing yanked text"; }
-            { key = "<leader>d"; mode = [ "n" "v" ]; action = "[[_d]]"; desc = "Delete without yanking"; }
+            { key = "p"; mode = "x"; action = ''"_dP''; desc = "Paste over selection without losing yanked text"; }
+            { key = "<leader>d"; mode = [ "n" "v" ]; action = ''"_d''; desc = "Delete without yanking"; }
             { key = "<Esc>"; mode = "n"; action = ":nohl<CR>"; desc = "Clear search highlighting"; }
             { key = "J"; mode = "v"; action = ":m '>+1<CR>gv=gv"; desc = "moves lines down in visual selection"; }
             { key = "K"; mode = "v"; action = ":m '<-2<CR>gv=gv"; desc = "moves lines up in visual selection"; }
