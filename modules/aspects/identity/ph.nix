@@ -25,7 +25,6 @@ in {
         self.modules.homeManager.git
         #self.modules.homeManager.hacking
         self.modules.homeManager.handy
-        self.modules.homeManager.lumen
         self.modules.homeManager.openssh
         self.modules.homeManager.nvf
         self.modules.homeManager.nushell
