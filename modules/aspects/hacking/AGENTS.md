@@ -6,13 +6,20 @@
 ## Installed Programs
 - `binwalk`
 - `burpsuite`
+- `clamav`
 - `exiftool`
 - `feroxbuster`
 - `ffuf`
+- `file`
+- `ghidra`
 - `hashcat`
 - `hydra`
 - `john`
 - `nmap`
+- `python3`
+- `sqlite`
+- `yara`
+- `7zz`
 - `wg`, `wg-quick`
 - `wireshark`
 
