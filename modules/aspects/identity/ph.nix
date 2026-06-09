@@ -29,6 +29,7 @@ in {
         self.modules.homeManager.nvf
         self.modules.homeManager.nushell
         self.modules.homeManager.opencode
+        self.modules.homeManager.typst
         self.modules.homeManager.ghostty
         self.modules.homeManager.cursor
         self.modules.homeManager.jj
