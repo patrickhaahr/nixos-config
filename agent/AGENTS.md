@@ -43,5 +43,5 @@ Prefer 40% coverage with meaningful tests over 100% shallow coverage. Design for
 
 ## Tooling
 - **Discovery**: Use the `explore` subagent for file discovery or codebase navigation. Do not use glob/grep directly.
-- **Knowledge**: Check relevant skills first. If unsure, use `websearch` / `codesearch`. If stuck, use `context7`.
+- **Knowledge**: Check relevant skills first. If unsure, use `websearch` / `codesearch`.
 - **Project-specific rules**: Check `AGENTS.md` in the project root.l

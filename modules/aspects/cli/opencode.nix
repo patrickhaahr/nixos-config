@@ -24,6 +24,8 @@ in {
         }) externalSkills
       );
     in {
+      home.sessionVariables.OPENCODE_ENABLE_EXA = "1";
+
       home.file.".config/opencode/AGENTS.md".source = opencodeSourceDir + "/AGENTS.md";
       home.file.".config/opencode/README.md".source = opencodeSourceDir + "/README.md";
       home.file.".config/opencode/agents".source = opencodeSourceDir + "/agents";
@@ -38,7 +40,7 @@ in {
           context7 = {
             type = "remote";
             url = "https://mcp.context7.com/mcp";
-            enabled = true;
+            enabled = false;
           };
           shadcn = {
             type = "local";
@@ -51,6 +53,7 @@ in {
             enabled = false;
           };
         };
+        permission.websearch = "allow";
       };
     };
 }
