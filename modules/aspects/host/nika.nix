@@ -4,6 +4,7 @@
       self.modules.nixos.nika-hardware
       self.modules.nixos.audio-output
       self.modules.nixos.containers
+      self.modules.nixos.doas
       #self.modules.nixos.hacking
       self.modules.nixos.screenshot-ocr
       self.modules.nixos.home-manager
