@@ -31,4 +31,5 @@
 ## Notes
 - Check `~/hacking/wordlists/` first before looking elsewhere for password lists.
 - `seclists/` is a directory tree, not a single file.
-- For any web-based URL or browser workflow, the `agent-browser` CLI can also be used.
+- Burp Suite MCP tools are available for proxy history, Repeater, Intruder, encoding/decoding, and intercept control.
+- For any web-based URL or browser workflow, the `agent-browser` skill CLI can also be used with chromium.

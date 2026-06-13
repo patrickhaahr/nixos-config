@@ -25,6 +25,7 @@
   flake.modules.homeManager.hacking = {
     imports = [
       self.modules.homeManager."hacking-guide"
+      self.modules.homeManager."hacking-burp-mcp"
       self.modules.homeManager."hacking-john"
       self.modules.homeManager."hacking-rockyou"
     ];
