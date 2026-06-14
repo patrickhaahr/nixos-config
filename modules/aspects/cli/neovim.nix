@@ -10,7 +10,6 @@
             providers.wl-copy.enable = true;
             registers = "unnamedplus";
           };
-          startPlugins = [ pkgs.vimPlugins.friendly-snippets ];
           extraPlugins = {
             fff = {
               package = pkgs.vimPlugins."fff-nvim";
@@ -67,14 +66,16 @@
             softtabstop = 4;
             shiftwidth = 4;
             expandtab = true;
-            wrap = false;
+            wrap = true;
+            linebreak = true;
             smartindent = true;
             inccommand = "split";
             laststatus = 3;
             undofile = true;
             completeopt = "menuone,noselect,fuzzy,nosort";
             scrolloff = 8;
-            colorcolumn = "0";
+            colorcolumn = "100";
+            showbreak = "↪ ";
           };
           keymaps = [
             { key = "p"; mode = "x"; action = ''"_dP''; desc = "Paste over selection without losing yanked text"; }
@@ -164,7 +165,6 @@
                 lsp_completion.auto_setup = true;
               };
             };
-            snippets.enable = true;
             diff = {
               enable = true;
               setupOpts.source = lib.generators.mkLuaInline ''
@@ -184,15 +184,6 @@
             pcall(function()
               require("vim._core.ui2").enable({})
             end)
-
-            local MiniSnippets = require("mini.snippets")
-
-            MiniSnippets.setup({
-              snippets = {
-                MiniSnippets.gen_loader.from_lang(),
-              },
-            })
-            MiniSnippets.start_lsp_server({ match = false })
           '';
         };
       };
