@@ -28,7 +28,9 @@ Transform every task into verifiable success criteria.
 Touch only what you must. Match existing style, even if you'd do it differently. Don't "improve" adjacent code. Remove only the imports, variables, or functions that *your* changes made unused.
 
 ### 4. Simplicity First
-Minimum code that solves the problem. Nothing speculative. No abstractions for single-use code. No configurability that wasn't requested. If a senior engineer would call it overcomplicated, simplify.
+Minimum code that solves the problem. Nothing speculative. No abstractions for single-use code. No configurability that wasn't requested.
+Prefer deletion over addition, stdlib/native platform features over custom code, and already-installed dependencies over new ones.
+Shortest correct diff wins.
 
 ### 5. Testing & Quality
 Prefer 40% coverage with meaningful tests over 100% shallow coverage. Design for testability: keep pure business logic separate from IO.
