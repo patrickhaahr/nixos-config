@@ -149,6 +149,7 @@
             notify = {
               enable = true;
               setupOpts = {
+                lsp_progress.enable = false;
                 content.format = lib.generators.mkLuaInline ''
                   function(notif)
                     return notif.msg
