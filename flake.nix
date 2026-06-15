@@ -45,6 +45,11 @@
       flake = false;
     };
 
+    rhys-sullivan-skills = {
+      url = "github:RhysSullivan/skills";
+      flake = false;
+    };
+
     lumen = {
       url = "github:jnsahaj/lumen";
       inputs.nixpkgs.follows = "nixpkgs";

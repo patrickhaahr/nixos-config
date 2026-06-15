@@ -556,6 +556,22 @@
         "type": "github"
       }
     },
+    "rhys-sullivan-skills": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1781486366,
+        "narHash": "sha256-FCmKzNnxLkIcWUWMDPP7/no9zQXONwstwH8BEfOCWYM=",
+        "owner": "RhysSullivan",
+        "repo": "skills",
+        "rev": "568f372bcc8b9db87eceb5d2e24a746e1d68caa0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "RhysSullivan",
+        "repo": "skills",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "anthropic-skills": "anthropic-skills",
@@ -572,6 +588,7 @@
         "mattpocock-skills": "mattpocock-skills",
         "nixpkgs": "nixpkgs",
         "nvf": "nvf",
+        "rhys-sullivan-skills": "rhys-sullivan-skills",
         "sentry-skills": "sentry-skills",
         "spicetify-nix": "spicetify-nix",
         "vercel-agent-browser": "vercel-agent-browser",
