@@ -15,6 +15,7 @@ in {
       self.modules.homeManager.agent-browser
       self.modules.homeManager.direnv
       self.modules.homeManager.gh
+      self.modules.homeManager.git
       self.modules.homeManager.nvf
       self.modules.homeManager.nushell
       self.modules.homeManager.opencode
