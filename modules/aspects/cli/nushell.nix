@@ -15,9 +15,6 @@
         };
         environmentVariables.EDITOR = "nvim";
         extraConfig = ''
-          starship init nu | save -f ~/.cache/starship/init.nu
-          mkdir ~/.cache/starship
-          $env.STARSHIP_CONFIG = "~/.config/starship.toml"
           mkdir ~/.cache/zoxide
           zoxide init nushell | save -f ~/.cache/zoxide/init.nu
           $env.config = {
@@ -31,6 +28,17 @@
                 enable: true,
                 max_results: 100
               }
+            },
+            # These prompt-boundary escape sequences can corrupt Reedline repainting
+            # in WSL terminals, causing the prompt line to accumulate padding while typing.
+            shell_integration: {
+              osc2: true,
+              osc7: true,
+              osc8: true,
+              osc9_9: false,
+              osc133: false,
+              osc633: false,
+              reset_application_mode: true
             }
           }
         '';
@@ -39,10 +47,10 @@
       starship = {
         enable = true;
         settings = {
-          add_newline = true;
+          add_newline = false;
           character = {
-            success_symbol = "[➜](bold green)";
-            error_symbol = "[➜](bold red)";
+            success_symbol = "[❯](bold green)";
+            error_symbol = "[❯](bold red)";
           };
         };
       };
