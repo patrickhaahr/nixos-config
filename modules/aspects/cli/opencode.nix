@@ -52,6 +52,11 @@ in {
             url = "https://mcp.docs.astro.build/mcp";
             enabled = false;
           };
+          learn = {
+            type = "remote";
+            url = "https://learn.microsoft.com/api/mcp";
+            enabled = false;
+          };
           burp = {
             type = "remote";
             url = "http://127.0.0.1:9876";
