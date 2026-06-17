@@ -1,11 +1,12 @@
-{ inputs, ... }: {
+{ self, inputs, ... }: {
   flake.modules.nixos.workstation = { pkgs, config, lib, ... }:
     let
       niriEnabled = if builtins.hasAttr "programs" config && builtins.hasAttr "niri" config.programs
         then config.programs.niri.enable
         else false;
     in {
-    nix.settings.experimental-features = [ "nix-command" "flakes" ];
+    imports = [ self.modules.nixos.nix-features ];
+
     networking.networkmanager.enable = true;
     time.timeZone = "Europe/Copenhagen";
     i18n.defaultLocale = "en_DK.UTF-8";

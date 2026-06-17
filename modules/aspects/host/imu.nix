@@ -2,6 +2,7 @@
   flake.modules.nixos.imu = { ... }: {
     imports = [
       inputs.nixos-wsl.nixosModules.default
+      self.modules.nixos.nix-features
       self.modules.nixos.home-manager
       self.modules.nixos.identity-wsl
     ];
