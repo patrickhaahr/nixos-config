@@ -35,7 +35,7 @@ The primary system. Copenhagen timezone, Danish keys, AMD silicon, encrypted roo
 - **OpenLinkHub** — local hardware state daemon.
 - **Tailscale** — the private mesh.
 
-`tester` exists as a secondary/scratch host, but `nika` is the source of truth.
+`zaza` exists as the headless Intel homelab host, but `nika` is the source of truth for desktop changes.
 
 ---
 
