@@ -4,7 +4,7 @@
       inputs.nixos-wsl.nixosModules.default
       self.modules.nixos.nix-features
       self.modules.nixos.home-manager
-      self.modules.nixos.identity-wsl
+      self.modules.nixos.identity-ph-headless
     ];
 
     networking.hostName = "imu";
@@ -12,8 +12,12 @@
 
     wsl = {
       enable = true;
-      defaultUser = "wsl";
+      defaultUser = "ph";
     };
+
+    home-manager.users.ph.imports = [
+      self.modules.homeManager.agent-browser
+    ];
 
     system.stateVersion = "25.11";
   };

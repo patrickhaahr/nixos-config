@@ -11,7 +11,7 @@
       self.modules.nixos.helium
       self.modules.nixos.lanzaboote
       self.modules.nixos.nix-maintenance
-      self.modules.nixos.identity-ph
+      self.modules.nixos.identity-ph-desktop
       self.modules.nixos.handy
       self.modules.nixos.openhome
       self.modules.nixos.openlinkhub

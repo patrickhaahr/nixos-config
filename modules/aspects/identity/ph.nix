@@ -2,67 +2,23 @@
 let
   userName = "ph";
 in {
-  flake.modules.nixos.identity-ph = { lib, pkgs, config, ... }:
-    let
-      handyConfigured = builtins.hasAttr "programs" config && builtins.hasAttr "handy" config.programs;
-    in {
+  flake.modules.nixos.identity-ph = { pkgs, ... }: {
     users.users.${userName} = {
       isNormalUser = true;
       description = userName;
-      extraGroups = [ "networkmanager" "wheel" "i2c" "docker" ];
+      extraGroups = [ "wheel" ];
       shell = pkgs.nushell;
       packages = with pkgs; [ ];
       openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKHug5lTw2U4y3umUuePSqFJH+t7dEEvlqDUroVIpPKF patrickhaahr@archbtw"
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICFRDoMg0lCDaI7cG3C5wcRtRz2gJXbFYDemOK+KLS5U nika"
       ];
     };
-    home-manager.users.${userName} = {
-      imports = [
-        self.modules.homeManager.identity-ph
-        self.modules.homeManager.agent-browser
-        self.modules.homeManager.direnv
-        self.modules.homeManager.gh
-        self.modules.homeManager.git
-        #self.modules.homeManager.hacking
-        self.modules.homeManager.handy
-        self.modules.homeManager.openssh
-        self.modules.homeManager.nvf
-        self.modules.homeManager.nushell
-        self.modules.homeManager.opencode
-        self.modules.homeManager.typst
-        self.modules.homeManager.ghostty
-        self.modules.homeManager.cursor
-        self.modules.homeManager.jj
-        self.modules.homeManager.steam-hm
-      ];
-
-      services.handy = lib.mkIf (handyConfigured && config.programs.handy.autostart) {
-        enable = true;
-        package = config.programs.handy.package;
-      };
-    };
+    home-manager.users.${userName}.imports = [ self.modules.homeManager.identity-ph ];
   };
 
-  flake.modules.homeManager.identity-ph = { lib, pkgs, ... }: {
+  flake.modules.homeManager.identity-ph = { lib, ... }: {
     home.username = lib.mkDefault userName;
-    home.homeDirectory = lib.mkDefault (
-      if pkgs.stdenvNoCC.isDarwin then "/Users/${userName}" else "/home/${userName}"
-    );
+    home.homeDirectory = lib.mkDefault "/home/${userName}";
     home.stateVersion = lib.mkDefault "25.11";
-    dconf.settings."org/gnome/desktop/interface" = {
-      color-scheme = "prefer-dark";
-      gtk-theme = "Adwaita-dark";
-    };
-    gtk = {
-      enable = true;
-      gtk3.extraConfig.gtk-application-prefer-dark-theme = 1;
-      gtk4.extraConfig.gtk-application-prefer-dark-theme = 1;
-    };
-    home.file."tmp/vj-noctalia-cache/wallpapers.json".text = builtins.toJSON {
-      defaultWallpaper = "/home/ph/nixos-config/wallpaper/a_woman_holding_a_sword.jpg";
-      wallpapers = {
-        "HDMI-A-1" = "/home/ph/nixos-config/wallpaper/a_woman_holding_a_sword.jpg";
-      };
-    };
   };
 }
