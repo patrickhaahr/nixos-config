@@ -24,6 +24,8 @@ in {
         }) externalSkills
       );
     in {
+      home.packages = [ pkgs.opencode ];
+
       home.sessionVariables.OPENCODE_ENABLE_EXA = "1";
 
       home.file.".config/opencode/AGENTS.md".source = opencodeSourceDir + "/AGENTS.md";

@@ -28,20 +28,12 @@
     console.keyMap = "dk-latin1";
     nixpkgs.config.allowUnfree = true;
     environment.systemPackages = with pkgs; [
-      openssh
-      gh
       cascadia-code
-      nushell
-      bitwarden-cli
       fzf
       yazi
       wl-clipboard
       fastfetch
-      neovim
-      starship
-      carapace
       nautilus
-      opencode
     ];
     services.greetd.enable = true;
     services.greetd.settings.default_session.command =
