@@ -1,0 +1,10 @@
+keys:
+  - &zaza age154rksuth9fmyx7q80dxljvwl92gufz8pu9sxdxwrhwenht2n4akq69s3wx
+  - &nika age1mlnknujmm56sllxfuau457tv4yl8f5p59a5zr4x4jasagsfkwdts2sjyz0
+
+creation_rules:
+  - path_regex: secrets/zaza\.yaml$
+    key_groups:
+      - age:
+          - *zaza
+          - *nika
