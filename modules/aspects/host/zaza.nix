@@ -6,6 +6,7 @@
       self.modules.nixos.home-manager
       self.modules.nixos.homelab-excalidraw
       self.modules.nixos.homelab-hermes
+      self.modules.nixos.homelab-searxng
       self.modules.nixos.homelab-traefik
       self.modules.nixos.identity-ph-headless
       self.modules.nixos.k3s
