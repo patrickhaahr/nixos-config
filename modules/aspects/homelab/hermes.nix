@@ -128,6 +128,13 @@
                       key = "SIGNAL_ACCOUNT";
                     };
                   }
+                  {
+                    name = "SIGNAL_ALLOWED_USERS";
+                    valueFrom.secretKeyRef = {
+                      name = "hermes-signal";
+                      key = "SIGNAL_ACCOUNT";
+                    };
+                  }
                 ];
                 volumeMounts = [
                   {
