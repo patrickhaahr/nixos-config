@@ -53,18 +53,18 @@
         apiVersion = "apps/v1";
         kind = "Deployment";
         metadata = {
-          name = "hermes-gateway";
+          name = "hermes";
           namespace = "hermes";
-          labels.app = "hermes-gateway";
+          labels.app = "hermes";
         };
         spec = {
           replicas = 1;
-          selector.matchLabels.app = "hermes-gateway";
+          selector.matchLabels.app = "hermes";
           template = {
-            metadata.labels.app = "hermes-gateway";
+            metadata.labels.app = "hermes";
             spec.containers = [
               {
-                name = "hermes-gateway";
+                name = "gateway";
                 image = "nousresearch/hermes-agent:latest";
                 args = [
                   "gateway"
@@ -87,32 +87,8 @@
                   }
                 ];
               }
-            ];
-            volumes = [
               {
-                name = "data";
-                persistentVolumeClaim.claimName = "hermes-data";
-              }
-            ];
-          };
-        };
-      }
-      {
-        apiVersion = "apps/v1";
-        kind = "Deployment";
-        metadata = {
-          name = "hermes-dashboard";
-          namespace = "hermes";
-          labels.app = "hermes-dashboard";
-        };
-        spec = {
-          replicas = 1;
-          selector.matchLabels.app = "hermes-dashboard";
-          template = {
-            metadata.labels.app = "hermes-dashboard";
-            spec.containers = [
-              {
-                name = "hermes-dashboard";
+                name = "dashboard";
                 image = "nousresearch/hermes-agent:latest";
                 args = [
                   "dashboard"
@@ -153,7 +129,7 @@
                 ];
               }
             ];
-            volumes = [
+            spec.volumes = [
               {
                 name = "data";
                 persistentVolumeClaim.claimName = "hermes-data";
@@ -170,7 +146,7 @@
           namespace = "hermes";
         };
         spec = {
-          selector.app = "hermes-dashboard";
+          selector.app = "hermes";
           ports = [
             {
               name = "http";
