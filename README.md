@@ -20,11 +20,14 @@ If an aspect does not exist, you grow a new one. You never bolt features into a 
 
 ---
 
-## The Machine: `nika`
+## The Pantheon
 
-The primary system. Copenhagen timezone, Danish keys, AMD silicon, encrypted root, and Secure Boot locked down with Lanzaboote.
+The gods of this system are named after the divine of *One Piece*. Each host is a deity with its own domain.
 
-**What she runs:**
+### ☀️ `nika` — The Sun God
+
+The primary desktop. Copenhagen timezone, Danish keys, AMD silicon, encrypted root, and Secure Boot locked down with Lanzaboote.
+
 - **Niri** — a scrollable Wayland compositor, wrapped and bound to custom logic.
 - **Noctalia** — the ambient shell / desktop UI layer that glides over Niri.
 - **Ghostty** — the terminal.
@@ -35,7 +38,24 @@ The primary system. Copenhagen timezone, Danish keys, AMD silicon, encrypted roo
 - **OpenLinkHub** — local hardware state daemon.
 - **Tailscale** — the private mesh.
 
-`zaza` exists as the headless Intel homelab host, but `nika` is the source of truth for desktop changes.
+### 🌧️ `zaza` — The Rain Goddess
+
+The headless k3s homelab host. Where the sun does not reach, the rain brings life. Zaza is the cloud beneath the cloud—running Kubernetes, hosting services, and serving the home from a quiet corner.
+
+- **k3s** — the Kubernetes raincloud, orchestrating containers like droplets in a storm.
+- **Traefik** — the divine gateway; all traffic flows through the Rain God's river, with TLS carried by Cloudflare.
+- **SearXNG** — a private, meta-search engine tuned to the user's will (dark mode, vim keys, curated engines, and a Danish default).
+- **Excalidraw** — the whiteboard of the gods, for sketching ideas in the clouds.
+- **Hermes** — the messenger. Nous Research's agent gateway and dashboard, wired into Signal and an internal API. The homelab thinks, and it speaks.
+- **OpenSSH** — the tunnel into the storm.
+- **SOPS** — secrets are sealed with weather magic.
+- **Tailscale** — the private mesh, even in the rain.
+
+### 👁️ `imu` — The King of the World
+
+A WSL host. The secret ruler who sits on the Empty Throne. The only one of the pantheon who does not touch bare metal, but instead floats above it—inside the abstraction of Windows, unseen, pulling strings from the shadows.
+
+Imu carries the minimal identity of the user: Nushell, Home Manager, and the **agent-browser** skill for AI-driven browsing. Nothing more. No desktop, no sound, no sun. Just the quiet observation of a hidden supreme ruler.
 
 ---
 
@@ -86,6 +106,8 @@ Currently disarmed on `nika`, but one uncomment away.
 | **Shell** | Nushell + Starship |
 | **Navigation** | yazi, fzf, zoxide |
 | **Env** | direnv + nix-direnv |
+| **Orchestration** | k3s + Traefik |
+| **Secrets** | SOPS + sops-nix |
 
 ---
 
@@ -97,6 +119,12 @@ nix flake check
 
 # Dry-run the primary system
 nix build .#nixosConfigurations.nika.config.system.build.toplevel --dry-run
+
+# Dry-run the rain goddess
+nix build .#nixosConfigurations.zaza.config.system.build.toplevel --dry-run
+
+# Dry-run the hidden ruler
+nix build .#nixosConfigurations.imu.config.system.build.toplevel --dry-run
 ```
 
 ---

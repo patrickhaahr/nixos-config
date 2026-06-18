@@ -4,7 +4,7 @@
 - This repo is a `flake-parts` flake with `import-tree ./modules` in `flake.nix`. Every `.nix` file under `modules/` is loaded automatically; do not add scratch files there.
 - New files are invisible to `nix flake` evaluation until Git tracks them. If you add a file that must participate in `nix eval`, `nix flake check`, or `nix build`, stage it with `git add <path>` before running verification commands.
 - The active config is the dendritic tree under `modules/aspects/`. Prefer editing those files over anything in `modules/hosts/` except the host entrypoint you are wiring.
-- `nixosConfigurations.nika` is the primary desktop host. `zaza` is the headless Intel homelab host and should not be treated as the default target for unrelated fixes, checks, or verification unless the user explicitly asks for it.
+- `nixosConfigurations.nika` is the primary desktop host. `zaza` is the headless k3s homelab host. `imu` is the WSL host. Do not default to `nika` for unrelated fixes or verification unless the change is desktop-specific; use the host relevant to the change.
 
 ## Dendritic Rules
 - Keep modules aspect-oriented. Add to an existing aspect before creating a new one.
@@ -26,15 +26,17 @@
 - `modules/aspects/identity/ph.nix`: user account, HM imports, standalone `homeConfigurations.ph`.
 - `modules/aspects/cli/`: CLI aspects (`git.nix`, `nushell.nix`).
 - `modules/aspects/desktop/`: desktop aspects (`niri.nix`, `noctalia.nix`, `ghostty.nix`, `cursor.nix`).
-- `modules/aspects/host/`: host composition (`zaza.nix`, `zaza-hardware.nix`, `workstation.nix`).
+- `modules/aspects/host/`: host composition (`nika.nix`, `zaza.nix`, `imu.nix`, `zaza-hardware.nix`, `workstation.nix`).
+- `modules/aspects/homelab/`: homelab service aspects (`k3s.nix`, `traefik.nix`, `excalidraw.nix`, `searxng.nix`, `hermes.nix`).
 
 ## Verification
 - Always run both after changes:
 - `nix flake check`
-- `nix build .#nixosConfigurations.nika.config.system.build.toplevel --dry-run`
+- `nix build .#nixosConfigurations.<host>.config.system.build.toplevel --dry-run` (use the host relevant to the change, not the desktop host by default)
 
 ## Known Wiring
 - The primary exported NixOS host is `nixosConfigurations.nika` from `modules/hosts/nika/default.nix`.
 - `modules/aspects/host/nika.nix` currently imports `nika-hardware`, `audio-output`, `home-manager`, `identity-ph`, `handy`, `openhome`, `openlinkhub`, `openssh`, `tailscale`, `niri`, `niri-dp1-1080p`, `workstation`, and related desktop aspects.
-- `modules/aspects/host/zaza.nix` wires the headless Intel homelab host.
+- `modules/aspects/host/zaza.nix` wires the headless k3s homelab host.
+- `modules/aspects/host/imu.nix` wires the WSL host.
 - `modules/aspects/identity/ph.nix` wires the `ph` user through Home Manager inside the NixOS hosts.
