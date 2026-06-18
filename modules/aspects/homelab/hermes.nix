@@ -4,6 +4,7 @@
       hermes_dashboard_basic_auth_username = { };
       hermes_dashboard_basic_auth_password = { };
       hermes_dashboard_basic_auth_secret = { };
+      hermes_api_server_key = { };
       hermes_signal_account = { };
     };
 
@@ -32,6 +33,12 @@
 
         k3s kubectl --namespace hermes create secret generic hermes-signal \
           --from-file=SIGNAL_ACCOUNT=${config.sops.secrets.hermes_signal_account.path} \
+          --dry-run=client \
+          --output yaml \
+          | k3s kubectl apply --filename -
+
+        k3s kubectl --namespace hermes create secret generic hermes-api-server \
+          --from-file=API_SERVER_KEY=${config.sops.secrets.hermes_api_server_key.path} \
           --dry-run=client \
           --output yaml \
           | k3s kubectl apply --filename -
@@ -134,6 +141,31 @@
                       name = "hermes-signal";
                       key = "SIGNAL_ACCOUNT";
                     };
+                  }
+                  {
+                    name = "API_SERVER_ENABLED";
+                    value = "true";
+                  }
+                  {
+                    name = "API_SERVER_HOST";
+                    value = "0.0.0.0";
+                  }
+                  {
+                    name = "API_SERVER_PORT";
+                    value = "8642";
+                  }
+                  {
+                    name = "API_SERVER_KEY";
+                    valueFrom.secretKeyRef = {
+                      name = "hermes-api-server";
+                      key = "API_SERVER_KEY";
+                    };
+                  }
+                ];
+                ports = [
+                  {
+                    name = "api-server";
+                    containerPort = 8642;
                   }
                 ];
                 volumeMounts = [
@@ -241,6 +273,24 @@
               name = "http";
               port = 80;
               targetPort = "http";
+            }
+          ];
+        };
+      }
+      {
+        apiVersion = "v1";
+        kind = "Service";
+        metadata = {
+          name = "hermes-api-server";
+          namespace = "hermes";
+        };
+        spec = {
+          selector.app = "hermes";
+          ports = [
+            {
+              name = "http";
+              port = 8642;
+              targetPort = "api-server";
             }
           ];
         };
