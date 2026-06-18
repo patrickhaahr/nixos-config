@@ -1,5 +1,7 @@
 { ... }: {
   flake.modules.nixos.homelab-hermes = { config, pkgs, ... }: {
+    networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 8642 ];
+
     sops.secrets = {
       hermes_dashboard_basic_auth_username = { };
       hermes_dashboard_basic_auth_password = { };
@@ -285,6 +287,7 @@
           namespace = "hermes";
         };
         spec = {
+          type = "LoadBalancer";
           selector.app = "hermes";
           ports = [
             {
@@ -326,6 +329,41 @@
           tls = [
             {
               hosts = [ "hermes.zaza.haahr.me" ];
+            }
+          ];
+        };
+      }
+      {
+        apiVersion = "networking.k8s.io/v1";
+        kind = "Ingress";
+        metadata = {
+          name = "hermes-api-server";
+          namespace = "hermes";
+          annotations = {
+            "traefik.ingress.kubernetes.io/router.entrypoints" = "websecure";
+            "traefik.ingress.kubernetes.io/router.tls" = "true";
+            "traefik.ingress.kubernetes.io/router.tls.certresolver" = "cloudflare";
+          };
+        };
+        spec = {
+          rules = [
+            {
+              host = "hermes-api.zaza.haahr.me";
+              http.paths = [
+                {
+                  path = "/";
+                  pathType = "Prefix";
+                  backend.service = {
+                    name = "hermes-api-server";
+                    port.name = "http";
+                  };
+                }
+              ];
+            }
+          ];
+          tls = [
+            {
+              hosts = [ "hermes-api.zaza.haahr.me" ];
             }
           ];
         };
