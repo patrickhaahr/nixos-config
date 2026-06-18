@@ -67,7 +67,7 @@
         spec = {
           rules = [
             {
-              host = "excalidraw.haahr.me";
+              host = "excalidraw.zaza.haahr.me";
               http.paths = [
                 {
                   path = "/";
@@ -82,7 +82,7 @@
           ];
           tls = [
             {
-              hosts = [ "excalidraw.haahr.me" ];
+              hosts = [ "excalidraw.zaza.haahr.me" ];
             }
           ];
         };
