@@ -45,6 +45,13 @@
           ];
           IdentitiesOnly = true;
         };
+        "uranus" = {
+          HostName = "100.118.180.74";
+          User = "root";
+          IdentityAgent = "none";
+          IdentityFile = "~/.ssh/id_ed25519_uranus";
+          IdentitiesOnly = true;
+        };
       };
     };
 
