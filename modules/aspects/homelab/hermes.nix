@@ -92,6 +92,29 @@
             metadata.labels.app = "hermes";
             spec.initContainers = [
               {
+                name = "hermes-env";
+                image = "busybox:latest";
+                command = [ "sh" ];
+                args = [
+                  "-c"
+                  ''
+                    touch /opt/data/.env
+                    if grep -q '^SEARXNG_URL=' /opt/data/.env; then
+                      sed -i 's|^SEARXNG_URL=.*|SEARXNG_URL=http://searxng.searxng.svc.cluster.local/|' /opt/data/.env
+                    else
+                      printf '\nSEARXNG_URL=http://searxng.searxng.svc.cluster.local/\n' >> /opt/data/.env
+                    fi
+                    chown 10000:10000 /opt/data/.env
+                  ''
+                ];
+                volumeMounts = [
+                  {
+                    name = "data";
+                    mountPath = "/opt/data";
+                  }
+                ];
+              }
+              {
                 name = "signal-cli-data-permissions";
                 image = "registry.gitlab.com/packaging/signal-cli/signal-cli-native:latest";
                 command = [ "chown" ];
@@ -129,6 +152,10 @@
                   {
                     name = "SIGNAL_HTTP_URL";
                     value = "http://127.0.0.1:8080";
+                  }
+                  {
+                    name = "SEARXNG_URL";
+                    value = "http://searxng.searxng.svc.cluster.local/";
                   }
                   {
                     name = "SIGNAL_ACCOUNT";

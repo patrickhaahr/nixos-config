@@ -43,6 +43,11 @@
 
           search:
             default_lang: "da-DK"
+            formats:
+              - html
+              - json
+              - csv
+              - rss
 
           server:
             port: 8080
@@ -206,7 +211,10 @@
           replicas = 1;
           selector.matchLabels.app = "searxng";
           template = {
-            metadata.labels.app = "searxng";
+            metadata = {
+              labels.app = "searxng";
+              annotations."config.ph/settings-revision" = "2026-06-18-search-formats";
+            };
             spec.containers = [
               {
                 name = "searxng";
