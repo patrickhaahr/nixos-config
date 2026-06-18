@@ -48,6 +48,9 @@
               storage: /data/acme.json
               dnsChallenge:
                 provider: cloudflare
+                propagation:
+                  delayBeforeChecks: 120s
+                  disableChecks: true
                 resolvers:
                   - 1.1.1.1:53
                   - 1.0.0.1:53
