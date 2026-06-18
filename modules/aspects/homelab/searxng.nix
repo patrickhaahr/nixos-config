@@ -236,7 +236,8 @@
                 ];
               }
             ];
-            volumes = [
+            spec.enableServiceLinks = false;
+            spec.volumes = [
               {
                 name = "settings";
                 configMap.name = "searxng-settings";
@@ -264,27 +265,38 @@
         };
       }
       {
-        apiVersion = "traefik.io/v1alpha1";
-        kind = "IngressRoute";
+        apiVersion = "networking.k8s.io/v1";
+        kind = "Ingress";
         metadata = {
           name = "searxng";
           namespace = "searxng";
+          annotations = {
+            "traefik.ingress.kubernetes.io/router.entrypoints" = "websecure";
+            "traefik.ingress.kubernetes.io/router.tls" = "true";
+            "traefik.ingress.kubernetes.io/router.tls.certresolver" = "cloudflare";
+          };
         };
         spec = {
-          entryPoints = [ "websecure" ];
-          routes = [
+          rules = [
             {
-              match = "Host(`searxng.zaza.haahr.me`)";
-              kind = "Rule";
-              services = [
+              host = "searxng.zaza.haahr.me";
+              http.paths = [
                 {
-                  name = "searxng";
-                  port = 80;
+                  path = "/";
+                  pathType = "Prefix";
+                  backend.service = {
+                    name = "searxng";
+                    port.name = "http";
+                  };
                 }
               ];
             }
           ];
-          tls.certResolver = "cloudflare";
+          tls = [
+            {
+              hosts = [ "searxng.zaza.haahr.me" ];
+            }
+          ];
         };
       }
     ];
