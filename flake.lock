@@ -73,6 +73,22 @@
         "type": "github"
       }
     },
+    "dmmulroy-coding-standards": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1781822372,
+        "narHash": "sha256-kkhRplWbQnfz0xpMo2wq45+nv+6PbrL4wuzPCeIalU4=",
+        "ref": "refs/heads/main",
+        "rev": "db1b93212222dc5b1a723e48aedb2ed1835b1ed7",
+        "revCount": 1,
+        "type": "git",
+        "url": "https://gist.github.com/dmmulroy/9c80f1f499b031aa0b6525b5d9ae25f0.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://gist.github.com/dmmulroy/9c80f1f499b031aa0b6525b5d9ae25f0.git"
+      }
+    },
     "dotnet-skillz": {
       "flake": false,
       "locked": {
@@ -614,6 +630,7 @@
       "inputs": {
         "anthropic-skills": "anthropic-skills",
         "claude-skill-typst": "claude-skill-typst",
+        "dmmulroy-coding-standards": "dmmulroy-coding-standards",
         "dotnet-skillz": "dotnet-skillz",
         "flake-parts": "flake-parts",
         "frontend-slides": "frontend-slides",

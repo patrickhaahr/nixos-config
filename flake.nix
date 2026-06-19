@@ -50,6 +50,11 @@
       flake = false;
     };
 
+    dmmulroy-coding-standards = {
+      url = "git+https://gist.github.com/dmmulroy/9c80f1f499b031aa0b6525b5d9ae25f0.git";
+      flake = false;
+    };
+
     lumen = {
       url = "github:jnsahaj/lumen";
       inputs.nixpkgs.follows = "nixpkgs";

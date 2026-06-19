@@ -1,8 +1,9 @@
-{ inputs, lib }:
+{ inputs, lib, pkgs }:
 let
   providers = [
     (import ./agent-browser.nix { inherit inputs; })
     (import ./anthropic.nix { inherit inputs; })
+    (import ./dmmulroy.nix { inherit inputs pkgs; })
     (import ./dotnet-skillz.nix { inherit inputs; })
     (import ./frontend-slides.nix { inherit inputs; })
     (import ./mattpocock.nix { inherit inputs; })

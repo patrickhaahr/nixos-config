@@ -5,6 +5,5 @@ let
 in {
   how-to-earn-a-billion-dollars = skill "how-to-earn-a-billion-dollars";
   no-ui-flash = skill "no-ui-flash";
-  quality-code = skill "quality-code";
   write-better-error-messages = skill "write-better-error-messages";
 }

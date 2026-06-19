@@ -5,7 +5,7 @@ let
 in {
   flake.modules.homeManager.opencode = { lib, pkgs, ... }:
     let
-      externalSkills = import (opencodeSourceDir + "/skill-sources") { inherit inputs lib; };
+      externalSkills = import (opencodeSourceDir + "/skill-sources") { inherit inputs lib pkgs; };
 
       localSkillNames = builtins.attrNames (
         lib.filterAttrs (name: type:

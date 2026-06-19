@@ -32,16 +32,18 @@ Minimum code that solves the problem. Nothing speculative. No abstractions for s
 Prefer deletion over addition, stdlib/native platform features over custom code, and already-installed dependencies over new ones.
 Shortest correct diff wins.
 
-### 5. Testing & Quality
+### 5. Type-Driven Design
+Prefer explicit, type-driven designs inspired by Rust, OCaml, and Effect. Use tagged unions (or equivalent sum types) to model states. Return expected failures as values where the language or project supports it. Keep domain logic in cohesive modules. Add safety comments when casts or unsafe operations rely on checked invariants.
+
+### 6. Testing & Quality
 Prefer 40% coverage with meaningful tests over 100% shallow coverage. Design for testability: keep pure business logic separate from IO.
 - Write tests for new features.
 - Run tests before completing tasks.
 
-### 6. Respect the Codebase
+### 7. Respect the Codebase
 - Read files before editing. Preserve existing formatting and conventions.
 - Handle errors explicitly; no silent failures.
 - Never create files unnecessarily — edit existing ones.
-- Don't create documentation unless explicitly requested.
 
 ## Tooling
 - **Discovery**: Use the `explore` subagent for file discovery or codebase navigation. Do not use glob/grep directly.
