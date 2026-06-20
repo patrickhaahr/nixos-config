@@ -15,6 +15,11 @@
         };
         environmentVariables.EDITOR = "nvim";
         extraConfig = ''
+          def --env mkcd [dir: string] {
+            mkdir $dir
+            cd $dir
+          }
+
           mkdir ~/.cache/zoxide
           zoxide init nushell | save -f ~/.cache/zoxide/init.nu
           $env.config = {
