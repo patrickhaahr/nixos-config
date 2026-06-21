@@ -14,6 +14,7 @@ in {
       self.modules.homeManager.nvf
       self.modules.homeManager.opencode
       self.modules.homeManager.openssh
+      self.modules.homeManager.sops
       self.modules.homeManager.typst
     ];
   };
