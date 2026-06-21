@@ -1,5 +1,5 @@
 { ... }: {
-  flake.modules.homeManager.ghostty = {
+  flake.modules.homeManager.ghostty = { config, ... }: {
     home.file.".config/ghostty/gtk.css".text = ''
       toolbarview > .bottom-bar,
       toolbarview > .bottom-bar:backdrop,
@@ -113,6 +113,7 @@
 
     programs.ghostty = {
       enable = true;
+      systemd.enable = true;
       clearDefaultKeybinds = true;
       settings = {
         "font-family" = "Cascadia Code";
@@ -153,6 +154,7 @@
         "mouse-hide-while-typing" = true;
         "copy-on-select" = "clipboard";
         "window-save-state" = "always";
+        "quit-after-last-window-closed" = false;
         "confirm-close-surface" = false;
         keybind = [
           "copy=copy_to_clipboard:mixed"
@@ -192,5 +194,8 @@
         ];
       };
     };
+
+    xdg.configFile."systemd/user/default.target.wants/app-com.mitchellh.ghostty.service".source =
+      config.xdg.configFile."systemd/user/app-com.mitchellh.ghostty.service".source;
   };
 }

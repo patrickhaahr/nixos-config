@@ -76,7 +76,7 @@
         (lib.getExe spotifyAutoplay)
         (lib.getExe focusWorkspace1)
         (lib.getExe self'.packages.noctalia-shell)
-        (lib.getExe pkgs.ghostty)
+        "${lib.getExe pkgs.ghostty} +new-window"
       ] ++ lib.optional (heliumCommand != null) heliumCommand;
       mkNiri = { settings, openhomeEnabled ? false, handyEnabled ? false }: inputs.wrapper-modules.wrappers.niri.wrap {
         inherit pkgs settings;
@@ -170,8 +170,7 @@
           ];
 
           binds = ({
-            "Mod+Return".spawn = "ghostty";
-            "Mod+T".spawn = "ghostty";
+            "Mod+Return".spawn-sh = "${lib.getExe pkgs.ghostty} +new-window";
             "Mod+Print".spawn-sh = lib.getExe self'.packages.niriOcrScreenshot;
             "Print".screenshot = _: { };
             "Ctrl+Print"."screenshot-screen" = _: {
