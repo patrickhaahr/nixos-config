@@ -24,7 +24,10 @@ in {
         }) externalSkills
       );
     in {
-      home.packages = [ pkgs.opencode ];
+      home.packages = [
+        pkgs.nodejs
+        pkgs.opencode
+      ];
 
       home.sessionVariables.OPENCODE_ENABLE_EXA = "1";
 
@@ -63,6 +66,17 @@ in {
             type = "remote";
             url = "http://127.0.0.1:9876";
             enabled = false;
+          };
+          firecrawl = {
+            type = "local";
+            command = [
+              "${pkgs.coreutils}/bin/env"
+              "FIRECRAWL_API_URL=https://firecrawl.zaza.haahr.me"
+              "npx"
+              "-y"
+              "firecrawl-mcp"
+            ];
+            enabled = true;
           };
         };
         permission.websearch = "allow";
