@@ -7,6 +7,8 @@ in {
 
     home-manager.users.${userName}.imports = [
       self.modules.homeManager.direnv
+      self.modules.homeManager.btop
+      self.modules.homeManager.fastfetch
       self.modules.homeManager.gh
       self.modules.homeManager.git
       self.modules.homeManager.jj
