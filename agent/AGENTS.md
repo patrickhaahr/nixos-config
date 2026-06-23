@@ -18,6 +18,8 @@ Don't assume. Don't hide confusion. If multiple interpretations exist, present t
 
 Before implementation, look for opportunities to *prefactor* the code to make the implementation easier. "Make the change easy, then make the easy change."
 
+If a better path exists — especially one that outlasts the tactical fix — say so. Explain the trade-off, get alignment, then proceed.
+
 ### 2. Goal-Driven
 Transform every task into verifiable success criteria.
 - Bug? Write a failing test first, then fix it.
