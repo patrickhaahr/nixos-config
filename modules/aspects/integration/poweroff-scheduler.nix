@@ -32,7 +32,6 @@
         wantedBy = [ "timers.target" ];
         timerConfig = {
           OnCalendar = "*-*-* 22:55:00";
-          Persistent = true;
           Unit = "poweroff-warning-five-minutes.service";
         };
       };
@@ -50,7 +49,6 @@
         wantedBy = [ "timers.target" ];
         timerConfig = {
           OnCalendar = "*-*-* 22:59:00";
-          Persistent = true;
           Unit = "poweroff-warning-one-minute.service";
         };
       };
@@ -68,7 +66,6 @@
         wantedBy = [ "timers.target" ];
         timerConfig = {
           OnCalendar = "*-*-* 23:00:00";
-          Persistent = true;
           Unit = "scheduled-poweroff.service";
         };
       };
