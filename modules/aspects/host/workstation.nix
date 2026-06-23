@@ -32,7 +32,6 @@
       fzf
       yazi
       wl-clipboard
-      fastfetch
       nautilus
     ];
     services.greetd.enable = true;
