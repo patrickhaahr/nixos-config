@@ -76,7 +76,7 @@
         (lib.getExe spotifyAutoplay)
         (lib.getExe focusWorkspace1)
         (lib.getExe self'.packages.noctalia-shell)
-        "${lib.getExe pkgs.ghostty} +new-window"
+        (lib.getExe pkgs.ghostty)
       ] ++ lib.optional (heliumCommand != null) heliumCommand;
       mkNiri = { settings, openhomeEnabled ? false, handyEnabled ? false }: inputs.wrapper-modules.wrappers.niri.wrap {
         inherit pkgs settings;
