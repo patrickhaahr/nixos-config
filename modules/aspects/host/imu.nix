@@ -5,6 +5,7 @@
       self.modules.nixos.nix-features
       self.modules.nixos.home-manager
       self.modules.nixos.identity-ph-headless
+      self.modules.nixos.tailscale
     ];
 
     networking.hostName = "imu";
