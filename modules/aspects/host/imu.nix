@@ -3,6 +3,7 @@
     imports = [
       inputs.nixos-wsl.nixosModules.default
       self.modules.nixos.nix-features
+      self.modules.nixos.nix-maintenance
       self.modules.nixos.home-manager
       self.modules.nixos.identity-ph-headless
       self.modules.nixos.tailscale

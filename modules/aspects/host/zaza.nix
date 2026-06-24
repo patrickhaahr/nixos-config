@@ -11,6 +11,7 @@
       self.modules.nixos.homelab-traefik
       self.modules.nixos.identity-ph-headless
       self.modules.nixos.k3s
+      self.modules.nixos.nix-maintenance
       self.modules.nixos.openssh
       self.modules.nixos.sops
       self.modules.nixos.tailscale
