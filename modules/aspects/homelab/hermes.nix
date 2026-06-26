@@ -10,6 +10,19 @@
       hermes_signal_account = { };
     };
 
+    services.k3s.images = [
+      (pkgs.dockerTools.buildLayeredImage {
+        name = "hermes-media-tools";
+        tag = "latest";
+        contents = [
+          pkgs.busybox
+          pkgs.ffmpeg
+          pkgs.yt-dlp
+        ];
+        config.Cmd = [ "${pkgs.busybox}/bin/true" ];
+      })
+    ];
+
     systemd.services.k3s-hermes-secrets = {
       description = "Sync Hermes secrets into k3s";
       after = [ "k3s.service" ];
@@ -241,6 +254,37 @@
                   }
                 ];
               }
+              {
+                name = "hermes-media-tools";
+                image = "hermes-media-tools:latest";
+                imagePullPolicy = "IfNotPresent";
+                command = [ "${pkgs.busybox}/bin/sh" ];
+                args = [
+                  "-c"
+                  ''
+                    mkdir -p /media-tools/bin /media-tools/nix
+                    cp -a /nix/store /media-tools/nix/
+                    cat > /media-tools/bin/yt-dlp <<'SH'
+                    #!/bin/sh
+                    unset PYTHONPATH
+                    exec ${pkgs.yt-dlp}/bin/yt-dlp "$@"
+                    SH
+                    chmod +x /media-tools/bin/yt-dlp
+                    ln -sf ${pkgs.ffmpeg}/bin/ffmpeg /media-tools/bin/ffmpeg
+                    ln -sf ${pkgs.ffmpeg}/bin/ffprobe /media-tools/bin/ffprobe
+                  ''
+                ];
+                volumeMounts = [
+                  {
+                    name = "media-tools-bin";
+                    mountPath = "/media-tools/bin";
+                  }
+                  {
+                    name = "media-tools-store";
+                    mountPath = "/media-tools/nix";
+                  }
+                ];
+              }
             ];
             spec.containers = [
               {
@@ -262,6 +306,10 @@
                   {
                     name = "HOME";
                     value = "/opt/data";
+                  }
+                  {
+                    name = "PATH";
+                    value = "/media-tools/bin:/opt/hermes/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
                   }
                   {
                     name = "SIGNAL_HTTP_URL";
@@ -363,6 +411,16 @@
                   {
                     name = "shared-tmp";
                     mountPath = "/tmp";
+                  }
+                  {
+                    name = "media-tools-bin";
+                    mountPath = "/media-tools/bin";
+                    readOnly = true;
+                  }
+                  {
+                    name = "media-tools-store";
+                    mountPath = "/nix";
+                    readOnly = true;
                   }
                 ];
               }
@@ -478,6 +536,14 @@
               }
               {
                 name = "browser-sockets";
+                emptyDir = { };
+              }
+              {
+                name = "media-tools-bin";
+                emptyDir = { };
+              }
+              {
+                name = "media-tools-store";
                 emptyDir = { };
               }
               {
