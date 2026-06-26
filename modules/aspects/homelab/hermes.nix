@@ -109,7 +109,47 @@
                     else
                       printf '\nSEARXNG_URL=http://searxng.searxng.svc.cluster.local/\n' >> /opt/data/.env
                     fi
-                    mkdir -p /opt/data/cache/screenshots
+                    mkdir -p /opt/data/cache/screenshots /opt/data/hermes-patches
+                    cat > /opt/data/hermes-patches/sitecustomize.py <<'PY'
+                    import re
+                    from urllib.parse import urlsplit, urlunsplit
+
+                    import httpx
+
+                    _original_async_get = httpx.AsyncClient.get
+                    _wikimedia_thumb_re = re.compile(r"^/wikipedia/commons/thumb/([^/]+)/([^/]+)/(.+)/[^/]+px-\3$")
+
+
+                    def _wikimedia_original_url(url: str) -> str | None:
+                        parts = urlsplit(url)
+                        if parts.netloc != "upload.wikimedia.org":
+                            return None
+
+                        match = _wikimedia_thumb_re.match(parts.path)
+                        if not match:
+                            return None
+
+                        original_path = f"/wikipedia/commons/{match.group(1)}/{match.group(2)}/{match.group(3)}"
+                        return urlunsplit((parts.scheme, parts.netloc, original_path, "", ""))
+
+
+                    async def _get_with_wikimedia_original_fallback(self, url, *args, **kwargs):
+                        response = await _original_async_get(self, url, *args, **kwargs)
+                        if response.status_code != 400:
+                            return response
+
+                        original_url = _wikimedia_original_url(str(response.request.url))
+                        if original_url is None:
+                            return response
+
+                        if "Use thumbnail sizes" not in response.text[:200]:
+                            return response
+
+                        return await _original_async_get(self, original_url, *args, **kwargs)
+
+
+                    httpx.AsyncClient.get = _get_with_wikimedia_original_fallback
+                    PY
                     touch /opt/data/SOUL.md
                     chown -R 10000:10000 /opt/data
                     chmod -R u+rwX,g+rwX /opt/data
@@ -218,6 +258,10 @@
                     value = "/opt/data/cache";
                   }
                   {
+                    name = "PYTHONPATH";
+                    value = "/opt/data/hermes-patches";
+                  }
+                  {
                     name = "AGENT_BROWSER_ARGS";
                     value = "--no-sandbox,--disable-dev-shm-usage";
                   }
@@ -232,6 +276,10 @@
                   {
                     name = "TERMINAL_ENV";
                     value = "local";
+                  }
+                  {
+                    name = "HERMES_MEDIA_ALLOW_DIRS";
+                    value = "/tmp:/opt/data/cache/screenshots";
                   }
                   {
                     name = "SIGNAL_ACCOUNT";
@@ -285,6 +333,10 @@
                   {
                     name = "dev-shm";
                     mountPath = "/dev/shm";
+                  }
+                  {
+                    name = "shared-tmp";
+                    mountPath = "/tmp";
                   }
                 ];
               }
@@ -353,7 +405,7 @@
                     mountPath = "/var/lib/signal-cli";
                   }
                   {
-                    name = "signal-cli-tmp";
+                    name = "shared-tmp";
                     mountPath = "/tmp";
                   }
                 ];
@@ -366,8 +418,8 @@
                   "-c"
                   ''
                     while true; do
-                      chmod g+rx /opt/data /opt/data/cache /opt/data/cache/screenshots 2>/dev/null || true
-                      chmod -R g+rX /opt/data/cache/screenshots 2>/dev/null || true
+                      chmod -R g+rX /opt/data 2>/dev/null || true
+                      chmod -R g+rX /tmp 2>/dev/null || true
                       sleep 1
                     done
                   ''
@@ -376,6 +428,10 @@
                   {
                     name = "data";
                     mountPath = "/opt/data";
+                  }
+                  {
+                    name = "shared-tmp";
+                    mountPath = "/tmp";
                   }
                 ];
                 securityContext.runAsUser = 0;
@@ -391,7 +447,7 @@
                 persistentVolumeClaim.claimName = "signal-cli-data";
               }
               {
-                name = "signal-cli-tmp";
+                name = "shared-tmp";
                 emptyDir.medium = "Memory";
               }
               {
