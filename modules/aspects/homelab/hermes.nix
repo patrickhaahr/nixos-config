@@ -118,6 +118,42 @@
                 securityContext.runAsUser = 0;
               }
               {
+                name = "hermes-local-stt-model";
+                image = "nousresearch/hermes-agent:latest";
+                command = [ "/opt/hermes/.venv/bin/python" ];
+                args = [
+                  "-c"
+                  ''
+                    from faster_whisper import WhisperModel
+                    WhisperModel("base", device="auto", compute_type="auto")
+                  ''
+                ];
+                env = [
+                  {
+                    name = "HF_HOME";
+                    value = "/opt/data/huggingface";
+                  }
+                  {
+                    name = "HF_HUB_CACHE";
+                    value = "/opt/data/huggingface/hub";
+                  }
+                  {
+                    name = "XDG_CACHE_HOME";
+                    value = "/opt/data/cache";
+                  }
+                ];
+                volumeMounts = [
+                  {
+                    name = "data";
+                    mountPath = "/opt/data";
+                  }
+                ];
+                securityContext = {
+                  runAsUser = 10000;
+                  runAsGroup = 10000;
+                };
+              }
+              {
                 name = "signal-cli-data-permissions";
                 image = "registry.gitlab.com/packaging/signal-cli/signal-cli-native:latest";
                 command = [ "chown" ];
@@ -159,6 +195,18 @@
                   {
                     name = "SEARXNG_URL";
                     value = "http://searxng.searxng.svc.cluster.local/";
+                  }
+                  {
+                    name = "HF_HOME";
+                    value = "/opt/data/huggingface";
+                  }
+                  {
+                    name = "HF_HUB_CACHE";
+                    value = "/opt/data/huggingface/hub";
+                  }
+                  {
+                    name = "XDG_CACHE_HOME";
+                    value = "/opt/data/cache";
                   }
                   {
                     name = "SIGNAL_ACCOUNT";

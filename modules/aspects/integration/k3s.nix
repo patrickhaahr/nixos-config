@@ -1,5 +1,10 @@
 { ... }: {
   flake.modules.nixos.k3s = {
+    networking.firewall.trustedInterfaces = [
+      "cni0"
+      "flannel.1"
+    ];
+
     networking.firewall.allowedTCPPorts = [
       80
       443
