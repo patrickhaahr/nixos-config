@@ -87,9 +87,14 @@
         };
         spec = {
           replicas = 1;
+          strategy.type = "Recreate";
           selector.matchLabels.app = "hermes";
           template = {
             metadata.labels.app = "hermes";
+            spec.securityContext = {
+              fsGroup = 10000;
+              fsGroupChangePolicy = "OnRootMismatch";
+            };
             spec.initContainers = [
               {
                 name = "hermes-env";
@@ -104,9 +109,11 @@
                     else
                       printf '\nSEARXNG_URL=http://searxng.searxng.svc.cluster.local/\n' >> /opt/data/.env
                     fi
+                    mkdir -p /opt/data/cache/screenshots
                     touch /opt/data/SOUL.md
                     chown -R 10000:10000 /opt/data
                     chmod -R u+rwX,g+rwX /opt/data
+                    chmod g+rx /opt/data /opt/data/cache /opt/data/cache/screenshots
                   ''
                 ];
                 volumeMounts = [
@@ -124,8 +131,10 @@
                 args = [
                   "-c"
                   ''
+                    import sys
+                    sys.path.insert(0, "/opt/data/lazy-packages")
                     from faster_whisper import WhisperModel
-                    WhisperModel("base", device="auto", compute_type="auto")
+                    WhisperModel("base", device="cpu", compute_type="int8")
                   ''
                 ];
                 env = [
@@ -209,6 +218,22 @@
                     value = "/opt/data/cache";
                   }
                   {
+                    name = "AGENT_BROWSER_ARGS";
+                    value = "--no-sandbox,--disable-dev-shm-usage";
+                  }
+                  {
+                    name = "AGENT_BROWSER_SOCKET_DIR";
+                    value = "/tmp/browser-sockets";
+                  }
+                  {
+                    name = "BROWSER_INACTIVITY_TIMEOUT";
+                    value = "300";
+                  }
+                  {
+                    name = "TERMINAL_ENV";
+                    value = "local";
+                  }
+                  {
                     name = "SIGNAL_ACCOUNT";
                     valueFrom.secretKeyRef = {
                       name = "hermes-signal";
@@ -252,6 +277,14 @@
                   {
                     name = "data";
                     mountPath = "/opt/data";
+                  }
+                  {
+                    name = "browser-sockets";
+                    mountPath = "/tmp/browser-sockets";
+                  }
+                  {
+                    name = "dev-shm";
+                    mountPath = "/dev/shm";
                   }
                 ];
               }
@@ -312,6 +345,10 @@
                 ];
                 volumeMounts = [
                   {
+                    name = "data";
+                    mountPath = "/opt/data";
+                  }
+                  {
                     name = "signal-cli-data";
                     mountPath = "/var/lib/signal-cli";
                   }
@@ -334,6 +371,17 @@
               {
                 name = "signal-cli-tmp";
                 emptyDir.medium = "Memory";
+              }
+              {
+                name = "browser-sockets";
+                emptyDir = { };
+              }
+              {
+                name = "dev-shm";
+                emptyDir = {
+                  medium = "Memory";
+                  sizeLimit = "256Mi";
+                };
               }
             ];
           };
