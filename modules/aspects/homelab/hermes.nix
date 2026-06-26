@@ -104,7 +104,9 @@
                     else
                       printf '\nSEARXNG_URL=http://searxng.searxng.svc.cluster.local/\n' >> /opt/data/.env
                     fi
-                    chown 10000:10000 /opt/data/.env
+                    touch /opt/data/SOUL.md
+                    chown -R 10000:10000 /opt/data
+                    chmod -R u+rwX,g+rwX /opt/data
                   ''
                 ];
                 volumeMounts = [
@@ -113,6 +115,7 @@
                     mountPath = "/opt/data";
                   }
                 ];
+                securityContext.runAsUser = 0;
               }
               {
                 name = "signal-cli-data-permissions";
