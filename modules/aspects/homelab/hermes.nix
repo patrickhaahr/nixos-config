@@ -110,6 +110,28 @@
                       printf '\nSEARXNG_URL=http://searxng.searxng.svc.cluster.local/\n' >> /opt/data/.env
                     fi
                     mkdir -p /opt/data/cache/screenshots /opt/data/hermes-patches
+                    cat > /tmp/hermes-firecrawl-mcp.yaml <<'YAML'
+                    mcp_servers:
+                      firecrawl:
+                        command: npx
+                        args:
+                          - -y
+                          - firecrawl-mcp
+                        env:
+                          FIRECRAWL_API_URL: http://api.firecrawl.svc.cluster.local:3002
+                    YAML
+                    if [ -f /opt/data/config.yaml ]; then
+                      awk '
+                        BEGIN { skipping = 0 }
+                        /^mcp_servers:[[:space:]]*$/ { skipping = 1; next }
+                        skipping && /^[[:alnum:]_]+:[[:space:]]*/ { skipping = 0 }
+                        !skipping { print }
+                      ' /opt/data/config.yaml > /opt/data/config.yaml.tmp
+                      cat /tmp/hermes-firecrawl-mcp.yaml >> /opt/data/config.yaml.tmp
+                      mv /opt/data/config.yaml.tmp /opt/data/config.yaml
+                    else
+                      cp /tmp/hermes-firecrawl-mcp.yaml /opt/data/config.yaml
+                    fi
                     cat > /opt/data/hermes-patches/sitecustomize.py <<'PY'
                     import re
                     from urllib.parse import urlsplit, urlunsplit
@@ -236,6 +258,10 @@
                   {
                     name = "HERMES_GID";
                     value = "10000";
+                  }
+                  {
+                    name = "HOME";
+                    value = "/opt/data";
                   }
                   {
                     name = "SIGNAL_HTTP_URL";
