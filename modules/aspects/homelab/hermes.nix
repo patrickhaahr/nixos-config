@@ -358,6 +358,28 @@
                   }
                 ];
               }
+              {
+                name = "screenshot-permissions";
+                image = "busybox:latest";
+                command = [ "sh" ];
+                args = [
+                  "-c"
+                  ''
+                    while true; do
+                      chmod g+rx /opt/data /opt/data/cache /opt/data/cache/screenshots 2>/dev/null || true
+                      chmod -R g+rX /opt/data/cache/screenshots 2>/dev/null || true
+                      sleep 1
+                    done
+                  ''
+                ];
+                volumeMounts = [
+                  {
+                    name = "data";
+                    mountPath = "/opt/data";
+                  }
+                ];
+                securityContext.runAsUser = 0;
+              }
             ];
             spec.volumes = [
               {
