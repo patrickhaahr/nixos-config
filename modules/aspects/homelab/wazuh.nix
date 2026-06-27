@@ -70,6 +70,18 @@
             tr -d '\n' < "$1"
           }
 
+          validate_wazuh_cluster_key() {
+            key="$(secret_literal "$1")"
+            if [ "''${#key}" -ne 32 ] || printf '%s' "$key" | grep -q '[^0-9A-Za-z]'; then
+              printf '%s\n' \
+                'wazuh_cluster_key must be exactly 32 alphanumeric characters.' \
+                'Generate one with: openssl rand -base64 24 | tr -dc A-Za-z0-9 | head -c 32' >&2
+              exit 1
+            fi
+          }
+
+          validate_wazuh_cluster_key ${config.sops.secrets.wazuh_cluster_key.path}
+
           secret_bcrypt_hash() {
             secret_literal "$1" | htpasswd -BinC 12 wazuh-user | cut -d: -f2-
           }
@@ -188,6 +200,22 @@
             type: ClusterIP
           EOF
 
+          cat > envs/local-env/zaza-dashboard-api-url.yaml <<'EOF'
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: wazuh-dashboard
+            namespace: wazuh
+          spec:
+            template:
+              spec:
+                containers:
+                  - name: wazuh-dashboard
+                    env:
+                      - name: WAZUH_API_URL
+                        value: https://wazuh
+          EOF
+
           cat > envs/local-env/kustomization.yml <<'EOF'
           apiVersion: kustomize.config.k8s.io/v1beta1
           kind: Kustomization
@@ -199,6 +227,7 @@
             - path: indexer-resources.yaml
             - path: wazuh-resources.yaml
             - path: zaza-service-types.yaml
+            - path: zaza-dashboard-api-url.yaml
           EOF
 
           k3s kubectl apply --kustomize envs/local-env
