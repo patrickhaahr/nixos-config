@@ -1,5 +1,9 @@
 { ... }: {
-  flake.modules.nixos.homelab-hermes = { config, pkgs, ... }: {
+  flake.modules.nixos.homelab-hermes = { config, pkgs, ... }:
+    let
+      brainrotPlugin = ./hermes/plugins/brainrot-summarizer;
+    in
+    {
     networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 8642 ];
 
     sops.secrets = {
@@ -11,6 +15,15 @@
     };
 
     services.k3s.images = [
+      (pkgs.dockerTools.buildLayeredImage {
+        name = "hermes-brainrot-plugin";
+        tag = "latest";
+        contents = [
+          pkgs.busybox
+          brainrotPlugin
+        ];
+        config.Cmd = [ "${pkgs.busybox}/bin/true" ];
+      })
       (pkgs.dockerTools.buildLayeredImage {
         name = "hermes-media-tools";
         tag = "latest";
@@ -122,7 +135,7 @@
                     else
                       printf '\nSEARXNG_URL=http://searxng.searxng.svc.cluster.local/\n' >> /opt/data/.env
                     fi
-                    mkdir -p /opt/data/cache/screenshots /opt/data/hermes-patches
+                    mkdir -p /opt/data/cache/screenshots /opt/data/hermes-patches /opt/data/.hermes/plugins
                     cat > /tmp/hermes-firecrawl-mcp.yaml <<'YAML'
                     mcp_servers:
                       firecrawl:
@@ -145,6 +158,47 @@
                     else
                       cp /tmp/hermes-firecrawl-mcp.yaml /opt/data/config.yaml
                     fi
+                    awk '
+                      BEGIN { in_plugins = 0; skip_enabled = 0; wrote_plugins = 0 }
+                      function enabled_block() {
+                        print "  enabled:"
+                        print "    - brainrot-summarizer"
+                      }
+                      /^[^[:space:]].*:/ {
+                        if (in_plugins && !wrote_plugins) {
+                          enabled_block()
+                          wrote_plugins = 1
+                        }
+                        if ($0 == "plugins:") {
+                          print
+                          enabled_block()
+                          in_plugins = 1
+                          skip_enabled = 0
+                          wrote_plugins = 1
+                          next
+                        }
+                        in_plugins = 0
+                        skip_enabled = 0
+                        print
+                        next
+                      }
+                      in_plugins && $0 ~ /^  enabled:/ {
+                        skip_enabled = 1
+                        next
+                      }
+                      in_plugins && skip_enabled && $0 ~ /^    - / { next }
+                      in_plugins && skip_enabled { skip_enabled = 0 }
+                      in_plugins && $0 == "    - brainrot-summarizer" { next }
+                      { print }
+                      END {
+                        if (!wrote_plugins) {
+                          print ""
+                          print "plugins:"
+                          enabled_block()
+                        }
+                      }
+                    ' /opt/data/config.yaml > /opt/data/config.yaml.tmp
+                    mv /opt/data/config.yaml.tmp /opt/data/config.yaml
                     cat > /opt/data/hermes-patches/sitecustomize.py <<'PY'
                     import re
                     from urllib.parse import urlsplit, urlunsplit
@@ -195,6 +249,57 @@
                   {
                     name = "data";
                     mountPath = "/opt/data";
+                  }
+                ];
+                securityContext.runAsUser = 0;
+              }
+              {
+                name = "hermes-bundled-plugins";
+                image = "nousresearch/hermes-agent:latest";
+                command = [ "sh" ];
+                args = [
+                  "-c"
+                  ''
+                    mkdir -p /hermes-plugins
+                    if [ -d /opt/hermes/plugins ]; then
+                      cp -a /opt/hermes/plugins/. /hermes-plugins/
+                    fi
+                    chown -R 10000:10000 /hermes-plugins
+                    chmod -R u+rwX,g+rwX /hermes-plugins
+                  ''
+                ];
+                volumeMounts = [
+                  {
+                    name = "hermes-plugins";
+                    mountPath = "/hermes-plugins";
+                  }
+                ];
+                securityContext.runAsUser = 0;
+              }
+              {
+                name = "hermes-brainrot-plugin";
+                image = "hermes-brainrot-plugin:latest";
+                imagePullPolicy = "IfNotPresent";
+                command = [ "${pkgs.busybox}/bin/sh" ];
+                args = [
+                  "-c"
+                  ''
+                    mkdir -p /hermes-plugins /opt/data/.hermes/plugins
+                    rm -rf /hermes-plugins/brainrot-summarizer /opt/data/.hermes/plugins/brainrot-summarizer
+                    cp -a ${brainrotPlugin} /hermes-plugins/brainrot-summarizer
+                    cp -a ${brainrotPlugin} /opt/data/.hermes/plugins/brainrot-summarizer
+                    chown -R 10000:10000 /hermes-plugins /opt/data/.hermes
+                    chmod -R u+rwX,g+rwX /hermes-plugins /opt/data/.hermes
+                  ''
+                ];
+                volumeMounts = [
+                  {
+                    name = "data";
+                    mountPath = "/opt/data";
+                  }
+                  {
+                    name = "hermes-plugins";
+                    mountPath = "/hermes-plugins";
                   }
                 ];
                 securityContext.runAsUser = 0;
@@ -413,6 +518,10 @@
                     mountPath = "/tmp";
                   }
                   {
+                    name = "hermes-plugins";
+                    mountPath = "/opt/hermes/plugins";
+                  }
+                  {
                     name = "media-tools-bin";
                     mountPath = "/media-tools/bin";
                     readOnly = true;
@@ -533,6 +642,10 @@
               {
                 name = "shared-tmp";
                 emptyDir.medium = "Memory";
+              }
+              {
+                name = "hermes-plugins";
+                emptyDir = { };
               }
               {
                 name = "browser-sockets";
