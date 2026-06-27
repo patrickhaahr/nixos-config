@@ -644,7 +644,8 @@
         "spicetify-nix": "spicetify-nix",
         "vercel-agent-browser": "vercel-agent-browser",
         "vercel-agent-skills": "vercel-agent-skills",
-        "wrapper-modules": "wrapper-modules"
+        "wrapper-modules": "wrapper-modules",
+        "wshobson-agents": "wshobson-agents"
       }
     },
     "rust-analyzer-src": {
@@ -904,6 +905,22 @@
       "original": {
         "owner": "BirdeeHub",
         "repo": "nix-wrapper-modules",
+        "type": "github"
+      }
+    },
+    "wshobson-agents": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1782392594,
+        "narHash": "sha256-wgDN0ytDleqyPQtJHSvrzZVSeY+JPI+SNDl3FFliIqM=",
+        "owner": "wshobson",
+        "repo": "agents",
+        "rev": "5cc2549a50fc672230efd0a0307e2fd27ffba792",
+        "type": "github"
+      },
+      "original": {
+        "owner": "wshobson",
+        "repo": "agents",
         "type": "github"
       }
     }

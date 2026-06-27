@@ -11,6 +11,7 @@ let
     (import ./sentry.nix { inherit inputs; })
     (import ./typst.nix { inherit inputs; })
     (import ./vercel.nix { inherit inputs; })
+    (import ./wshobson.nix { inherit inputs; })
   ];
 in
 lib.foldl' lib.mergeAttrs { } providers

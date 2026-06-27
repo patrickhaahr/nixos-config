@@ -56,6 +56,11 @@
       flake = false;
     };
 
+    wshobson-agents = {
+      url = "github:wshobson/agents";
+      flake = false;
+    };
+
     lumen = {
       url = "github:jnsahaj/lumen";
       inputs.nixpkgs.follows = "nixpkgs";
