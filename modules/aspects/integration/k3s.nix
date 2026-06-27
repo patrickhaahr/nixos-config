@@ -14,6 +14,7 @@
     services.k3s = {
       enable = true;
       role = "server";
+      extraFlags = [ "--node-ip=10.0.20.3" ];
     };
   };
 }
