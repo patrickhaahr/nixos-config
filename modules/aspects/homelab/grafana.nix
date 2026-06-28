@@ -1,4 +1,24 @@
-{ ... }: {
+{ ... }:
+let
+  grafanaDatasources = ''
+    apiVersion: 1
+
+    deleteDatasources:
+      - name: prometheus
+        orgId: 1
+
+    datasources:
+      - name: Loki
+        type: loki
+        access: proxy
+        url: http://loki.grafana.svc.cluster.local:3100
+        isDefault: true
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        url: http://prometheus.prometheus.svc.cluster.local:80
+  '';
+in {
   flake.modules.nixos.homelab-grafana = { config, pkgs, ... }: {
     sops.secrets.grafana_admin_password = { };
 
@@ -38,16 +58,7 @@
           name = "grafana-datasources";
           namespace = "grafana";
         };
-        data."datasources.yaml" = ''
-          apiVersion: 1
-
-          datasources:
-            - name: Loki
-              type: loki
-              access: proxy
-              url: http://loki.grafana.svc.cluster.local:3100
-              isDefault: true
-        '';
+        data."datasources.yaml" = grafanaDatasources;
       }
       {
         apiVersion = "v1";
@@ -73,7 +84,10 @@
           replicas = 1;
           selector.matchLabels.app = "grafana";
           template = {
-            metadata.labels.app = "grafana";
+            metadata = {
+              labels.app = "grafana";
+              annotations."checksum/datasources" = builtins.hashString "sha256" grafanaDatasources;
+            };
             spec = {
               securityContext = {
                 fsGroup = 472;
