@@ -6,6 +6,7 @@
       self.modules.nixos.home-manager
       self.modules.nixos.homelab-excalidraw
       self.modules.nixos.homelab-firecrawl
+      self.modules.nixos.homelab-grafana
       self.modules.nixos.homelab-hermes
       self.modules.nixos.homelab-honcho
       self.modules.nixos.homelab-openconcho
