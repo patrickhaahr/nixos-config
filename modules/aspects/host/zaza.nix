@@ -8,6 +8,7 @@
       self.modules.nixos.homelab-firecrawl
       self.modules.nixos.homelab-hermes
       self.modules.nixos.homelab-honcho
+      self.modules.nixos.homelab-openconcho
       self.modules.nixos.homelab-prometheus
       self.modules.nixos.homelab-searxng
       self.modules.nixos.homelab-traefik
