@@ -7,6 +7,7 @@
       self.modules.nixos.homelab-excalidraw
       self.modules.nixos.homelab-firecrawl
       self.modules.nixos.homelab-hermes
+      self.modules.nixos.homelab-prometheus
       self.modules.nixos.homelab-searxng
       self.modules.nixos.homelab-traefik
       self.modules.nixos.homelab-wazuh
