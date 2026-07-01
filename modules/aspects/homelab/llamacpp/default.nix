@@ -1,6 +1,7 @@
 { self, ... }: {
   flake.modules.nixos.homelab-llamacpp = {
     imports = [
+      self.modules.nixos.homelab-llamacpp-chat-qwen3-4b-instruct-2507
       self.modules.nixos.homelab-llamacpp-embeddings-nomic-embed-text-v1-5
     ];
 
