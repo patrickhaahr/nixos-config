@@ -202,6 +202,14 @@
                     fi
                     mkdir -p /opt/data/cache/screenshots /opt/data/hermes-patches /opt/data/.hermes/plugins /opt/data/.honcho
                     cat > /tmp/hermes-managed-config.yaml <<'YAML'
+                    model:
+                      provider: custom
+                      default: qwen3.6-35b-a3b
+                      base_url: http://100.75.6.21:8080/v1
+                    custom_providers:
+                      - name: nika-llamacpp
+                        base_url: http://100.75.6.21:8080/v1
+                        model: qwen3.6-35b-a3b
                     mcp_servers:
                       firecrawl:
                         command: npx
@@ -215,7 +223,7 @@
                     if [ -f /opt/data/config.yaml ]; then
                       awk '
                         BEGIN { skipping = 0 }
-                        /^(mcp_servers|memory):[[:space:]]*$/ { skipping = 1; next }
+                        /^(custom_providers|mcp_servers|memory|model):[[:space:]]*$/ { skipping = 1; next }
                         skipping && /^[[:alnum:]_]+:[[:space:]]*/ { skipping = 0 }
                         !skipping { print }
                       ' /opt/data/config.yaml > /opt/data/config.yaml.tmp
@@ -252,7 +260,7 @@
                         print "  enabled:"
 ${enabledPluginsAwk}
                       }
-                      /^(memory|honcho):[[:space:]]*$/ {
+                      /^(custom_providers|memory|model|honcho):[[:space:]]*$/ {
                         skip_section = 1
                         next
                       }
@@ -292,6 +300,15 @@ ${enabledPluginsAwk}
                           print "plugins:"
                           enabled_block()
                         }
+                        print ""
+                        print "model:"
+                        print "  provider: custom"
+                        print "  default: qwen3.6-35b-a3b"
+                        print "  base_url: http://100.75.6.21:8080/v1"
+                        print "custom_providers:"
+                        print "  - name: nika-llamacpp"
+                        print "    base_url: http://100.75.6.21:8080/v1"
+                        print "    model: qwen3.6-35b-a3b"
                         print ""
                         print "honcho:"
                         print "  base_url: ${honchoPlugin.honchoJson.baseUrl}"
