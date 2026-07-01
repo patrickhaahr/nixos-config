@@ -18,6 +18,7 @@
       self.modules.nixos.homelab-wazuh
       self.modules.nixos.identity-ph-headless
       self.modules.nixos.k3s
+      self.modules.nixos.k3s-nvidia
       self.modules.nixos.nix-maintenance
       self.modules.nixos.openssh
       self.modules.nixos.sops
