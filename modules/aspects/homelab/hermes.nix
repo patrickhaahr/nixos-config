@@ -3,6 +3,28 @@
     let
       brainrotPlugin = ./hermes/plugins/brainrot-summarizer;
       honchoPlugin = hermesHonchoPlugin;
+      honchoPython = pkgs.python313.withPackages (pythonPackages: [
+        (pythonPackages.buildPythonPackage {
+          pname = "honcho-ai";
+          version = "2.1.2";
+          pyproject = true;
+          src = "${pkgs.fetchFromGitHub {
+            owner = "plastic-labs";
+            repo = "honcho";
+            rev = "60a15e664d7298eb790b788e95c6ca2e6bd30c80";
+            hash = "sha256-FI9JO436dJD83tmyLTYSWNLSUkeErgGwId3ewI9j9ig=";
+          }}/sdks/python";
+          build-system = [ pythonPackages.setuptools ];
+          dependencies = [
+            pythonPackages.httpx
+            pythonPackages.pydantic
+          ];
+          doCheck = false;
+          pythonImportsCheck = [ "honcho" ];
+        })
+        pythonPackages.httpx
+      ]);
+      pythonSitePackages = "${honchoPython}/${pkgs.python313.sitePackages}";
       enabledPlugins = [
         "brainrot-summarizer"
         honchoPlugin.name
@@ -19,7 +41,6 @@
         hermes_dashboard_basic_auth_secret = { };
         hermes_api_server_key = { };
         hermes_signal_account = { };
-        honcho_auth_jwt_secret = { };
       };
 
     services.k3s.images = [
@@ -38,6 +59,7 @@
         contents = [
           pkgs.busybox
           pkgs.ffmpeg
+          honchoPython
           pkgs.yt-dlp
         ];
         config.Cmd = [ "${pkgs.busybox}/bin/true" ];
@@ -54,28 +76,10 @@
         Type = "oneshot";
         RemainAfterExit = true;
       };
-      path = [ pkgs.k3s pkgs.nodejs ];
+      path = [ pkgs.k3s ];
       script = ''
         k3s kubectl create namespace hermes --dry-run=client --output yaml \
           | k3s kubectl apply --filename -
-
-        export HONCHO_AUTH_JWT_SECRET="$(tr -d '\n' < ${config.sops.secrets.honcho_auth_jwt_secret.path})"
-        honcho_api_key="$(node <<'EOF'
-        const { createHmac } = require("node:crypto");
-
-        function base64urlJson(value) {
-          return Buffer.from(JSON.stringify(value)).toString("base64url");
-        }
-
-        const header = base64urlJson({ alg: "HS256", typ: "JWT" });
-        const payload = base64urlJson({ t: "", ad: true });
-        const signingInput = header + "." + payload;
-        const signature = createHmac("sha256", process.env.HONCHO_AUTH_JWT_SECRET)
-          .update(signingInput)
-          .digest("base64url");
-        console.log(signingInput + "." + signature);
-        EOF
-        )"
 
         k3s kubectl --namespace hermes create secret generic hermes-dashboard-auth \
           --from-file=HERMES_DASHBOARD_BASIC_AUTH_USERNAME=${config.sops.secrets.hermes_dashboard_basic_auth_username.path} \
@@ -97,11 +101,9 @@
           --output yaml \
           | k3s kubectl apply --filename -
 
-        k3s kubectl --namespace hermes create secret generic hermes-honcho \
-          --from-literal=API_KEY="$honcho_api_key" \
-          --dry-run=client \
-          --output yaml \
-          | k3s kubectl apply --filename -
+        if k3s kubectl --namespace hermes get deployment hermes >/dev/null 2>&1; then
+          k3s kubectl --namespace hermes rollout restart deployment/hermes
+        fi
       '';
     };
 
@@ -134,6 +136,37 @@
           accessModes = [ "ReadWriteOnce" ];
           resources.requests.storage = "2Gi";
         };
+      }
+      {
+        apiVersion = "v1";
+        kind = "ConfigMap";
+        metadata = {
+          name = "hermes-cont-init";
+          namespace = "hermes";
+        };
+        data."99-clear-honcho-auth" = ''
+          #!/bin/sh
+          set -eu
+
+          for file in /opt/data/.env /opt/data/.hermes/.env; do
+            if [ -f "$file" ]; then
+              sed -i \
+                -e '/^HONCHO_API_KEY=/d' \
+                -e '/^HONCHO_TOKEN=/d' \
+                -e '/^HONCHO_BEARER_TOKEN=/d' \
+                -e '/^export HONCHO_API_KEY=/d' \
+                -e '/^export HONCHO_TOKEN=/d' \
+                -e '/^export HONCHO_BEARER_TOKEN=/d' \
+                "$file"
+            fi
+          done
+
+          cp /var/run/hermes-managed/honcho.json /opt/data/honcho.json
+          cp /opt/data/honcho.json /opt/data/.hermes/honcho.json
+          rm -f /opt/data/.honcho/config.json
+          ln -s /opt/data/honcho.json /opt/data/.honcho/config.json
+        '';
+        data."honcho.json" = builtins.toJSON honchoPlugin.honchoJson;
       }
       {
         apiVersion = "apps/v1";
@@ -192,22 +225,41 @@
                       cp /tmp/hermes-managed-config.yaml /opt/data/config.yaml
                     fi
                     cp ${honchoJson} /opt/data/honcho.json
-                    honcho_api_key="$(tr -d '\n' < /var/run/secrets/honcho/API_KEY)"
-                    sed -i "s|__HERMES_HONCHO_API_KEY__|$honcho_api_key|" /opt/data/honcho.json
-                    if grep -q '^HONCHO_API_KEY=' /opt/data/.env; then
-                      sed -i "s|^HONCHO_API_KEY=.*|HONCHO_API_KEY=$honcho_api_key|" /opt/data/.env
+                    for file in /opt/data/.env /opt/data/.hermes/.env; do
+                      if [ -f "$file" ]; then
+                        sed -i \
+                          -e '/^HONCHO_API_KEY=/d' \
+                          -e '/^HONCHO_TOKEN=/d' \
+                          -e '/^HONCHO_BEARER_TOKEN=/d' \
+                          -e '/^export HONCHO_API_KEY=/d' \
+                          -e '/^export HONCHO_TOKEN=/d' \
+                          -e '/^export HONCHO_BEARER_TOKEN=/d' \
+                          "$file"
+                      fi
+                    done
+                    if grep -q '^HONCHO_BASE_URL=' /opt/data/.env; then
+                      sed -i 's|^HONCHO_BASE_URL=.*|HONCHO_BASE_URL=${honchoPlugin.honchoJson.baseUrl}|' /opt/data/.env
                     else
-                      printf '\nHONCHO_API_KEY=%s\n' "$honcho_api_key" >> /opt/data/.env
+                      printf '\nHONCHO_BASE_URL=${honchoPlugin.honchoJson.baseUrl}\n' >> /opt/data/.env
                     fi
                     cp /opt/data/.env /opt/data/.hermes/.env
                     cp /opt/data/honcho.json /opt/data/.hermes/honcho.json
-                    cp /opt/data/honcho.json /opt/data/.honcho/config.json
+                    rm -f /opt/data/.honcho/config.json
+                    ln -s /opt/data/honcho.json /opt/data/.honcho/config.json
                     awk '
                       BEGIN { in_plugins = 0; skip_enabled = 0; wrote_plugins = 0 }
                       function enabled_block() {
                         print "  enabled:"
-                    ${enabledPluginsAwk}
+${enabledPluginsAwk}
                       }
+                      /^(memory|honcho):[[:space:]]*$/ {
+                        skip_section = 1
+                        next
+                      }
+                      skip_section && /^[[:alnum:]_]+:[[:space:]]*/ {
+                        skip_section = 0
+                      }
+                      skip_section { next }
                       /^[^[:space:]].*:/ {
                         if (in_plugins && !wrote_plugins) {
                           enabled_block()
@@ -240,13 +292,21 @@
                           print "plugins:"
                           enabled_block()
                         }
+                        print ""
+                        print "honcho:"
+                        print "  base_url: ${honchoPlugin.honchoJson.baseUrl}"
+                        print "memory:"
+                        print "  provider: honcho"
                       }
                     ' /opt/data/config.yaml > /opt/data/config.yaml.tmp
                     mv /opt/data/config.yaml.tmp /opt/data/config.yaml
                     cp /opt/data/config.yaml /opt/data/.hermes/config.yaml
                     cat > /opt/data/hermes-patches/sitecustomize.py <<'PY'
+                    import sys
                     import re
                     from urllib.parse import urlsplit, urlunsplit
+
+                    sys.path.insert(0, "${pythonSitePackages}")
 
                     import httpx
 
@@ -294,11 +354,6 @@
                   {
                     name = "data";
                     mountPath = "/opt/data";
-                  }
-                  {
-                    name = "honcho-api-key";
-                    mountPath = "/var/run/secrets/honcho";
-                    readOnly = true;
                   }
                 ];
                 securityContext.runAsUser = 0;
@@ -479,6 +534,26 @@
                     value = "http://searxng.searxng.svc.cluster.local/";
                   }
                   {
+                    name = "HONCHO_BASE_URL";
+                    value = honchoPlugin.honchoJson.baseUrl;
+                  }
+                  {
+                    name = "HONCHO_URL";
+                    value = honchoPlugin.honchoJson.baseUrl;
+                  }
+                  {
+                    name = "HONCHO_API_KEY";
+                    value = "";
+                  }
+                  {
+                    name = "HONCHO_TOKEN";
+                    value = "";
+                  }
+                  {
+                    name = "HONCHO_BEARER_TOKEN";
+                    value = "";
+                  }
+                  {
                     name = "HF_HOME";
                     value = "/opt/data/huggingface";
                   }
@@ -492,7 +567,7 @@
                   }
                   {
                     name = "PYTHONPATH";
-                    value = "/opt/data/hermes-patches";
+                    value = "${pythonSitePackages}:/opt/data/hermes-patches";
                   }
                   {
                     name = "AGENT_BROWSER_ARGS";
@@ -585,6 +660,17 @@
                     mountPath = "/nix";
                     readOnly = true;
                   }
+                  {
+                    name = "hermes-cont-init";
+                    mountPath = "/etc/cont-init.d/99-clear-honcho-auth";
+                    subPath = "99-clear-honcho-auth";
+                    readOnly = true;
+                  }
+                  {
+                    name = "hermes-cont-init";
+                    mountPath = "/var/run/hermes-managed";
+                    readOnly = true;
+                  }
                 ];
               }
               {
@@ -633,6 +719,17 @@
                   {
                     name = "data";
                     mountPath = "/opt/data";
+                  }
+                  {
+                    name = "hermes-cont-init";
+                    mountPath = "/etc/cont-init.d/99-clear-honcho-auth";
+                    subPath = "99-clear-honcho-auth";
+                    readOnly = true;
+                  }
+                  {
+                    name = "hermes-cont-init";
+                    mountPath = "/var/run/hermes-managed";
+                    readOnly = true;
                   }
                 ];
               }
@@ -702,10 +799,6 @@
                 persistentVolumeClaim.claimName = "signal-cli-data";
               }
               {
-                name = "honcho-api-key";
-                secret.secretName = "hermes-honcho";
-              }
-              {
                 name = "shared-tmp";
                 emptyDir.medium = "Memory";
               }
@@ -724,6 +817,13 @@
               {
                 name = "media-tools-store";
                 emptyDir = { };
+              }
+              {
+                name = "hermes-cont-init";
+                configMap = {
+                  name = "hermes-cont-init";
+                  defaultMode = 493;
+                };
               }
               {
                 name = "dev-shm";

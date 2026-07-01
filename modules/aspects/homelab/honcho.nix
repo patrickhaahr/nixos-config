@@ -1,60 +1,7 @@
 { ... }: {
   flake.modules.nixos.homelab-honcho = { config, pkgs, ... }:
     let
-      honchoVersion = "v3.0.11";
-      honchoImageTag = "${honchoVersion}-nix2";
-      honchoImage = pkgs.dockerTools.buildImage {
-        name = "honcho";
-        tag = honchoImageTag;
-        fromImage = pkgs.dockerTools.pullImage {
-          imageName = "python";
-          imageDigest = "sha256:721dc13fd1be0a771e54b72097634291d628d0007dee9da777e2ce676a9c998f";
-          finalImageName = "python";
-          finalImageTag = "3.11-slim-bookworm";
-          hash = "sha256-nZwLg+KH1/qVNeeTYtMAkZw8IzF5Yi0Jrxj5D5yVk18=";
-        };
-        copyToRoot = pkgs.runCommand "honcho-image-root" { } ''
-          mkdir -p $out/app $out/bin
-          cp -R ${pkgs.fetchFromGitHub {
-            owner = "plastic-labs";
-            repo = "honcho";
-            rev = "60a15e664d7298eb790b788e95c6ca2e6bd30c80";
-            hash = "sha256-FI9JO436dJD83tmyLTYSWNLSUkeErgGwId3ewI9j9ig=";
-          }}/. $out/app/
-          chmod -R u+w $out/app
-          ln -s ${pkgs.uv}/bin/uv $out/bin/uv
-        '';
-        runAsRoot = ''
-          #!${pkgs.runtimeShell}
-          ${pkgs.dockerTools.shadowSetup}
-          groupadd --system app
-          useradd --system --gid app --home-dir /app app
-          mkdir -p /tmp/uv-cache
-          chown -R app:app /app /tmp/uv-cache
-        '';
-        config = {
-          WorkingDir = "/app";
-          Env = [
-            "HOME=/app"
-            "PATH=/app/.venv/bin:/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin"
-            "PYTHONDONTWRITEBYTECODE=1"
-            "PYTHONUNBUFFERED=1"
-            "UV_CACHE_DIR=/tmp/uv-cache"
-            "UV_COMPILE_BYTECODE=1"
-            "UV_LINK_MODE=copy"
-            "UV_PROJECT_ENVIRONMENT=/tmp/honcho-venv"
-          ];
-          ExposedPorts."8000/tcp" = { };
-          User = "app";
-          Cmd = [
-            "fastapi"
-            "run"
-            "--host"
-            "0.0.0.0"
-            "src/main.py"
-          ];
-        };
-      };
+      honchoImage = "ghcr.io/plastic-labs/honcho:v3.0.11";
     in
     {
     sops.secrets = {
@@ -62,8 +9,6 @@
       honcho_postgres_password = { };
       hermes_api_server_key = { };
     };
-
-    services.k3s.images = [ honchoImage ];
 
     systemd.services.k3s-honcho-secrets = {
       description = "Sync Honcho secrets into k3s";
@@ -89,12 +34,21 @@
           --output yaml \
           | k3s kubectl apply --filename -
 
+        auth_jwt_secret="$(tr -d '\n' < ${config.sops.secrets.honcho_auth_jwt_secret.path})"
+        llm_openai_api_key="$(tr -d '\n' < ${config.sops.secrets.hermes_api_server_key.path})"
+
         k3s kubectl --namespace honcho create secret generic honcho-app \
-          --from-file=AUTH_JWT_SECRET=${config.sops.secrets.honcho_auth_jwt_secret.path} \
-          --from-file=LLM_OPENAI_API_KEY=${config.sops.secrets.hermes_api_server_key.path} \
+          --from-literal=AUTH_JWT_SECRET="$auth_jwt_secret" \
+          --from-literal=LLM_OPENAI_API_KEY="$llm_openai_api_key" \
           --dry-run=client \
           --output yaml \
           | k3s kubectl apply --filename -
+
+        for deployment in api deriver; do
+          if k3s kubectl --namespace honcho get deployment "$deployment" >/dev/null 2>&1; then
+            k3s kubectl --namespace honcho rollout restart "deployment/$deployment"
+          fi
+        done
       '';
     };
 
@@ -112,13 +66,21 @@
           namespace = "honcho";
         };
         data = {
-          AUTH_USE_AUTH = "true";
+          AUTH_USE_AUTH = "false";
           CACHE_ENABLED = "true";
           CACHE_URL = "redis://redis:6379/0?suppress=true";
           CORS_ORIGINS = ''["https://honcho.zaza.haahr.me"]'';
+          DERIVER_ENABLED = "true";
+          DERIVER_FLUSH_ENABLED = "false";
+          DERIVER_POLLING_BACKOFF_MULTIPLIER = "3";
+          DERIVER_POLLING_SLEEP_INTERVAL_SECONDS = "10";
+          DERIVER_POLLING_SLEEP_MAX_INTERVAL_SECONDS = "120";
+          DERIVER_REPRESENTATION_BATCH_MAX_AGE_SECONDS = "30";
+          DERIVER_REPRESENTATION_BATCH_MAX_TOKENS = "512";
           DERIVER_MODEL_CONFIG__MODEL = "hermes-agent";
           DERIVER_MODEL_CONFIG__OVERRIDES__BASE_URL = "http://hermes-api-server.hermes.svc.cluster.local:8642/v1";
           DERIVER_MODEL_CONFIG__TRANSPORT = "openai";
+          DERIVER_WORKERS = "1";
           DIALECTIC_LEVELS__high__MODEL_CONFIG__MODEL = "hermes-agent";
           DIALECTIC_LEVELS__high__MODEL_CONFIG__OVERRIDES__BASE_URL = "http://hermes-api-server.hermes.svc.cluster.local:8642/v1";
           DIALECTIC_LEVELS__high__MODEL_CONFIG__TRANSPORT = "openai";
@@ -140,9 +102,11 @@
           DREAM_INDUCTION_MODEL_CONFIG__MODEL = "hermes-agent";
           DREAM_INDUCTION_MODEL_CONFIG__OVERRIDES__BASE_URL = "http://hermes-api-server.hermes.svc.cluster.local:8642/v1";
           DREAM_INDUCTION_MODEL_CONFIG__TRANSPORT = "openai";
-          EMBEDDING_MODEL_CONFIG__MODEL = "hermes-agent";
-          EMBEDDING_MODEL_CONFIG__OVERRIDES__BASE_URL = "http://hermes-api-server.hermes.svc.cluster.local:8642/v1";
+          EMBEDDING_MAX_CONCURRENT_EMBEDDINGS = "1";
+          EMBEDDING_MODEL_CONFIG__MODEL = "nomic-embed-text-v1.5";
+          EMBEDDING_MODEL_CONFIG__OVERRIDES__BASE_URL = "http://llamacpp-embeddings.llamacpp.svc.cluster.local:8080/v1";
           EMBEDDING_MODEL_CONFIG__TRANSPORT = "openai";
+          EMBEDDING_VECTOR_DIMENSIONS = "768";
           LOG_LEVEL = "INFO";
           NAMESPACE = "honcho";
           SUMMARY_MODEL_CONFIG__MODEL = "hermes-agent";
@@ -377,17 +341,10 @@
             spec.containers = [
               {
                 name = "api";
-                image = "honcho:${honchoImageTag}";
+                image = honchoImage;
                 imagePullPolicy = "IfNotPresent";
                 command = [ "sh" ];
-                args = [
-                  "-c"
-                  ''
-                    uv sync --frozen --no-group dev
-                    "$UV_PROJECT_ENVIRONMENT/bin/python" scripts/provision_db.py
-                    exec "$UV_PROJECT_ENVIRONMENT/bin/fastapi" run --host 0.0.0.0 src/main.py
-                  ''
-                ];
+                args = [ "docker/entrypoint.sh" ];
                 ports = [
                   {
                     name = "http";
@@ -468,15 +425,12 @@
             spec.containers = [
               {
                 name = "deriver";
-                image = "honcho:${honchoImageTag}";
+                image = honchoImage;
                 imagePullPolicy = "IfNotPresent";
-                command = [ "sh" ];
+                command = [ "/app/.venv/bin/python" ];
                 args = [
-                  "-c"
-                  ''
-                    uv sync --frozen --no-group dev
-                    exec "$UV_PROJECT_ENVIRONMENT/bin/python" -m src.deriver
-                  ''
+                  "-m"
+                  "src.deriver"
                 ];
                 envFrom = [
                   { configMapRef.name = "honcho-config"; }
