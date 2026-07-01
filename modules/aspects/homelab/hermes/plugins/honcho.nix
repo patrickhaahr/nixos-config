@@ -13,11 +13,11 @@
         aiPeer = "hermes";
         peerName = "ph";
         workspace = "hermes";
-        recallMode = "hybrid";
+        recallMode = "tools";
         writeFrequency = "async";
         sessionStrategy = "global";
         dialecticReasoningLevel = "low";
-        dialecticDynamic = true;
+        dialecticDynamic = false;
       };
     };
   };
