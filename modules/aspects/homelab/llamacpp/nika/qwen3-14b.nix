@@ -29,7 +29,7 @@
         LLAMA_ARG_ALIAS = "qwen3-14b";
         LLAMA_ARG_HOST = "0.0.0.0";
         LLAMA_ARG_PORT = "8080";
-        LLAMA_ARG_CTX_SIZE = "32768";
+        LLAMA_ARG_CTX_SIZE = "131072";
         LLAMA_ARG_N_GPU_LAYERS = "all";
         LLAMA_ARG_N_PARALLEL = "1";
         LLAMA_ARG_THREADS = "16";
@@ -37,6 +37,7 @@
         LLAMA_ARG_CACHE_TYPE_K = "q8_0";
         LLAMA_ARG_CACHE_TYPE_V = "q8_0";
         LLAMA_ARG_FLASH_ATTN = "on";
+        LLAMA_ARG_JINJA = "true";
         LLAMA_ARG_ENDPOINT_METRICS = "true";
       };
 

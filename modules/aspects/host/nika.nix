@@ -64,6 +64,7 @@
     };
 
     services.openhome.enable = true;
+    services.llamacpp.nika.model = "qwen3-6-35b-a3b";
 
     boot.kernelPackages = pkgs.linuxPackages_latest;
     # Docker needs these netfilter modules available before kernel module locking kicks in.

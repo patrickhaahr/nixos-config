@@ -28,9 +28,9 @@
         LLAMA_ARG_ALIAS = "qwen3.6-35b-a3b";
         LLAMA_ARG_HOST = "0.0.0.0";
         LLAMA_ARG_PORT = "8080";
-        LLAMA_ARG_CTX_SIZE = "32768";
+        LLAMA_ARG_CTX_SIZE = "131072";
         LLAMA_ARG_FIT = "on";
-        LLAMA_ARG_FIT_CTX = "32768";
+        LLAMA_ARG_FIT_CTX = "131072";
         LLAMA_ARG_FIT_TARGET = "1024";
         LLAMA_ARG_MMPROJ_AUTO = "false";
         LLAMA_ARG_N_PARALLEL = "1";
@@ -41,9 +41,12 @@
         LLAMA_ARG_CACHE_TYPE_K = "q8_0";
         LLAMA_ARG_CACHE_TYPE_V = "q8_0";
         LLAMA_ARG_FLASH_ATTN = "on";
+        LLAMA_ARG_JINJA = "true";
         LLAMA_ARG_MMAP = "false";
         LLAMA_ARG_MLOCK = "true";
         LLAMA_ARG_ENDPOINT_METRICS = "true";
+        LLAMA_ARG_LOG_TIMESTAMPS = "true";
+        LLAMA_ARG_LOG_VERBOSITY = "4";
       };
 
       serviceConfig = {

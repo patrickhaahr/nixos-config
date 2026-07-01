@@ -80,6 +80,17 @@ in {
           };
         };
         permission.websearch = "allow";
+        provider."llama.cpp" = {
+          npm = "@ai-sdk/openai-compatible";
+          options = {
+            apiKey = "local";
+            baseURL = "http://127.0.0.1:8081/v1";
+          };
+          models = {
+            "qwen3-14b".tool_call = true;
+            "qwen3.6-35b-a3b".tool_call = true;
+          };
+        };
       };
     };
 }
