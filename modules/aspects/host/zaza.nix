@@ -10,6 +10,7 @@
       self.modules.nixos.homelab-hermes
       self.modules.nixos.homelab-honcho
       self.modules.nixos.homelab-librespeed
+      self.modules.nixos.homelab-llamacpp
       self.modules.nixos.homelab-openconcho
       self.modules.nixos.homelab-prometheus
       self.modules.nixos.homelab-searxng
