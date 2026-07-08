@@ -1,4 +1,4 @@
-{ self, inputs, ... }: {
+{ self, ... }: {
   flake.modules.nixos.nika = { config, lib, pkgs, ... }:
     let
       niriEnabled = if builtins.hasAttr "programs" config && builtins.hasAttr "niri" config.programs
@@ -67,8 +67,8 @@
     services.llamacpp.nika.model = "qwen3-6-35b-a3b";
 
     boot.kernelPackages = pkgs.linuxPackages_latest;
-    # Docker needs these netfilter modules available before kernel module locking kicks in.
-    boot.kernelModules = [ "ip_tables" "iptable_nat" "overlay" "xt_addrtype" ];
+    # Docker and Bluetooth gamepads need these before kernel module locking kicks in.
+    boot.kernelModules = [ "hid_playstation" "hidp" "ip_tables" "iptable_nat" "overlay" "uinput" "xt_addrtype" ];
     security.lockKernelModules = true;
     hardware.bluetooth = {
       enable = true;
