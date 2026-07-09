@@ -17,6 +17,7 @@ in {
           self.modules.homeManager.handy
           self.modules.homeManager.ghostty
           self.modules.homeManager.cursor
+          self.modules.homeManager.osu-lazer
           self.modules.homeManager.steam-hm
         ];
 
