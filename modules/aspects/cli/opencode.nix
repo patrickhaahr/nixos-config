@@ -41,6 +41,7 @@ in {
         "$schema" = "https://opencode.ai/config.json";
         autoupdate = false;
         instructions = [ "AGENTS*.md" ];
+        skills.paths = [ ".skills" ];
         mcp = {
           context7 = {
             type = "remote";
