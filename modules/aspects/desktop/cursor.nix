@@ -1,6 +1,7 @@
 { ... }: {
   flake.modules.homeManager.cursor = { pkgs, ... }: {
     home.pointerCursor = {
+      enable = true;
       name = "Bibata-Modern-Classic";
       package = pkgs.stdenvNoCC.mkDerivation {
         pname = "bibata-modern-classic";
