@@ -73,7 +73,7 @@ deploy host action="switch" *args:
 
 [group('validation')]
 [no-exit-message]
-check *args:
+check *args: fmt lint
     nix flake check {{ flake }} {{ args }}
 
 [group('validation')]

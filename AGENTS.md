@@ -30,11 +30,9 @@
 - `modules/aspects/homelab/`: homelab service aspects (`k3s.nix`, `traefik.nix`, `excalidraw.nix`, `searxng.nix`, `hermes.nix`).
 
 ## Verification
-- Use the repo `justfile` for common validation. With direnv enabled, `.envrc` loads the flake dev shell and provides `just`.
-- Always run both after changes:
-  - `just check`
-  - `just build <host>` or `just verify <host>`
-- Use the host relevant to the change, not the desktop host by default.
+- Run validation from the repository root using the root `justfile`. With direnv enabled, `.envrc` loads the flake dev shell and provides `just`.
+- After every implementation, run `just verify <host>`. It formats the repository, runs Statix, runs `nix flake check`, and performs the host build dry run.
+- Use the host relevant to the change, not the desktop host by default. Use `just check` only when no NixOS host is relevant; it runs formatting, Statix, and `nix flake check` without a host build.
 
 ## Known Wiring
 - The primary exported NixOS host is `nixosConfigurations.nika` from `modules/hosts/nika/default.nix`.
