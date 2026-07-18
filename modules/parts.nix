@@ -6,14 +6,22 @@
   ];
 
   config = {
-    perSystem = { system, ... }: {
-      _module.args.pkgs = import inputs.nixpkgs {
-        inherit system;
-        config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
-          "replace"
-        ];
+    perSystem =
+      { system, ... }:
+      let
+        pkgs = import inputs.nixpkgs {
+          inherit system;
+          config.allowUnfreePredicate =
+            pkg:
+            builtins.elem (lib.getName pkg) [
+              "replace"
+            ];
+        };
+      in
+      {
+        _module.args.pkgs = pkgs;
+        formatter = pkgs.nixfmt-tree;
       };
-    };
 
     systems = [
       "x86_64-linux"
