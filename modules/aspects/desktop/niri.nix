@@ -1,6 +1,7 @@
 { self, inputs, ... }: {
   flake.modules.nixos.niri = { lib, pkgs, config, ... }:
     let
+      cfg = config.programs.niri;
       openhomeEnabled = if builtins.hasAttr "services" config && builtins.hasAttr "openhome" config.services
         then config.services.openhome.enable
         else false;
@@ -12,8 +13,11 @@
         else false;
       heliumCommand = if heliumEnabled then lib.getExe' config.programs.helium.launcherPackage "helium" else null;
     in {
-    hardware.i2c.enable = true;
-    services.gnome.gnome-keyring.enable = lib.mkForce false;
+    options.programs.niri.minimalProfile = lib.mkEnableOption "the minimal Niri session profile";
+
+    config = {
+      hardware.i2c.enable = true;
+      services.gnome.gnome-keyring.enable = lib.mkForce false;
 
       programs.niri = {
         enable = true;
@@ -21,8 +25,10 @@
           inherit openhomeEnabled;
           inherit handyEnabled;
           inherit heliumCommand;
+          minimalProfile = cfg.minimalProfile;
         };
       };
+    };
     };
 
   flake.modules.nixos."niri-dp1-1080p" = { lib, pkgs, config, ... }: {
@@ -70,18 +76,20 @@
           sleep 1
         done
       '';
-      startupApps = { handyEnabled ? false, heliumCommand ? null }: [
+      startupApps = { handyEnabled ? false, heliumCommand ? null, minimalProfile ? false }: [
         (lib.getExe focusWorkspace2)
+      ] ++ lib.optionals (!minimalProfile) [
         "signal-desktop"
         (lib.getExe spotifyAutoplay)
+      ] ++ [
         (lib.getExe focusWorkspace1)
         (lib.getExe self'.packages.noctalia-shell)
         (lib.getExe pkgs.ghostty)
       ] ++ lib.optional (heliumCommand != null) heliumCommand;
-      mkNiri = { settings, openhomeEnabled ? false, handyEnabled ? false }: inputs.wrapper-modules.wrappers.niri.wrap {
+      mkNiri = { settings, openhomeEnabled ? false, handyEnabled ? false, minimalProfile ? false }: inputs.wrapper-modules.wrappers.niri.wrap {
         inherit pkgs settings;
       };
-      mkSettings = { openhomeEnabled, handyEnabled ? false, heliumCommand ? null }: {
+      mkSettings = { openhomeEnabled, handyEnabled ? false, heliumCommand ? null, minimalProfile ? false }: {
           prefer-no-csd = true;
 
           workspaces = {
@@ -89,7 +97,7 @@
             "2" = { };
           };
 
-          spawn-at-startup = startupApps { inherit handyEnabled heliumCommand; };
+          spawn-at-startup = startupApps { inherit handyEnabled heliumCommand minimalProfile; };
 
           xwayland-satellite.path = lib.getExe pkgs.xwayland-satellite;
 
@@ -138,6 +146,7 @@
               ];
               open-on-workspace = "1";
             }
+          ] ++ lib.optionals (!minimalProfile) [
             {
               matches = [
                 {
@@ -222,13 +231,14 @@
             "Mod+Ctrl+Shift+L".move-column-to-monitor-right = _: { };
             "Mod+Ctrl+Shift+Left".move-column-to-monitor-left = _: { };
             "Mod+Ctrl+Shift+Right".move-column-to-monitor-right = _: { };
-            "Mod+Space".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call launcher toggle";
-            "Mod+E".spawn = "nautilus";
             "Super+F"."maximize-window-to-edges" = _: { };
-            "Super+O".spawn = "toggle-audio-output";
+            "Mod+Space".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call launcher toggle";
             "Mod+F9".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call brightness decrease";
             "Mod+Shift+F9".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call brightness increase";
             "Mod+Alt+F10".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call nightLight toggle";
+          } // lib.optionalAttrs (!minimalProfile) {
+            "Mod+E".spawn = "nautilus";
+            "Super+O".spawn = "toggle-audio-output";
           } // lib.optionalAttrs (heliumCommand != null) {
             "Mod+B".spawn = heliumCommand;
           } // lib.optionalAttrs handyEnabled {
@@ -292,10 +302,10 @@
       };
 
       packages = lib.optionalAttrs pkgs.stdenv.isLinux {
-        myNiri = lib.makeOverridable ({ openhomeEnabled ? false, handyEnabled ? false, heliumCommand ? null }: mkNiri {
+        myNiri = lib.makeOverridable ({ openhomeEnabled ? false, handyEnabled ? false, heliumCommand ? null, minimalProfile ? false }: mkNiri {
           inherit openhomeEnabled;
           inherit handyEnabled;
-          settings = mkSettings { inherit openhomeEnabled handyEnabled heliumCommand; };
+          settings = mkSettings { inherit openhomeEnabled handyEnabled heliumCommand minimalProfile; };
         }) { };
         myNiriDp11080p = lib.makeOverridable ({ openhomeEnabled ? false, handyEnabled ? false, heliumCommand ? null }: let
           baseSettings = mkSettings { inherit openhomeEnabled handyEnabled heliumCommand; };

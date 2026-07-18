@@ -38,7 +38,7 @@ in {
       gtk3.extraConfig.gtk-application-prefer-dark-theme = 1;
       gtk4.extraConfig.gtk-application-prefer-dark-theme = 1;
     };
-    home.file."tmp/vj-noctalia-cache/wallpapers.json".text = builtins.toJSON {
+    home.file.".cache/noctalia/wallpapers.json".text = builtins.toJSON {
       defaultWallpaper = "/home/ph/nixos-config/wallpaper/a_woman_holding_a_sword.jpg";
       wallpapers = {
         "HDMI-A-1" = "/home/ph/nixos-config/wallpaper/a_woman_holding_a_sword.jpg";

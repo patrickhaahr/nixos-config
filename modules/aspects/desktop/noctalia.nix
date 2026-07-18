@@ -6,7 +6,7 @@
         name = "vjnoctalia2";
       };
       env = {
-        NOCTALIA_CACHE_DIR = "/home/ph/tmp/vj-noctalia-cache/";
+        NOCTALIA_CACHE_DIR = "/home/ph/.cache/noctalia/";
       };
       colors = {
         mError = "#fb4934";
