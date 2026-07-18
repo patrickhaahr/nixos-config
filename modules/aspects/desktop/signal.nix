@@ -1,5 +1,6 @@
 { ... }: {
-  flake.modules.nixos.signal = { pkgs, ... }:
+  flake.modules.nixos.signal =
+    { pkgs, ... }:
     let
       signalDesktop = pkgs.signal-desktop.overrideAttrs (old: {
         postPatch = (old.postPatch or "") + ''
@@ -9,7 +10,8 @@
               ": OS.isLinux() ? ('hidden' as const) : ('default' as const);"
         '';
       });
-    in {
+    in
+    {
       environment.systemPackages = [ signalDesktop ];
     };
 }

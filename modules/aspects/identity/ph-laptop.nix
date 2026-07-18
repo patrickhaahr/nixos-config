@@ -1,11 +1,15 @@
 { self, ... }:
 let
   userName = "ph";
-in {
+in
+{
   flake.modules.nixos.identity-ph-laptop = {
     imports = [ self.modules.nixos.identity-ph-headless ];
 
-    users.users.${userName}.extraGroups = [ "networkmanager" "i2c" ];
+    users.users.${userName}.extraGroups = [
+      "networkmanager"
+      "i2c"
+    ];
     home-manager.users.${userName} = {
       imports = [
         self.modules.homeManager.cursor

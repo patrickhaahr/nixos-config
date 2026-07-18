@@ -1,6 +1,7 @@
 { inputs }:
 let
   repo = inputs.claude-skill-typst;
-in {
+in
+{
   typst = repo + "/skills/typst";
 }

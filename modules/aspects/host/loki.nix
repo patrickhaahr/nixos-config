@@ -1,8 +1,15 @@
 { self, ... }: {
-  flake.modules.nixos.loki = { config, lib, pkgs, ... }:
+  flake.modules.nixos.loki =
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     let
       niriEnabled = config.programs.niri.enable;
-    in {
+    in
+    {
       imports = [
         self.modules.nixos.loki-hardware
         self.modules.nixos.home-manager
@@ -47,9 +54,11 @@
       services.greetd = {
         enable = true;
         settings.default_session = {
-          command = if niriEnabled
-            then lib.getExe' config.programs.niri.package "niri-session"
-            else "${pkgs.niri}/bin/niri-session";
+          command =
+            if niriEnabled then
+              lib.getExe' config.programs.niri.package "niri-session"
+            else
+              "${pkgs.niri}/bin/niri-session";
           user = "ph";
         };
       };

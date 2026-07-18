@@ -1,5 +1,6 @@
 { ... }: {
-  flake.modules.nixos.homelab-wazuh = { config, pkgs, ... }:
+  flake.modules.nixos.homelab-wazuh =
+    { config, pkgs, ... }:
     let
       wazuhKubernetes = pkgs.fetchFromGitHub {
         owner = "wazuh";
@@ -7,7 +8,8 @@
         rev = "v4.14.5";
         hash = "sha256-HHHUYjVzNuutMOZqO6jl9eGG0abattqssNCSIu4CA30=";
       };
-    in {
+    in
+    {
       sops.secrets = {
         wazuh_api_username = { };
         wazuh_api_password = { };

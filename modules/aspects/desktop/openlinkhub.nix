@@ -15,7 +15,10 @@
       vendorHash = "sha256-/itomxsbTDT7ML52bpUfDZIBZ/Rh/zx4Blg+PP7m7gE=";
 
       nativeBuildInputs = [ pkgs.pkg-config ];
-      buildInputs = [ pkgs.udev pkgs.pipewire ];
+      buildInputs = [
+        pkgs.udev
+        pkgs.pipewire
+      ];
       env.CGO_CFLAGS_ALLOW = "-fno-strict-overflow";
 
       postInstall = ''
@@ -28,7 +31,8 @@
     };
   };
 
-  flake.modules.nixos.openlinkhub = { lib, pkgs, ... }:
+  flake.modules.nixos.openlinkhub =
+    { lib, pkgs, ... }:
     let
       package = self.packages.${pkgs.stdenv.hostPlatform.system}.openlinkhub;
       dataDir = "/var/lib/openlinkhub";
@@ -49,78 +53,79 @@
         "motherboard"
       ];
       setupScript = pkgs.writeShellScript "openlinkhub-setup" ''
-        set -euo pipefail
+                set -euo pipefail
 
-        install -d -o openlinkhub -g openlinkhub -m 0755 ${dataDir}
-        install -d -o openlinkhub -g openlinkhub -m 0755 ${dataDir}/database
-        install -d -o openlinkhub -g openlinkhub -m 0755 ${dataDir}/database/lcd
-        install -d -o openlinkhub -g openlinkhub -m 0755 ${dataDir}/database/lcd/images
+                install -d -o openlinkhub -g openlinkhub -m 0755 ${dataDir}
+                install -d -o openlinkhub -g openlinkhub -m 0755 ${dataDir}/database
+                install -d -o openlinkhub -g openlinkhub -m 0755 ${dataDir}/database/lcd
+                install -d -o openlinkhub -g openlinkhub -m 0755 ${dataDir}/database/lcd/images
 
-        ln -sfn ${packageShare}/web ${dataDir}/web
-        ln -sfn ${packageShare}/static ${dataDir}/static
-        ln -sfn ${packageShare}/database/rgb.json ${dataDir}/database/rgb.json
+                ln -sfn ${packageShare}/web ${dataDir}/web
+                ln -sfn ${packageShare}/static ${dataDir}/static
+                ln -sfn ${packageShare}/database/rgb.json ${dataDir}/database/rgb.json
 
-        ${lib.concatMapStringsSep "\n" (dir: ''
-          install -d -o openlinkhub -g openlinkhub -m 0755 ${dataDir}/database/${dir}
-        '') writeableDatabaseDirs}
+                ${lib.concatMapStringsSep "\n" (dir: ''
+                  install -d -o openlinkhub -g openlinkhub -m 0755 ${dataDir}/database/${dir}
+                '') writeableDatabaseDirs}
 
-        ${lib.concatMapStringsSep "\n" (dir: ''
-          ln -sfn ${packageShare}/database/${dir} ${dataDir}/database/${dir}
-        '') readOnlyDatabaseDirs}
+                ${lib.concatMapStringsSep "\n" (dir: ''
+                  ln -sfn ${packageShare}/database/${dir} ${dataDir}/database/${dir}
+                '') readOnlyDatabaseDirs}
 
-        if [ ! -e ${dataDir}/database/scheduler.json ]; then
-          install -o openlinkhub -g openlinkhub -m 0644 ${packageShare}/database/scheduler.json ${dataDir}/database/scheduler.json
-        fi
+                if [ ! -e ${dataDir}/database/scheduler.json ]; then
+                  install -o openlinkhub -g openlinkhub -m 0644 ${packageShare}/database/scheduler.json ${dataDir}/database/scheduler.json
+                fi
 
-        if [ ! -e ${dataDir}/database/lcd/background.jpg ]; then
-          install -o openlinkhub -g openlinkhub -m 0644 ${packageShare}/database/lcd/background.jpg ${dataDir}/database/lcd/background.jpg
-        fi
+                if [ ! -e ${dataDir}/database/lcd/background.jpg ]; then
+                  install -o openlinkhub -g openlinkhub -m 0644 ${packageShare}/database/lcd/background.jpg ${dataDir}/database/lcd/background.jpg
+                fi
 
-        if [ ! -e ${dataDir}/config.json ]; then
-          cat > ${dataDir}/config.json <<'EOF'
-{
-  "debug": false,
-  "listenPort": 27003,
-  "listenAddress": "127.0.0.1",
-  "cpuSensorChip": "",
-  "manual": false,
-  "frontend": true,
-  "metrics": false,
-  "memory": false,
-  "memorySmBus": "i2c-0",
-  "memoryType": 5,
-  "exclude": [],
-  "memorySku": "",
-  "resumeDelay": 15000,
-  "logFile": "",
-  "logLevel": "info",
-  "enhancementKits": [],
-  "temperatureOffset": 0,
-  "amdGpuIndex": 0,
-  "amdsmiPath": "",
-  "checkDevicePermission": false,
-  "cpuTempFile": "",
-  "graphProfiles": true,
-  "ramTempViaHwmon": true,
-  "nvidiaGpuIndex": [0],
-  "defaultNvidiaGPU": 0,
-  "openRGBPort": 6743,
-  "enableOpenRGBTargetServer": false,
-  "enableGamepad": true,
-  "enableMotherboard": false,
-  "motherboardBiosOnExit": false,
-  "memoryRegisterOverride": []
-}
-EOF
-          chown openlinkhub:openlinkhub ${dataDir}/config.json
-          chmod 0644 ${dataDir}/config.json
-        fi
+                if [ ! -e ${dataDir}/config.json ]; then
+                  cat > ${dataDir}/config.json <<'EOF'
+        {
+          "debug": false,
+          "listenPort": 27003,
+          "listenAddress": "127.0.0.1",
+          "cpuSensorChip": "",
+          "manual": false,
+          "frontend": true,
+          "metrics": false,
+          "memory": false,
+          "memorySmBus": "i2c-0",
+          "memoryType": 5,
+          "exclude": [],
+          "memorySku": "",
+          "resumeDelay": 15000,
+          "logFile": "",
+          "logLevel": "info",
+          "enhancementKits": [],
+          "temperatureOffset": 0,
+          "amdGpuIndex": 0,
+          "amdsmiPath": "",
+          "checkDevicePermission": false,
+          "cpuTempFile": "",
+          "graphProfiles": true,
+          "ramTempViaHwmon": true,
+          "nvidiaGpuIndex": [0],
+          "defaultNvidiaGPU": 0,
+          "openRGBPort": 6743,
+          "enableOpenRGBTargetServer": false,
+          "enableGamepad": true,
+          "enableMotherboard": false,
+          "motherboardBiosOnExit": false,
+          "memoryRegisterOverride": []
+        }
+        EOF
+                  chown openlinkhub:openlinkhub ${dataDir}/config.json
+                  chmod 0644 ${dataDir}/config.json
+                fi
 
-        if [ ! -e ${dataDir}/database/lcd/images/background.jpg ]; then
-          install -o openlinkhub -g openlinkhub -m 0644 ${packageShare}/database/lcd/background.jpg ${dataDir}/database/lcd/images/background.jpg
-        fi
+                if [ ! -e ${dataDir}/database/lcd/images/background.jpg ]; then
+                  install -o openlinkhub -g openlinkhub -m 0644 ${packageShare}/database/lcd/background.jpg ${dataDir}/database/lcd/images/background.jpg
+                fi
       '';
-    in {
+    in
+    {
       users.users.openlinkhub = {
         isSystemUser = true;
         group = "openlinkhub";
@@ -132,7 +137,9 @@ EOF
       environment.systemPackages = [ package ];
 
       services.udev.packages = [
-        (pkgs.writeTextDir "lib/udev/rules.d/99-openlinkhub.rules" (builtins.readFile "${packageShare}/99-openlinkhub.rules"))
+        (pkgs.writeTextDir "lib/udev/rules.d/99-openlinkhub.rules" (
+          builtins.readFile "${packageShare}/99-openlinkhub.rules"
+        ))
       ];
 
       systemd.tmpfiles.rules = [
@@ -140,7 +147,8 @@ EOF
         "d ${dataDir}/database 0755 openlinkhub openlinkhub -"
         "d ${dataDir}/database/lcd 0755 openlinkhub openlinkhub -"
         "d ${dataDir}/database/lcd/images 0755 openlinkhub openlinkhub -"
-      ] ++ map (dir: "d ${dataDir}/database/${dir} 0755 openlinkhub openlinkhub -") writeableDatabaseDirs;
+      ]
+      ++ map (dir: "d ${dataDir}/database/${dir} 0755 openlinkhub openlinkhub -") writeableDatabaseDirs;
 
       systemd.services.openlinkhub-setup = {
         description = "Prepare OpenLinkHub runtime directory";
@@ -156,7 +164,11 @@ EOF
       systemd.services.openlinkhub = {
         description = "OpenLinkHub";
         wantedBy = [ "multi-user.target" ];
-        after = [ "network.target" "openlinkhub-setup.service" "systemd-udev-settle.service" ];
+        after = [
+          "network.target"
+          "openlinkhub-setup.service"
+          "systemd-udev-settle.service"
+        ];
         wants = [ "openlinkhub-setup.service" ];
         serviceConfig = {
           User = "openlinkhub";

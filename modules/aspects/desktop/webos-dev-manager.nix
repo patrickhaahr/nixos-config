@@ -1,5 +1,6 @@
 {
-  flake.modules.nixos.webos-dev-manager = { lib, pkgs, ... }:
+  flake.modules.nixos.webos-dev-manager =
+    { lib, pkgs, ... }:
     let
       basePackage = pkgs.appimageTools.wrapType2 {
         pname = "webos-dev-manager";
@@ -8,8 +9,8 @@
           url = "https://github.com/webosbrew/dev-manager-desktop/releases/download/v1.99.16/webos-dev-manager_1.99.16_amd64.AppImage";
           hash = "sha256-1Eg8flL81vJXcGG9492tePqI4LpvEap2spuYtfIwAKU=";
         };
-        extraPkgs = appPkgs:
-          with appPkgs; [
+        extraPkgs =
+          appPkgs: with appPkgs; [
             fontconfig
             freetype
             harfbuzz
@@ -33,21 +34,24 @@
             --set WEBKIT_DISABLE_DMABUF_RENDERER 1
         '';
       };
-    in {
+    in
+    {
       environment.systemPackages = [
         (pkgs.symlinkJoin {
           name = "webos-dev-manager";
           paths = [ package ];
           postBuild = ''
             mkdir -p "$out/share/applications"
-            cp ${pkgs.makeDesktopItem {
-              name = "webos-dev-manager";
-              desktopName = "webOS Dev Manager";
-              comment = "Device and Dev Mode Manager for webOS TV";
-              exec = lib.getExe' package "webos-dev-manager";
-              categories = [ "Development" ];
-              terminal = false;
-            }}/share/applications/webos-dev-manager.desktop "$out/share/applications/"
+            cp ${
+              pkgs.makeDesktopItem {
+                name = "webos-dev-manager";
+                desktopName = "webOS Dev Manager";
+                comment = "Device and Dev Mode Manager for webOS TV";
+                exec = lib.getExe' package "webos-dev-manager";
+                categories = [ "Development" ];
+                terminal = false;
+              }
+            }/share/applications/webos-dev-manager.desktop "$out/share/applications/"
           '';
         })
       ];

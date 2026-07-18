@@ -1,5 +1,11 @@
 { self, ... }: {
-  flake.modules.nixos.homelab-llamacpp-nika = { config, lib, pkgs, ... }:
+  flake.modules.nixos.homelab-llamacpp-nika =
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     let
       toolSchemaProxy = pkgs.writeText "llamacpp-tool-schema-proxy.js" ''
         const http = require("http");
@@ -116,31 +122,38 @@
           });
         }).listen(listenPort, "127.0.0.1");
       '';
-    in {
-    imports = [
-      self.modules.nixos.homelab-llamacpp-nika-qwen3-14b
-      self.modules.nixos.homelab-llamacpp-nika-qwen3-6-35b-a3b
-    ];
+    in
+    {
+      imports = [
+        self.modules.nixos.homelab-llamacpp-nika-qwen3-14b
+        self.modules.nixos.homelab-llamacpp-nika-qwen3-6-35b-a3b
+      ];
 
-    options.services.llamacpp.nika.model = lib.mkOption {
-      type = lib.types.enum [ "none" "qwen3-14b" "qwen3-6-35b-a3b" ];
-      default = "qwen3-14b";
-      description = "The llama.cpp model service to run on nika.";
-    };
-
-    config.systemd.services.llamacpp-tool-schema-proxy = lib.mkIf (config.services.llamacpp.nika.model != "none") {
-      description = "llama.cpp OpenCode tool schema compatibility proxy";
-      after = [ "network.target" ];
-      wantedBy = [ "multi-user.target" ];
-
-      serviceConfig = {
-        ExecStart = "${pkgs.nodejs}/bin/node ${toolSchemaProxy}";
-        Restart = "on-failure";
-        RestartSec = "2s";
-        DynamicUser = true;
-        NoNewPrivileges = true;
-        PrivateTmp = true;
+      options.services.llamacpp.nika.model = lib.mkOption {
+        type = lib.types.enum [
+          "none"
+          "qwen3-14b"
+          "qwen3-6-35b-a3b"
+        ];
+        default = "qwen3-14b";
+        description = "The llama.cpp model service to run on nika.";
       };
+
+      config.systemd.services.llamacpp-tool-schema-proxy =
+        lib.mkIf (config.services.llamacpp.nika.model != "none")
+          {
+            description = "llama.cpp OpenCode tool schema compatibility proxy";
+            after = [ "network.target" ];
+            wantedBy = [ "multi-user.target" ];
+
+            serviceConfig = {
+              ExecStart = "${pkgs.nodejs}/bin/node ${toolSchemaProxy}";
+              Restart = "on-failure";
+              RestartSec = "2s";
+              DynamicUser = true;
+              NoNewPrivileges = true;
+              PrivateTmp = true;
+            };
+          };
     };
-  };
 }

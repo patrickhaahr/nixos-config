@@ -1,20 +1,29 @@
 { inputs, ... }: {
-  flake.modules.nixos.helium = { lib, pkgs, config, ... }:
+  flake.modules.nixos.helium =
+    {
+      lib,
+      pkgs,
+      config,
+      ...
+    }:
     let
       cfg = config.programs.helium;
       basePackage = inputs.helium.packages.${pkgs.stdenv.hostPlatform.system}.default;
       launcherPackage =
-        if cfg.passwordStore == null then cfg.package else
-        pkgs.symlinkJoin {
-          name = "helium-launcher";
-          paths = [ cfg.package ];
-          nativeBuildInputs = [ pkgs.makeWrapper ];
-          postBuild = ''
-            wrapProgram "$out/bin/helium" \
-              --add-flags "--password-store=${cfg.passwordStore}"
-          '';
-        };
-    in {
+        if cfg.passwordStore == null then
+          cfg.package
+        else
+          pkgs.symlinkJoin {
+            name = "helium-launcher";
+            paths = [ cfg.package ];
+            nativeBuildInputs = [ pkgs.makeWrapper ];
+            postBuild = ''
+              wrapProgram "$out/bin/helium" \
+                --add-flags "--password-store=${cfg.passwordStore}"
+            '';
+          };
+    in
+    {
       options.programs.helium = {
         enable = lib.mkEnableOption "Helium browser";
 

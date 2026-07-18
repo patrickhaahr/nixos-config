@@ -26,14 +26,14 @@
                 })
               '';
             };
-           mini-cmdline = {
-             package = pkgs.vimPlugins.mini-cmdline;
-             setup = ''
-               require("mini.cmdline").setup({
-                 autocorrect = { enable = true },
-               })
-             '';
-           };
+            mini-cmdline = {
+              package = pkgs.vimPlugins.mini-cmdline;
+              setup = ''
+                require("mini.cmdline").setup({
+                  autocorrect = { enable = true },
+                })
+              '';
+            };
             supermaven = {
               package = pkgs.vimPlugins.supermaven-nvim;
               setup = ''
@@ -78,34 +78,187 @@
             showbreak = "↪ ";
           };
           keymaps = [
-            { key = "p"; mode = "x"; action = ''"_dP''; desc = "Paste over selection without losing yanked text"; }
-            { key = "<leader>d"; mode = [ "n" "v" ]; action = ''"_d''; desc = "Delete without yanking"; }
-            { key = "<Esc>"; mode = "n"; action = ":nohl<CR>"; desc = "Clear search highlighting"; }
-            { key = "J"; mode = "v"; action = ":m '>+1<CR>gv=gv"; desc = "moves lines down in visual selection"; }
-            { key = "K"; mode = "v"; action = ":m '<-2<CR>gv=gv"; desc = "moves lines up in visual selection"; }
-            { key = "<"; mode = "v"; action = "<gv"; desc = "Unindent and keep selection"; }
-            { key = ">"; mode = "v"; action = ">gv"; desc = "Indent and keep selection"; }
-            { key = "J"; mode = "n"; action = "mzJ`z"; desc = "Join lines without moving cursor"; }
-            { key = "<C-d>"; mode = "n"; action = "<C-d>zz"; desc = "move down in buffer with cursor centered"; }
-            { key = "<C-u>"; mode = "n"; action = "<C-u>zz"; desc = "move up in buffer with cursor centered"; }
-            { key = "n"; mode = "n"; action = "nzzzv"; desc = "Next search result cursor centered"; }
-            { key = "N"; mode = "n"; action = "Nzzzv"; desc = "Previous search result cursor centered"; }
-            { key = "<leader>s"; mode = "n"; action = '':%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>''; desc = "Replace word cursor is on globally"; }
-            { key = "<leader>X"; mode = "n"; action = "<cmd>!chmod +x %<CR>"; desc = "makes file executable"; }
-            { key = "<leader>re"; mode = "n"; action = "<cmd>restart<cr>"; desc = "Restart config :restart)"; }
-            { key = "<leader>fmt"; mode = "n"; lua = true; action = "vim.lsp.buf.format"; desc = "Format Local buffer"; }
-            { key = "df"; mode = "n"; lua = true; action = "vim.diagnostic.open_float"; desc = "Show line diagnostics"; }
-            { key = "<leader>u"; mode = "n"; action = "<cmd>UndotreeToggle<CR>"; desc = "Toggle Builtin Undotree"; }
-            { key = "-"; mode = "n"; lua = true; action = ''function() require("mini.files").open() end''; desc = "Toggle mini file explorer"; }
-            { key = "<leader>-"; mode = "n"; lua = true; action = ''function() local MiniFiles = require("mini.files"); MiniFiles.open(vim.api.nvim_buf_get_name(0), false); MiniFiles.reveal_cwd() end''; desc = "Toggle into currently opened file"; }
-            { key = "<leader>ff"; mode = "n"; lua = true; action = ''function() require("fff").find_files() end''; desc = "FFF File Picker"; }
-            { key = "<leader>fg"; mode = "n"; lua = true; action = ''function() require("fff").live_grep({ query = vim.fn.expand("<cword>"), grep = { modes = { "fuzzy", "plain" } } }) end''; desc = "FFF Grep word/Search word"; }
-            { key = "<leader>nix"; mode = "n"; lua = true; action = ''function() require("fff").find_files_in_dir(vim.fn.expand("~/nixos-config")) end''; desc = "Find files in ~/nixos-config"; }
-            { key = "<leader>vh"; mode = "n"; lua = true; action = ''function() require("mini.pick").builtin.help() end''; desc = "Mini Help"; }
-            { key = "<leader>xx"; mode = "n"; lua = true; action = ''function() require("mini.extra").pickers.diagnostic() end''; desc = "Mini Picker Diagnostics"; }
-            { key = "<leader>pk"; mode = "n"; lua = true; action = ''function() require("mini.extra").pickers.keymaps() end''; desc = "Search keymaps"; }
-            { key = "<leader>gg"; mode = "n"; action = "<cmd>tabnew | Git | only<cr>"; desc = "Fugitive Full Page New Tab"; }
-            { key = "<leader>gd"; mode = "n"; action = "<cmd>Gvdiffsplit<CR>"; desc = "Git diff split"; }
+            {
+              key = "p";
+              mode = "x";
+              action = ''"_dP'';
+              desc = "Paste over selection without losing yanked text";
+            }
+            {
+              key = "<leader>d";
+              mode = [
+                "n"
+                "v"
+              ];
+              action = ''"_d'';
+              desc = "Delete without yanking";
+            }
+            {
+              key = "<Esc>";
+              mode = "n";
+              action = ":nohl<CR>";
+              desc = "Clear search highlighting";
+            }
+            {
+              key = "J";
+              mode = "v";
+              action = ":m '>+1<CR>gv=gv";
+              desc = "moves lines down in visual selection";
+            }
+            {
+              key = "K";
+              mode = "v";
+              action = ":m '<-2<CR>gv=gv";
+              desc = "moves lines up in visual selection";
+            }
+            {
+              key = "<";
+              mode = "v";
+              action = "<gv";
+              desc = "Unindent and keep selection";
+            }
+            {
+              key = ">";
+              mode = "v";
+              action = ">gv";
+              desc = "Indent and keep selection";
+            }
+            {
+              key = "J";
+              mode = "n";
+              action = "mzJ`z";
+              desc = "Join lines without moving cursor";
+            }
+            {
+              key = "<C-d>";
+              mode = "n";
+              action = "<C-d>zz";
+              desc = "move down in buffer with cursor centered";
+            }
+            {
+              key = "<C-u>";
+              mode = "n";
+              action = "<C-u>zz";
+              desc = "move up in buffer with cursor centered";
+            }
+            {
+              key = "n";
+              mode = "n";
+              action = "nzzzv";
+              desc = "Next search result cursor centered";
+            }
+            {
+              key = "N";
+              mode = "n";
+              action = "Nzzzv";
+              desc = "Previous search result cursor centered";
+            }
+            {
+              key = "<leader>s";
+              mode = "n";
+              action = '':%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>'';
+              desc = "Replace word cursor is on globally";
+            }
+            {
+              key = "<leader>X";
+              mode = "n";
+              action = "<cmd>!chmod +x %<CR>";
+              desc = "makes file executable";
+            }
+            {
+              key = "<leader>re";
+              mode = "n";
+              action = "<cmd>restart<cr>";
+              desc = "Restart config :restart)";
+            }
+            {
+              key = "<leader>fmt";
+              mode = "n";
+              lua = true;
+              action = "vim.lsp.buf.format";
+              desc = "Format Local buffer";
+            }
+            {
+              key = "df";
+              mode = "n";
+              lua = true;
+              action = "vim.diagnostic.open_float";
+              desc = "Show line diagnostics";
+            }
+            {
+              key = "<leader>u";
+              mode = "n";
+              action = "<cmd>UndotreeToggle<CR>";
+              desc = "Toggle Builtin Undotree";
+            }
+            {
+              key = "-";
+              mode = "n";
+              lua = true;
+              action = ''function() require("mini.files").open() end'';
+              desc = "Toggle mini file explorer";
+            }
+            {
+              key = "<leader>-";
+              mode = "n";
+              lua = true;
+              action = ''function() local MiniFiles = require("mini.files"); MiniFiles.open(vim.api.nvim_buf_get_name(0), false); MiniFiles.reveal_cwd() end'';
+              desc = "Toggle into currently opened file";
+            }
+            {
+              key = "<leader>ff";
+              mode = "n";
+              lua = true;
+              action = ''function() require("fff").find_files() end'';
+              desc = "FFF File Picker";
+            }
+            {
+              key = "<leader>fg";
+              mode = "n";
+              lua = true;
+              action = ''function() require("fff").live_grep({ query = vim.fn.expand("<cword>"), grep = { modes = { "fuzzy", "plain" } } }) end'';
+              desc = "FFF Grep word/Search word";
+            }
+            {
+              key = "<leader>nix";
+              mode = "n";
+              lua = true;
+              action = ''function() require("fff").find_files_in_dir(vim.fn.expand("~/nixos-config")) end'';
+              desc = "Find files in ~/nixos-config";
+            }
+            {
+              key = "<leader>vh";
+              mode = "n";
+              lua = true;
+              action = ''function() require("mini.pick").builtin.help() end'';
+              desc = "Mini Help";
+            }
+            {
+              key = "<leader>xx";
+              mode = "n";
+              lua = true;
+              action = ''function() require("mini.extra").pickers.diagnostic() end'';
+              desc = "Mini Picker Diagnostics";
+            }
+            {
+              key = "<leader>pk";
+              mode = "n";
+              lua = true;
+              action = ''function() require("mini.extra").pickers.keymaps() end'';
+              desc = "Search keymaps";
+            }
+            {
+              key = "<leader>gg";
+              mode = "n";
+              action = "<cmd>tabnew | Git | only<cr>";
+              desc = "Fugitive Full Page New Tab";
+            }
+            {
+              key = "<leader>gd";
+              mode = "n";
+              action = "<cmd>Gvdiffsplit<CR>";
+              desc = "Git diff split";
+            }
           ];
           treesitter.enable = true;
           languages = {

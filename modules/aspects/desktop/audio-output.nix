@@ -1,8 +1,15 @@
 { ... }: {
-  flake.modules.nixos.audio-output = { lib, pkgs, config, ... }:
+  flake.modules.nixos.audio-output =
+    {
+      lib,
+      pkgs,
+      config,
+      ...
+    }:
     let
       cfg = config.services.audio-output;
-    in {
+    in
+    {
       options.services.audio-output = {
         enable = lib.mkEnableOption "shared audio output toggle";
         headphones = lib.mkOption {

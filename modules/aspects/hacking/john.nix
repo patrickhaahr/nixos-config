@@ -1,6 +1,7 @@
 { ... }:
 let
-  mkJohnPackage = pkgs:
+  mkJohnPackage =
+    pkgs:
     pkgs.john.overrideAttrs (_: {
       src = pkgs.fetchFromGitHub {
         owner = "openwall";
@@ -9,17 +10,20 @@ let
         hash = "sha256-zO1/KUJe3LvYCGlwVpNg5uDwPRD0ql/7anErb7tywC0=";
       };
     });
-in {
+in
+{
   flake.modules.nixos."hacking-john" = { pkgs, ... }: {
     environment.systemPackages = [
       (mkJohnPackage pkgs)
     ];
   };
 
-  flake.modules.homeManager."hacking-john" = { pkgs, ... }:
+  flake.modules.homeManager."hacking-john" =
+    { pkgs, ... }:
     let
       johnPackage = mkJohnPackage pkgs;
-    in {
+    in
+    {
       home.file."hacking/wordlists/password.lst".source = "${johnPackage}/share/john/password.lst";
     };
 }

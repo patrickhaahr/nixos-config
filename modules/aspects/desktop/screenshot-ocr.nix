@@ -6,7 +6,14 @@
   perSystem = { pkgs, lib, ... }: {
     packages.niriOcrScreenshot = pkgs.writeShellApplication {
       name = "niri-ocr-screenshot";
-      runtimeInputs = with pkgs; [ coreutils grim slurp tesseract wl-clipboard libnotify ];
+      runtimeInputs = with pkgs; [
+        coreutils
+        grim
+        slurp
+        tesseract
+        wl-clipboard
+        libnotify
+      ];
       text = ''
         set -eu
 

@@ -12,7 +12,10 @@
         Type = "oneshot";
         RemainAfterExit = true;
       };
-      path = [ pkgs.k3s pkgs.nodejs ];
+      path = [
+        pkgs.k3s
+        pkgs.nodejs
+      ];
       script = ''
         k3s kubectl create namespace openconcho --dry-run=client --output yaml \
           | k3s kubectl apply --filename -

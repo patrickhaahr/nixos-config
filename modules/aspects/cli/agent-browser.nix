@@ -1,5 +1,6 @@
 { ... }: {
-  flake.modules.homeManager.agent-browser = { pkgs, ... }:
+  flake.modules.homeManager.agent-browser =
+    { pkgs, ... }:
     let
       agent-browser = pkgs.symlinkJoin {
         name = "agent-browser-with-chromium";
@@ -10,7 +11,8 @@
             --set-default AGENT_BROWSER_EXECUTABLE_PATH "${pkgs.chromium}/bin/chromium"
         '';
       };
-    in {
+    in
+    {
       home.packages = [
         agent-browser
         pkgs.chromium

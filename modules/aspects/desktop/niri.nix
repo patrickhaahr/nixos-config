@@ -1,51 +1,90 @@
 { self, inputs, ... }: {
-  flake.modules.nixos.niri = { lib, pkgs, config, ... }:
+  flake.modules.nixos.niri =
+    {
+      lib,
+      pkgs,
+      config,
+      ...
+    }:
     let
       cfg = config.programs.niri;
-      openhomeEnabled = if builtins.hasAttr "services" config && builtins.hasAttr "openhome" config.services
-        then config.services.openhome.enable
-        else false;
-      handyEnabled = if builtins.hasAttr "programs" config && builtins.hasAttr "handy" config.programs
-        then config.programs.handy.enable
-        else false;
-      heliumEnabled = if builtins.hasAttr "programs" config && builtins.hasAttr "helium" config.programs
-        then config.programs.helium.enable
-        else false;
-      heliumCommand = if heliumEnabled then lib.getExe' config.programs.helium.launcherPackage "helium" else null;
-    in {
-    options.programs.niri.minimalProfile = lib.mkEnableOption "the minimal Niri session profile";
+      openhomeEnabled =
+        if builtins.hasAttr "services" config && builtins.hasAttr "openhome" config.services then
+          config.services.openhome.enable
+        else
+          false;
+      handyEnabled =
+        if builtins.hasAttr "programs" config && builtins.hasAttr "handy" config.programs then
+          config.programs.handy.enable
+        else
+          false;
+      heliumEnabled =
+        if builtins.hasAttr "programs" config && builtins.hasAttr "helium" config.programs then
+          config.programs.helium.enable
+        else
+          false;
+      heliumCommand =
+        if heliumEnabled then lib.getExe' config.programs.helium.launcherPackage "helium" else null;
+    in
+    {
+      options.programs.niri.minimalProfile = lib.mkEnableOption "the minimal Niri session profile";
 
-    config = {
-      hardware.i2c.enable = true;
-      services.gnome.gnome-keyring.enable = lib.mkForce false;
+      config = {
+        hardware.i2c.enable = true;
+        services.gnome.gnome-keyring.enable = lib.mkForce false;
 
-      programs.niri = {
-        enable = true;
-        package = self.packages.${pkgs.stdenv.hostPlatform.system}.myNiri.override {
-          inherit openhomeEnabled;
-          inherit handyEnabled;
-          inherit heliumCommand;
-          minimalProfile = cfg.minimalProfile;
+        programs.niri = {
+          enable = true;
+          package = self.packages.${pkgs.stdenv.hostPlatform.system}.myNiri.override {
+            inherit openhomeEnabled;
+            inherit handyEnabled;
+            inherit heliumCommand;
+            minimalProfile = cfg.minimalProfile;
+          };
         };
       };
     };
+
+  flake.modules.nixos."niri-dp1-1080p" =
+    {
+      lib,
+      pkgs,
+      config,
+      ...
+    }:
+    {
+      programs.niri.package = lib.mkForce (
+        self.packages.${pkgs.stdenv.hostPlatform.system}.myNiriDp11080p.override {
+          openhomeEnabled =
+            if builtins.hasAttr "services" config && builtins.hasAttr "openhome" config.services then
+              config.services.openhome.enable
+            else
+              false;
+          handyEnabled =
+            if builtins.hasAttr "programs" config && builtins.hasAttr "handy" config.programs then
+              config.programs.handy.enable
+            else
+              false;
+          heliumCommand =
+            if
+              builtins.hasAttr "programs" config
+              && builtins.hasAttr "helium" config.programs
+              && config.programs.helium.enable
+            then
+              lib.getExe' config.programs.helium.launcherPackage "helium"
+            else
+              null;
+        }
+      );
     };
 
-  flake.modules.nixos."niri-dp1-1080p" = { lib, pkgs, config, ... }: {
-    programs.niri.package = lib.mkForce (self.packages.${pkgs.stdenv.hostPlatform.system}.myNiriDp11080p.override {
-      openhomeEnabled = if builtins.hasAttr "services" config && builtins.hasAttr "openhome" config.services
-        then config.services.openhome.enable
-        else false;
-      handyEnabled = if builtins.hasAttr "programs" config && builtins.hasAttr "handy" config.programs
-        then config.programs.handy.enable
-        else false;
-      heliumCommand = if builtins.hasAttr "programs" config && builtins.hasAttr "helium" config.programs && config.programs.helium.enable
-        then lib.getExe' config.programs.helium.launcherPackage "helium"
-        else null;
-    });
-  };
-
-  perSystem = { pkgs, lib, self', ... }:
+  perSystem =
+    {
+      pkgs,
+      lib,
+      self',
+      ...
+    }:
     let
       spotifyAutoplay = pkgs.writeShellScriptBin "spotify-autoplay" ''
         spotify &
@@ -76,20 +115,43 @@
           sleep 1
         done
       '';
-      startupApps = { handyEnabled ? false, heliumCommand ? null, minimalProfile ? false }: [
-        (lib.getExe focusWorkspace2)
-      ] ++ lib.optionals (!minimalProfile) [
-        "signal-desktop"
-        (lib.getExe spotifyAutoplay)
-      ] ++ [
-        (lib.getExe focusWorkspace1)
-        (lib.getExe self'.packages.noctalia-shell)
-        (lib.getExe pkgs.ghostty)
-      ] ++ lib.optional (heliumCommand != null) heliumCommand;
-      mkNiri = { settings, openhomeEnabled ? false, handyEnabled ? false, minimalProfile ? false }: inputs.wrapper-modules.wrappers.niri.wrap {
-        inherit pkgs settings;
-      };
-      mkSettings = { openhomeEnabled, handyEnabled ? false, heliumCommand ? null, minimalProfile ? false }: {
+      startupApps =
+        {
+          handyEnabled ? false,
+          heliumCommand ? null,
+          minimalProfile ? false,
+        }:
+        [
+          (lib.getExe focusWorkspace2)
+        ]
+        ++ lib.optionals (!minimalProfile) [
+          "signal-desktop"
+          (lib.getExe spotifyAutoplay)
+        ]
+        ++ [
+          (lib.getExe focusWorkspace1)
+          (lib.getExe self'.packages.noctalia-shell)
+          (lib.getExe pkgs.ghostty)
+        ]
+        ++ lib.optional (heliumCommand != null) heliumCommand;
+      mkNiri =
+        {
+          settings,
+          openhomeEnabled ? false,
+          handyEnabled ? false,
+          minimalProfile ? false,
+        }:
+        inputs.wrapper-modules.wrappers.niri.wrap {
+          inherit pkgs settings;
+        };
+      mkSettings =
+        {
+          openhomeEnabled,
+          handyEnabled ? false,
+          heliumCommand ? null,
+          minimalProfile ? false,
+        }:
+        {
           prefer-no-csd = true;
 
           workspaces = {
@@ -104,7 +166,10 @@
           outputs = {
             "HDMI-A-1" = {
               position = _: {
-                props = { x = 0; y = 0; };
+                props = {
+                  x = 0;
+                  y = 0;
+                };
               };
             };
             "DVI-D-1" = {
@@ -146,7 +211,8 @@
               ];
               open-on-workspace = "1";
             }
-          ] ++ lib.optionals (!minimalProfile) [
+          ]
+          ++ lib.optionals (!minimalProfile) [
             {
               matches = [
                 {
@@ -178,102 +244,112 @@
             }
           ];
 
-          binds = ({
-            "Mod+Return".spawn-sh = "${lib.getExe pkgs.ghostty} +new-window";
-            "Mod+Print".spawn-sh = lib.getExe self'.packages.niriOcrScreenshot;
-            "Print".screenshot = _: { };
-            "Ctrl+Print"."screenshot-screen" = _: {
-              props.write-to-disk = false;
+          binds =
+            (
+              {
+                "Mod+Return".spawn-sh = "${lib.getExe pkgs.ghostty} +new-window";
+                "Mod+Print".spawn-sh = lib.getExe self'.packages.niriOcrScreenshot;
+                "Print".screenshot = _: { };
+                "Ctrl+Print"."screenshot-screen" = _: {
+                  props.write-to-disk = false;
+                };
+                "Ctrl+Shift+Print"."screenshot-screen" = _: { };
+                "Alt+Print"."screenshot-window" = _: {
+                  props.write-to-disk = false;
+                };
+                "Alt+Shift+Print"."screenshot-window" = _: { };
+                "Mod+C".close-window = _: { };
+                "Mod+H".focus-column-left = _: { };
+                "Mod+L".focus-column-right = _: { };
+                "Mod+Ctrl+H".move-column-left = _: { };
+                "Mod+Ctrl+L".move-column-right = _: { };
+                "Mod+J".focus-window-down = _: { };
+                "Mod+K".focus-window-up = _: { };
+                "Mod+WheelScrollUp" = _: {
+                  props.cooldown-ms = 150;
+                  content.focus-column-left = _: { };
+                };
+                "Mod+WheelScrollDown" = _: {
+                  props.cooldown-ms = 150;
+                  content.focus-column-right = _: { };
+                };
+                "Mod+Ctrl+J".move-window-down = _: { };
+                "Mod+Ctrl+K".move-window-up = _: { };
+                "Mod+Ctrl+WheelScrollUp" = _: {
+                  props.cooldown-ms = 150;
+                  content.move-column-left = _: { };
+                };
+                "Mod+Ctrl+WheelScrollDown" = _: {
+                  props.cooldown-ms = 150;
+                  content.move-column-right = _: { };
+                };
+                "Mod+Alt+H"."consume-or-expel-window-left" = _: { };
+                "Mod+Alt+L"."consume-or-expel-window-right" = _: { };
+                "Mod+Alt+WheelScrollUp" = _: {
+                  props.cooldown-ms = 150;
+                  content."consume-or-expel-window-left" = _: { };
+                };
+                "Mod+Alt+WheelScrollDown" = _: {
+                  props.cooldown-ms = 150;
+                  content."consume-or-expel-window-right" = _: { };
+                };
+                "Mod+Shift+H".focus-monitor-left = _: { };
+                "Mod+Shift+L".focus-monitor-right = _: { };
+                "Mod+Ctrl+Shift+H".move-column-to-monitor-left = _: { };
+                "Mod+Ctrl+Shift+L".move-column-to-monitor-right = _: { };
+                "Mod+Ctrl+Shift+Left".move-column-to-monitor-left = _: { };
+                "Mod+Ctrl+Shift+Right".move-column-to-monitor-right = _: { };
+                "Super+F"."maximize-window-to-edges" = _: { };
+                "Mod+Space".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call launcher toggle";
+                "Mod+F9".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call brightness decrease";
+                "Mod+Shift+F9".spawn-sh =
+                  "${lib.getExe self'.packages.noctalia-shell} ipc call brightness increase";
+                "Mod+Alt+F10".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call nightLight toggle";
+              }
+              // lib.optionalAttrs (!minimalProfile) {
+                "Mod+E".spawn = "nautilus";
+                "Super+O".spawn = "toggle-audio-output";
+              }
+              // lib.optionalAttrs (heliumCommand != null) {
+                "Mod+B".spawn = heliumCommand;
+              }
+              // lib.optionalAttrs handyEnabled {
+                "Ctrl+Space" = _: {
+                  props.repeat = false;
+                  content.spawn-sh = "${lib.getExe' pkgs.procps "pkill"} -USR2 -n handy";
+                };
+              }
+              // lib.optionalAttrs openhomeEnabled {
+                "Super+M".spawn = "openhome-ir-mute";
+                "Super+Left".spawn = "openhome-ir-bluetooth";
+                "Super+Right".spawn = "openhome-ir-optical";
+                "Super+Up".spawn = "openhome-ir-volume-up";
+                "Super+Down".spawn = "openhome-ir-volume-down";
+              }
+            )
+            // {
+              "Super+1"."focus-workspace" = 1;
+              "Super+2"."focus-workspace" = 2;
+              "Super+3"."focus-workspace" = 3;
+              "Super+4"."focus-workspace" = 4;
+              "Super+5"."focus-workspace" = 5;
+              "Super+6"."focus-workspace" = 6;
+              "Super+7"."focus-workspace" = 7;
+              "Super+8"."focus-workspace" = 8;
+              "Super+9"."focus-workspace" = 9;
+              "Super+Shift+1"."move-column-to-workspace" = 1;
+              "Super+Shift+2"."move-column-to-workspace" = 2;
+              "Super+Shift+3"."move-column-to-workspace" = 3;
+              "Super+Shift+4"."move-column-to-workspace" = 4;
+              "Super+Shift+5"."move-column-to-workspace" = 5;
+              "Super+Shift+6"."move-column-to-workspace" = 6;
+              "Super+Shift+7"."move-column-to-workspace" = 7;
+              "Super+Shift+8"."move-column-to-workspace" = 8;
+              "Super+Shift+9"."move-column-to-workspace" = 9;
             };
-            "Ctrl+Shift+Print"."screenshot-screen" = _: { };
-            "Alt+Print"."screenshot-window" = _: {
-              props.write-to-disk = false;
-            };
-            "Alt+Shift+Print"."screenshot-window" = _: { };
-            "Mod+C".close-window = _: { };
-            "Mod+H".focus-column-left = _: { };
-            "Mod+L".focus-column-right = _: { };
-            "Mod+Ctrl+H".move-column-left = _: { };
-            "Mod+Ctrl+L".move-column-right = _: { };
-            "Mod+J".focus-window-down = _: { };
-            "Mod+K".focus-window-up = _: { };
-            "Mod+WheelScrollUp" = _: {
-              props.cooldown-ms = 150;
-              content.focus-column-left = _: { };
-            };
-            "Mod+WheelScrollDown" = _: {
-              props.cooldown-ms = 150;
-              content.focus-column-right = _: { };
-            };
-            "Mod+Ctrl+J".move-window-down = _: { };
-            "Mod+Ctrl+K".move-window-up = _: { };
-            "Mod+Ctrl+WheelScrollUp" = _: {
-              props.cooldown-ms = 150;
-              content.move-column-left = _: { };
-            };
-            "Mod+Ctrl+WheelScrollDown" = _: {
-              props.cooldown-ms = 150;
-              content.move-column-right = _: { };
-            };
-            "Mod+Alt+H"."consume-or-expel-window-left" = _: { };
-            "Mod+Alt+L"."consume-or-expel-window-right" = _: { };
-            "Mod+Alt+WheelScrollUp" = _: {
-              props.cooldown-ms = 150;
-              content."consume-or-expel-window-left" = _: { };
-            };
-            "Mod+Alt+WheelScrollDown" = _: {
-              props.cooldown-ms = 150;
-              content."consume-or-expel-window-right" = _: { };
-            };
-            "Mod+Shift+H".focus-monitor-left = _: { };
-            "Mod+Shift+L".focus-monitor-right = _: { };
-            "Mod+Ctrl+Shift+H".move-column-to-monitor-left = _: { };
-            "Mod+Ctrl+Shift+L".move-column-to-monitor-right = _: { };
-            "Mod+Ctrl+Shift+Left".move-column-to-monitor-left = _: { };
-            "Mod+Ctrl+Shift+Right".move-column-to-monitor-right = _: { };
-            "Super+F"."maximize-window-to-edges" = _: { };
-            "Mod+Space".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call launcher toggle";
-            "Mod+F9".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call brightness decrease";
-            "Mod+Shift+F9".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call brightness increase";
-            "Mod+Alt+F10".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call nightLight toggle";
-          } // lib.optionalAttrs (!minimalProfile) {
-            "Mod+E".spawn = "nautilus";
-            "Super+O".spawn = "toggle-audio-output";
-          } // lib.optionalAttrs (heliumCommand != null) {
-            "Mod+B".spawn = heliumCommand;
-          } // lib.optionalAttrs handyEnabled {
-            "Ctrl+Space" = _: {
-              props.repeat = false;
-              content.spawn-sh = "${lib.getExe' pkgs.procps "pkill"} -USR2 -n handy";
-            };
-          } // lib.optionalAttrs openhomeEnabled {
-            "Super+M".spawn = "openhome-ir-mute";
-            "Super+Left".spawn = "openhome-ir-bluetooth";
-            "Super+Right".spawn = "openhome-ir-optical";
-            "Super+Up".spawn = "openhome-ir-volume-up";
-            "Super+Down".spawn = "openhome-ir-volume-down";
-          }) // {
-            "Super+1"."focus-workspace" = 1;
-            "Super+2"."focus-workspace" = 2;
-            "Super+3"."focus-workspace" = 3;
-            "Super+4"."focus-workspace" = 4;
-            "Super+5"."focus-workspace" = 5;
-            "Super+6"."focus-workspace" = 6;
-            "Super+7"."focus-workspace" = 7;
-            "Super+8"."focus-workspace" = 8;
-            "Super+9"."focus-workspace" = 9;
-            "Super+Shift+1"."move-column-to-workspace" = 1;
-            "Super+Shift+2"."move-column-to-workspace" = 2;
-            "Super+Shift+3"."move-column-to-workspace" = 3;
-            "Super+Shift+4"."move-column-to-workspace" = 4;
-            "Super+Shift+5"."move-column-to-workspace" = 5;
-            "Super+Shift+6"."move-column-to-workspace" = 6;
-            "Super+Shift+7"."move-column-to-workspace" = 7;
-            "Super+Shift+8"."move-column-to-workspace" = 8;
-            "Super+Shift+9"."move-column-to-workspace" = 9;
-          };
         };
-    in {
+    in
+    {
       checks = lib.optionalAttrs pkgs.stdenv.isLinux {
         niri-handy-startup-wiring = pkgs.runCommand "niri-handy-startup-wiring" { } ''
           test '${builtins.toJSON self.nixosConfigurations.nika.config.home-manager.users.ph.services.handy.enable}' = 'true'
@@ -281,7 +357,11 @@
           test '${self.nixosConfigurations.nika.config.home-manager.users.ph.services.handy.package}/bin/handy' = \
             '${self.nixosConfigurations.nika.config.programs.handy.package}/bin/handy'
 
-          case '${builtins.toJSON (startupApps { handyEnabled = true; })}' in
+          case '${
+            builtins.toJSON (startupApps {
+              handyEnabled = true;
+            })
+          }' in
             *'"handy"'*)
               exit 1
               ;;
@@ -302,22 +382,45 @@
       };
 
       packages = lib.optionalAttrs pkgs.stdenv.isLinux {
-        myNiri = lib.makeOverridable ({ openhomeEnabled ? false, handyEnabled ? false, heliumCommand ? null, minimalProfile ? false }: mkNiri {
-          inherit openhomeEnabled;
-          inherit handyEnabled;
-          settings = mkSettings { inherit openhomeEnabled handyEnabled heliumCommand minimalProfile; };
-        }) { };
-        myNiriDp11080p = lib.makeOverridable ({ openhomeEnabled ? false, handyEnabled ? false, heliumCommand ? null }: let
-          baseSettings = mkSettings { inherit openhomeEnabled handyEnabled heliumCommand; };
-        in mkNiri {
-          inherit openhomeEnabled;
-          inherit handyEnabled;
-          settings = baseSettings // {
-            outputs = baseSettings.outputs // {
-              "DP-1".mode = "1920x1080";
+        myNiri = lib.makeOverridable (
+          {
+            openhomeEnabled ? false,
+            handyEnabled ? false,
+            heliumCommand ? null,
+            minimalProfile ? false,
+          }:
+          mkNiri {
+            inherit openhomeEnabled;
+            inherit handyEnabled;
+            settings = mkSettings {
+              inherit
+                openhomeEnabled
+                handyEnabled
+                heliumCommand
+                minimalProfile
+                ;
             };
-          };
-        }) { };
+          }
+        ) { };
+        myNiriDp11080p = lib.makeOverridable (
+          {
+            openhomeEnabled ? false,
+            handyEnabled ? false,
+            heliumCommand ? null,
+          }:
+          let
+            baseSettings = mkSettings { inherit openhomeEnabled handyEnabled heliumCommand; };
+          in
+          mkNiri {
+            inherit openhomeEnabled;
+            inherit handyEnabled;
+            settings = baseSettings // {
+              outputs = baseSettings.outputs // {
+                "DP-1".mode = "1920x1080";
+              };
+            };
+          }
+        ) { };
       };
     };
 }

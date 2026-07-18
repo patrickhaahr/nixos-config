@@ -1,14 +1,21 @@
 { self, ... }:
 let
   userName = "ph";
-in {
-  flake.modules.nixos.identity-ph-desktop = { lib, config, ... }:
+in
+{
+  flake.modules.nixos.identity-ph-desktop =
+    { lib, config, ... }:
     let
       handyConfigured = builtins.hasAttr "programs" config && builtins.hasAttr "handy" config.programs;
-    in {
+    in
+    {
       imports = [ self.modules.nixos.identity-ph-headless ];
 
-      users.users.${userName}.extraGroups = [ "networkmanager" "i2c" "docker" ];
+      users.users.${userName}.extraGroups = [
+        "networkmanager"
+        "i2c"
+        "docker"
+      ];
       home-manager.users.${userName} = {
         imports = [
           self.modules.homeManager.identity-ph-desktop

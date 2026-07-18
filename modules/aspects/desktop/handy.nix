@@ -11,8 +11,10 @@ let
       hash = "sha256-CgSlTk3mJN/o1NuKeRKt7f+iRHPBqMUAhKhHDVBQNTE=";
     };
   };
-in {
-  flake.modules.nixos.handy = { lib, pkgs, ... }:
+in
+{
+  flake.modules.nixos.handy =
+    { lib, pkgs, ... }:
     let
       system = pkgs.stdenv.hostPlatform.system;
       release = releases.${system} or (throw "Handy is not packaged for ${system}");
@@ -35,8 +37,8 @@ in {
           url = "https://github.com/cjpais/Handy/releases/download/v${version}/${release.artifact}";
           hash = release.hash;
         };
-        extraPkgs = appPkgs:
-          with appPkgs; [
+        extraPkgs =
+          appPkgs: with appPkgs; [
             alsa-lib
             alsa-plugins
             glib
@@ -71,7 +73,8 @@ in {
             --set WEBKIT_DISABLE_DMABUF_RENDERER 1
         '';
       };
-    in {
+    in
+    {
       imports = [ "${inputs.handy}/nix/module.nix" ];
 
       options.programs.handy.autostart = lib.mkEnableOption "start Handy automatically for the configured user";

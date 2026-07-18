@@ -313,7 +313,12 @@
           autoHideMs = 3000;
           backgroundOpacity = 1;
           enabled = true;
-          enabledTypes = [ 0 1 2 4 ];
+          enabledTypes = [
+            0
+            1
+            2
+            4
+          ];
           location = "bottom";
           monitors = [ ];
           overlayLayer = true;

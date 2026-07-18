@@ -4,7 +4,8 @@ let
   engineering = name: repo + "/skills/engineering/${name}";
   #inProgress = name: repo + "/skills/in-progress/${name}";
   productivity = name: repo + "/skills/productivity/${name}";
-in {
+in
+{
   code-review = engineering "code-review";
   codebase-design = engineering "codebase-design";
   diagnosing-bugs = engineering "diagnosing-bugs";

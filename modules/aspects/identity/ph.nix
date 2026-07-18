@@ -1,7 +1,8 @@
 { self, ... }:
 let
   userName = "ph";
-in {
+in
+{
   flake.modules.nixos.identity-ph = { pkgs, ... }: {
     users.users.${userName} = {
       isNormalUser = true;

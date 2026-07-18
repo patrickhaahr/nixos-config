@@ -1,4 +1,8 @@
-{ inputs, lib, pkgs }:
+{
+  inputs,
+  lib,
+  pkgs,
+}:
 let
   providers = [
     (import ./agent-browser.nix { inherit inputs; })

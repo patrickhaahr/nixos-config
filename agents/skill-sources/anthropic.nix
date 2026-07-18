@@ -1,6 +1,7 @@
 { inputs }:
 let
   repo = inputs.anthropic-skills;
-in {
+in
+{
   frontend-design = repo + "/skills/frontend-design";
 }

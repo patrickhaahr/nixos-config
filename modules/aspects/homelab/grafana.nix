@@ -18,7 +18,8 @@ let
         access: proxy
         url: http://prometheus.prometheus.svc.cluster.local:80
   '';
-in {
+in
+{
   flake.modules.nixos.homelab-grafana = { config, pkgs, ... }: {
     sops.secrets.grafana_admin_password = { };
 
@@ -353,7 +354,11 @@ in {
               "pods"
               "pods/log"
             ];
-            verbs = [ "get" "list" "watch" ];
+            verbs = [
+              "get"
+              "list"
+              "watch"
+            ];
           }
         ];
       }

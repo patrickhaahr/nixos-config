@@ -3,8 +3,15 @@ let
   agentsSourceDir = ../../../agents;
   configDir = ".agents";
   localSkillsDir = agentsSourceDir + "/skills";
-in {
-  flake.modules.homeManager.opencode = { config, lib, pkgs, ... }:
+in
+{
+  flake.modules.homeManager.opencode =
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     let
       opencode = pkgs.writeShellApplication {
         name = "opencode";
@@ -17,9 +24,9 @@ in {
       externalSkills = import (agentsSourceDir + "/skill-sources") { inherit inputs lib pkgs; };
 
       localSkillNames = builtins.attrNames (
-        lib.filterAttrs (name: type:
-          type == "directory" && !(builtins.hasAttr name externalSkills)
-        ) (builtins.readDir localSkillsDir)
+        lib.filterAttrs (name: type: type == "directory" && !(builtins.hasAttr name externalSkills)) (
+          builtins.readDir localSkillsDir
+        )
       );
 
       mergedSkillsDir = pkgs.linkFarm "opencode-skills" (
@@ -32,7 +39,8 @@ in {
           inherit path;
         }) externalSkills
       );
-    in {
+    in
+    {
       home.packages = [
         pkgs.nodejs
         opencode
@@ -57,7 +65,11 @@ in {
           };
           shadcn = {
             type = "local";
-            command = [ "bunx" "shadcn@latest" "mcp" ];
+            command = [
+              "bunx"
+              "shadcn@latest"
+              "mcp"
+            ];
             enabled = false;
           };
           astro = {

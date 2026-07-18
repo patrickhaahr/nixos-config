@@ -1,6 +1,7 @@
 { inputs }:
 let
   repo = inputs.dotnet-skillz;
-in {
+in
+{
   ilspy-decompile = repo + "/skills/ilspy-decompile";
 }

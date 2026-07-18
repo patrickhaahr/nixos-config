@@ -29,7 +29,11 @@
               "pods"
               "services"
             ];
-            verbs = [ "get" "list" "watch" ];
+            verbs = [
+              "get"
+              "list"
+              "watch"
+            ];
           }
           {
             nonResourceURLs = [ "/metrics" ];
