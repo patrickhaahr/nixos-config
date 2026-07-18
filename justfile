@@ -4,7 +4,8 @@ export NIX_CONFIG := "experimental-features = nix-command flakes"
 flake := env('FLAKE', justfile_directory())
 rebuild := "nixos-rebuild"
 system-args := "--elevate run0 --no-reexec"
-elevate := env('ELEVATE', 'run0')
+elevate := env('ELEVATE', 'doas')
+deploy-elevate := env('DEPLOY_ELEVATE', 'run0')
 
 [private]
 default:
@@ -56,7 +57,8 @@ deploy host action="switch" *args:
       --target-host {{ host }} \
       --build-host "$build_host" \
       --use-substitutes \
-      --use-remote-sudo \
+      --elevate {{ deploy-elevate }} \
+      --ask-elevate-password \
       --log-format internal-json \
       {{ args }}
 

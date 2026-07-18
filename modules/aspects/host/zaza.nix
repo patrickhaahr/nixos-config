@@ -2,6 +2,7 @@
   flake.modules.nixos.zaza = { pkgs, ... }: {
     imports = [
       self.modules.nixos.zaza-hardware
+      self.modules.nixos.doas
       self.modules.nixos.nix-features
       self.modules.nixos.home-manager
       self.modules.nixos.homelab-excalidraw

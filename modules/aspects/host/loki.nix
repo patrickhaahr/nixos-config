@@ -12,6 +12,7 @@
     {
       imports = [
         self.modules.nixos.loki-hardware
+        self.modules.nixos.doas
         self.modules.nixos.home-manager
         self.modules.nixos.nix-features
         self.modules.nixos.nix-maintenance
