@@ -1,13 +1,15 @@
-{ ... }: {
+_: {
   flake.modules.nixos.k3s-nvidia = { pkgs, ... }: {
-    hardware.graphics.enable = true;
-    services.xserver.videoDrivers = [ "nvidia" ];
-    hardware.nvidia = {
-      branch = "legacy_580";
-      open = false;
-      nvidiaPersistenced = true;
+    hardware = {
+      graphics.enable = true;
+      nvidia = {
+        branch = "legacy_580";
+        open = false;
+        nvidiaPersistenced = true;
+      };
+      nvidia-container-toolkit.enable = true;
     };
-    hardware.nvidia-container-toolkit.enable = true;
+    services.xserver.videoDrivers = [ "nvidia" ];
 
     # Put nvidia-container-runtime on k3s's PATH so k3s auto-detects it and
     # wires the containerd "nvidia"/"nvidia-cdi" runtimes. On NixOS the legacy

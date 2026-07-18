@@ -1,4 +1,4 @@
-{ ... }: {
+_: {
   flake.modules.nixos.homelab-firecrawl = { config, pkgs, ... }: {
     sops.secrets = {
       firecrawl_bull_auth_key = { };

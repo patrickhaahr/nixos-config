@@ -1,4 +1,4 @@
-{ ... }: {
+_: {
   flake.modules.nixos.homelab-llamacpp-nika-ingress = {
     services.k3s.manifests.llamacpp-nika-ingress.content = [
       {

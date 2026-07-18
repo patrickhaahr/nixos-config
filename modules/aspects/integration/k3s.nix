@@ -1,4 +1,4 @@
-{ ... }: {
+_: {
   flake.modules.nixos.k3s = {
     users.groups.k3s-admin = { };
 

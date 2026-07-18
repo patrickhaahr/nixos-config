@@ -1,4 +1,4 @@
-{ ... }: {
+_: {
   flake.modules.nixos.nix-maintenance = {
     nix.gc = {
       automatic = true;

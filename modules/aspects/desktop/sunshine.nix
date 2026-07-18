@@ -1,4 +1,4 @@
-{ ... }: {
+_: {
   flake.modules.nixos.sunshine = {
     services.sunshine = {
       enable = true;

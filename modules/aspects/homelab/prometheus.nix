@@ -1,4 +1,4 @@
-{ ... }: {
+_: {
   flake.modules.nixos.homelab-prometheus = {
     services.k3s.manifests.prometheus.content = [
       {

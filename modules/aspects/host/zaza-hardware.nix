@@ -1,4 +1,4 @@
-{ ... }: {
+_: {
   flake.modules.nixos.zaza-hardware =
     {
       config,
@@ -11,22 +11,26 @@
       imports = [
         (modulesPath + "/installer/scan/not-detected.nix")
       ];
-      boot.initrd.availableKernelModules = [
-        "xhci_pci"
-        "ahci"
-        "usbhid"
-        "uas"
-        "sd_mod"
-      ];
-      boot.initrd.kernelModules = [ ];
-      boot.kernelModules = [ "kvm-intel" ];
-      boot.extraModulePackages = [ ];
+      boot = {
+        initrd = {
+          availableKernelModules = [
+            "xhci_pci"
+            "ahci"
+            "usbhid"
+            "uas"
+            "sd_mod"
+          ];
+          kernelModules = [ ];
+          luks.devices."luks-4b887d46-af7b-4153-9105-3f9286df520d".device =
+            "/dev/disk/by-uuid/4b887d46-af7b-4153-9105-3f9286df520d";
+        };
+        kernelModules = [ "kvm-intel" ];
+        extraModulePackages = [ ];
+      };
       fileSystems."/" = {
         device = "/dev/mapper/luks-4b887d46-af7b-4153-9105-3f9286df520d";
         fsType = "ext4";
       };
-      boot.initrd.luks.devices."luks-4b887d46-af7b-4153-9105-3f9286df520d".device =
-        "/dev/disk/by-uuid/4b887d46-af7b-4153-9105-3f9286df520d";
       fileSystems."/boot" = {
         device = "/dev/disk/by-uuid/6348-8E7C";
         fsType = "vfat";

@@ -1,4 +1,4 @@
-{ ... }: {
+_: {
   flake.modules.homeManager."hacking-burp-mcp" =
     { pkgs, ... }:
     let

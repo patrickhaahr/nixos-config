@@ -1,4 +1,4 @@
-{ ... }: {
+_: {
   flake.modules.homeManager.gh = { pkgs, ... }: {
     home.packages = [ pkgs.gh ];
 

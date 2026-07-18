@@ -25,9 +25,11 @@
       self.modules.nixos.tailscale
     ];
 
-    boot.loader.systemd-boot.enable = true;
-    boot.loader.efi.canTouchEfiVariables = true;
-    boot.kernelPackages = pkgs.linuxPackages_latest;
+    boot = {
+      loader.systemd-boot.enable = true;
+      loader.efi.canTouchEfiVariables = true;
+      kernelPackages = pkgs.linuxPackages_latest;
+    };
     networking.hostName = "zaza";
     networking.networkmanager.enable = true;
     users.users.ph.extraGroups = [ "networkmanager" ];

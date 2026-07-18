@@ -1,4 +1,4 @@
-{ ... }: {
+_: {
   flake.modules.nixos.homelab-searxng = { config, pkgs, ... }: {
     sops.secrets.searxng_secret = { };
 
@@ -215,42 +215,44 @@
               labels.app = "searxng";
               annotations."config.ph/settings-revision" = "2026-06-18-search-formats";
             };
-            spec.containers = [
-              {
-                name = "searxng";
-                image = "searxng/searxng:latest";
-                env = [
-                  {
-                    name = "SEARXNG_SECRET";
-                    valueFrom.secretKeyRef = {
-                      name = "searxng";
-                      key = "SEARXNG_SECRET";
-                    };
-                  }
-                ];
-                ports = [
-                  {
-                    name = "http";
-                    containerPort = 8080;
-                  }
-                ];
-                volumeMounts = [
-                  {
-                    name = "settings";
-                    mountPath = "/etc/searxng/settings.yml";
-                    subPath = "settings.yml";
-                    readOnly = true;
-                  }
-                ];
-              }
-            ];
-            spec.enableServiceLinks = false;
-            spec.volumes = [
-              {
-                name = "settings";
-                configMap.name = "searxng-settings";
-              }
-            ];
+            spec = {
+              containers = [
+                {
+                  name = "searxng";
+                  image = "searxng/searxng:latest";
+                  env = [
+                    {
+                      name = "SEARXNG_SECRET";
+                      valueFrom.secretKeyRef = {
+                        name = "searxng";
+                        key = "SEARXNG_SECRET";
+                      };
+                    }
+                  ];
+                  ports = [
+                    {
+                      name = "http";
+                      containerPort = 8080;
+                    }
+                  ];
+                  volumeMounts = [
+                    {
+                      name = "settings";
+                      mountPath = "/etc/searxng/settings.yml";
+                      subPath = "settings.yml";
+                      readOnly = true;
+                    }
+                  ];
+                }
+              ];
+              enableServiceLinks = false;
+              volumes = [
+                {
+                  name = "settings";
+                  configMap.name = "searxng-settings";
+                }
+              ];
+            };
           };
         };
       }

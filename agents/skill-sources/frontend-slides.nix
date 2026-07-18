@@ -1,4 +1,4 @@
 { inputs }:
 {
-  frontend-slides = inputs.frontend-slides;
+  inherit (inputs) frontend-slides;
 }

@@ -35,7 +35,7 @@ in
         inherit version;
         src = pkgs.fetchurl {
           url = "https://github.com/cjpais/Handy/releases/download/v${version}/${release.artifact}";
-          hash = release.hash;
+          inherit (release) hash;
         };
         extraPkgs =
           appPkgs: with appPkgs; [

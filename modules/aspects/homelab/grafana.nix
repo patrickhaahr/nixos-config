@@ -1,4 +1,4 @@
-{ ... }:
+_:
 let
   grafanaDatasources = ''
     apiVersion: 1

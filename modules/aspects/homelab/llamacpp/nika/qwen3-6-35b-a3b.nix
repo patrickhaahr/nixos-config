@@ -1,4 +1,4 @@
-{ ... }: {
+_: {
   flake.modules.nixos.homelab-llamacpp-nika-qwen3-6-35b-a3b =
     {
       config,

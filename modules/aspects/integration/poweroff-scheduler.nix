@@ -1,4 +1,4 @@
-{ ... }: {
+_: {
   flake.modules.nixos.poweroff-scheduler =
     { pkgs, ... }:
     let
@@ -21,54 +21,58 @@
       '';
     in
     {
-      systemd.user.services.poweroff-warning-five-minutes = {
-        description = "Send 5-minute poweroff warning";
-        serviceConfig = {
-          Type = "oneshot";
-          ExecStart = fiveMinuteWarning;
-        };
-      };
+      systemd = {
+        user = {
+          services.poweroff-warning-five-minutes = {
+            description = "Send 5-minute poweroff warning";
+            serviceConfig = {
+              Type = "oneshot";
+              ExecStart = fiveMinuteWarning;
+            };
+          };
 
-      systemd.user.timers.poweroff-warning-five-minutes = {
-        description = "Daily 5-minute warning before poweroff";
-        wantedBy = [ "timers.target" ];
-        timerConfig = {
-          OnCalendar = "*-*-* 22:55:00";
-          Unit = "poweroff-warning-five-minutes.service";
-        };
-      };
+          timers.poweroff-warning-five-minutes = {
+            description = "Daily 5-minute warning before poweroff";
+            wantedBy = [ "timers.target" ];
+            timerConfig = {
+              OnCalendar = "*-*-* 22:55:00";
+              Unit = "poweroff-warning-five-minutes.service";
+            };
+          };
 
-      systemd.user.services.poweroff-warning-one-minute = {
-        description = "Send 1-minute poweroff warning";
-        serviceConfig = {
-          Type = "oneshot";
-          ExecStart = oneMinuteWarning;
-        };
-      };
+          services.poweroff-warning-one-minute = {
+            description = "Send 1-minute poweroff warning";
+            serviceConfig = {
+              Type = "oneshot";
+              ExecStart = oneMinuteWarning;
+            };
+          };
 
-      systemd.user.timers.poweroff-warning-one-minute = {
-        description = "Daily 1-minute warning before poweroff";
-        wantedBy = [ "timers.target" ];
-        timerConfig = {
-          OnCalendar = "*-*-* 22:59:00";
-          Unit = "poweroff-warning-one-minute.service";
+          timers.poweroff-warning-one-minute = {
+            description = "Daily 1-minute warning before poweroff";
+            wantedBy = [ "timers.target" ];
+            timerConfig = {
+              OnCalendar = "*-*-* 22:59:00";
+              Unit = "poweroff-warning-one-minute.service";
+            };
+          };
         };
-      };
 
-      systemd.services.scheduled-poweroff = {
-        description = "Power off the system at 23:00";
-        serviceConfig = {
-          Type = "oneshot";
-          ExecStart = "${pkgs.systemd}/bin/systemctl poweroff";
+        services.scheduled-poweroff = {
+          description = "Power off the system at 23:00";
+          serviceConfig = {
+            Type = "oneshot";
+            ExecStart = "${pkgs.systemd}/bin/systemctl poweroff";
+          };
         };
-      };
 
-      systemd.timers.scheduled-poweroff = {
-        description = "Daily poweroff at 23:00";
-        wantedBy = [ "timers.target" ];
-        timerConfig = {
-          OnCalendar = "*-*-* 23:00:00";
-          Unit = "scheduled-poweroff.service";
+        timers.scheduled-poweroff = {
+          description = "Daily poweroff at 23:00";
+          wantedBy = [ "timers.target" ];
+          timerConfig = {
+            OnCalendar = "*-*-* 23:00:00";
+            Unit = "scheduled-poweroff.service";
+          };
         };
       };
     };

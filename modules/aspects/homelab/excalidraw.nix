@@ -1,4 +1,4 @@
-{ ... }: {
+_: {
   flake.modules.nixos.homelab-excalidraw = {
     services.k3s.manifests.excalidraw.content = [
       {

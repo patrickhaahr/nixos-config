@@ -39,7 +39,7 @@
             inherit openhomeEnabled;
             inherit handyEnabled;
             inherit heliumCommand;
-            minimalProfile = cfg.minimalProfile;
+            inherit (cfg) minimalProfile;
           };
         };
       };

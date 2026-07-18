@@ -1,4 +1,4 @@
-{ ... }: {
+_: {
   flake.modules.nixos.homelab-wazuh =
     { config, pkgs, ... }:
     let

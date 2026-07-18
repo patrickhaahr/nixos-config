@@ -19,8 +19,10 @@ in
   };
 
   flake.modules.homeManager.identity-ph = { lib, ... }: {
-    home.username = lib.mkDefault userName;
-    home.homeDirectory = lib.mkDefault "/home/${userName}";
-    home.stateVersion = lib.mkDefault "25.11";
+    home = {
+      username = lib.mkDefault userName;
+      homeDirectory = lib.mkDefault "/home/${userName}";
+      stateVersion = lib.mkDefault "25.11";
+    };
   };
 }

@@ -1,4 +1,4 @@
-{ ... }: {
+_: {
   flake.modules.homeManager.jj = {
     programs.jujutsu = {
       enable = true;

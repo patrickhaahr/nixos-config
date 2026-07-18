@@ -1,4 +1,4 @@
-{ ... }: {
+_: {
   flake.modules.nixos.homelab-librespeed = {
     services.k3s.manifests.librespeed.content = [
       {
@@ -47,41 +47,43 @@
           selector.matchLabels.app = "librespeed";
           template = {
             metadata.labels.app = "librespeed";
-            spec.containers = [
-              {
-                name = "librespeed";
-                image = "ghcr.io/librespeed/speedtest-rust:v1.4.0";
-                ports = [
-                  {
-                    name = "http";
-                    containerPort = 8080;
-                  }
-                ];
-                readinessProbe.httpGet = {
-                  path = "/";
-                  port = "http";
-                };
-                livenessProbe.httpGet = {
-                  path = "/";
-                  port = "http";
-                };
-                volumeMounts = [
-                  {
-                    name = "config";
-                    mountPath = "/usr/local/bin/configs.toml";
-                    subPath = "configs.toml";
-                    readOnly = true;
-                  }
-                ];
-              }
-            ];
-            spec.enableServiceLinks = false;
-            spec.volumes = [
-              {
-                name = "config";
-                configMap.name = "librespeed-config";
-              }
-            ];
+            spec = {
+              containers = [
+                {
+                  name = "librespeed";
+                  image = "ghcr.io/librespeed/speedtest-rust:v1.4.0";
+                  ports = [
+                    {
+                      name = "http";
+                      containerPort = 8080;
+                    }
+                  ];
+                  readinessProbe.httpGet = {
+                    path = "/";
+                    port = "http";
+                  };
+                  livenessProbe.httpGet = {
+                    path = "/";
+                    port = "http";
+                  };
+                  volumeMounts = [
+                    {
+                      name = "config";
+                      mountPath = "/usr/local/bin/configs.toml";
+                      subPath = "configs.toml";
+                      readOnly = true;
+                    }
+                  ];
+                }
+              ];
+              enableServiceLinks = false;
+              volumes = [
+                {
+                  name = "config";
+                  configMap.name = "librespeed-config";
+                }
+              ];
+            };
           };
         };
       }

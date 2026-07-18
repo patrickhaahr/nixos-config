@@ -1,4 +1,4 @@
-{ ... }: {
+_: {
   flake.modules.nixos.homelab-openconcho = { config, pkgs, ... }: {
     sops.secrets.honcho_auth_jwt_secret = { };
 

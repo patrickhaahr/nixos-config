@@ -1,4 +1,4 @@
-{ ... }: {
+_: {
   flake.modules.homeManager.nvf = { pkgs, lib, ... }: {
     programs.nvf = {
       enable = true;

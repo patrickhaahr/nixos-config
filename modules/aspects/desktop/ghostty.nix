@@ -1,4 +1,4 @@
-{ ... }: {
+_: {
   flake.modules.homeManager.ghostty = { config, ... }: {
     home.file.".config/ghostty/gtk.css".text = ''
       toolbarview > .bottom-bar,

@@ -142,41 +142,43 @@
         ))
       ];
 
-      systemd.tmpfiles.rules = [
-        "d ${dataDir} 0755 openlinkhub openlinkhub -"
-        "d ${dataDir}/database 0755 openlinkhub openlinkhub -"
-        "d ${dataDir}/database/lcd 0755 openlinkhub openlinkhub -"
-        "d ${dataDir}/database/lcd/images 0755 openlinkhub openlinkhub -"
-      ]
-      ++ map (dir: "d ${dataDir}/database/${dir} 0755 openlinkhub openlinkhub -") writeableDatabaseDirs;
+      systemd = {
+        tmpfiles.rules = [
+          "d ${dataDir} 0755 openlinkhub openlinkhub -"
+          "d ${dataDir}/database 0755 openlinkhub openlinkhub -"
+          "d ${dataDir}/database/lcd 0755 openlinkhub openlinkhub -"
+          "d ${dataDir}/database/lcd/images 0755 openlinkhub openlinkhub -"
+        ]
+        ++ map (dir: "d ${dataDir}/database/${dir} 0755 openlinkhub openlinkhub -") writeableDatabaseDirs;
 
-      systemd.services.openlinkhub-setup = {
-        description = "Prepare OpenLinkHub runtime directory";
-        wantedBy = [ "multi-user.target" ];
-        before = [ "openlinkhub.service" ];
-        serviceConfig = {
-          Type = "oneshot";
-          RemainAfterExit = true;
-          ExecStart = setupScript;
+        services.openlinkhub-setup = {
+          description = "Prepare OpenLinkHub runtime directory";
+          wantedBy = [ "multi-user.target" ];
+          before = [ "openlinkhub.service" ];
+          serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = true;
+            ExecStart = setupScript;
+          };
         };
-      };
 
-      systemd.services.openlinkhub = {
-        description = "OpenLinkHub";
-        wantedBy = [ "multi-user.target" ];
-        after = [
-          "network.target"
-          "openlinkhub-setup.service"
-          "systemd-udev-settle.service"
-        ];
-        wants = [ "openlinkhub-setup.service" ];
-        serviceConfig = {
-          User = "openlinkhub";
-          Group = "openlinkhub";
-          WorkingDirectory = dataDir;
-          ExecStart = lib.getExe package;
-          Restart = "always";
-          RestartSec = 5;
+        services.openlinkhub = {
+          description = "OpenLinkHub";
+          wantedBy = [ "multi-user.target" ];
+          after = [
+            "network.target"
+            "openlinkhub-setup.service"
+            "systemd-udev-settle.service"
+          ];
+          wants = [ "openlinkhub-setup.service" ];
+          serviceConfig = {
+            User = "openlinkhub";
+            Group = "openlinkhub";
+            WorkingDirectory = dataDir;
+            ExecStart = lib.getExe package;
+            Restart = "always";
+            RestartSec = 5;
+          };
         };
       };
     };

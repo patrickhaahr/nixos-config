@@ -35,7 +35,7 @@ in
       };
     };
 
-  flake.modules.homeManager.identity-ph-desktop = { ... }: {
+  flake.modules.homeManager.identity-ph-desktop = _: {
     dconf.settings."org/gnome/desktop/interface" = {
       color-scheme = "prefer-dark";
       gtk-theme = "Adwaita-dark";

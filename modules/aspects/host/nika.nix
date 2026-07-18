@@ -61,21 +61,32 @@
         LC_TELEPHONE = "da_DK.UTF-8";
         LC_TIME = "da_DK.UTF-8";
       };
-      services.xserver.xkb = {
-        layout = "dk";
-        variant = "";
+      services = {
+        xserver.xkb = {
+          layout = "dk";
+          variant = "";
+        };
+        audio-output = {
+          enable = true;
+          headphones = "alsa_output.usb-SteelSeries_Arctis_Pro_Wireless-00.analog-stereo";
+          speaker = "bluez_output.FC_E8_06_72_4E_85.1";
+        };
+        openhome.enable = true;
+        llamacpp.nika.model = "qwen3-6-35b-a3b";
+        greetd = {
+          enable = true;
+          settings.default_session = {
+            command =
+              if niriEnabled then
+                lib.getExe' config.programs.niri.package "niri-session"
+              else
+                "${pkgs.niri}/bin/niri-session";
+            user = "ph";
+          };
+        };
       };
       console.keyMap = "dk-latin1";
       nixpkgs.config.allowUnfree = true;
-
-      services.audio-output = {
-        enable = true;
-        headphones = "alsa_output.usb-SteelSeries_Arctis_Pro_Wireless-00.analog-stereo";
-        speaker = "bluez_output.FC_E8_06_72_4E_85.1";
-      };
-
-      services.openhome.enable = true;
-      services.llamacpp.nika.model = "qwen3-6-35b-a3b";
 
       boot.kernelPackages = pkgs.linuxPackages_latest;
       # Docker and Bluetooth gamepads need these before kernel module locking kicks in.
@@ -97,13 +108,6 @@
       #networking.extraHosts = ''    '';
       home-manager.users.ph.imports = [ self.modules.homeManager.spicetify ];
       programs.handy.autostart = true;
-      services.greetd.enable = true;
-      services.greetd.settings.default_session.command =
-        if niriEnabled then
-          lib.getExe' config.programs.niri.package "niri-session"
-        else
-          "${pkgs.niri}/bin/niri-session";
-      services.greetd.settings.default_session.user = "ph";
       system.stateVersion = "25.11";
     };
 }

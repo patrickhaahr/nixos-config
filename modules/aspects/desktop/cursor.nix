@@ -1,4 +1,4 @@
-{ ... }: {
+_: {
   flake.modules.homeManager.cursor = { pkgs, ... }: {
     home.pointerCursor = {
       enable = true;

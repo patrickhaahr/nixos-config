@@ -41,74 +41,77 @@ in
       );
     in
     {
-      home.packages = [
-        pkgs.nodejs
-        opencode
-      ];
-
-      home.file."${configDir}/AGENTS.md".source = agentsSourceDir + "/AGENTS.md";
-      home.file."${configDir}/README.md".source = agentsSourceDir + "/README.md";
-      home.file."${configDir}/agents".source = agentsSourceDir + "/agents";
-      home.file."${configDir}/commands".source = agentsSourceDir + "/commands";
-      home.file."${configDir}/plugins".source = agentsSourceDir + "/plugins";
-      home.file."${configDir}/skills".source = mergedSkillsDir;
-      home.file."${configDir}/opencode.json".text = builtins.toJSON {
-        "$schema" = "https://opencode.ai/config.json";
-        autoupdate = false;
-        instructions = [ "AGENTS*.md" ];
-        skills.paths = [ ".skills" ];
-        mcp = {
-          context7 = {
-            type = "remote";
-            url = "https://mcp.context7.com/mcp";
-            enabled = false;
-          };
-          shadcn = {
-            type = "local";
-            command = [
-              "bunx"
-              "shadcn@latest"
-              "mcp"
-            ];
-            enabled = false;
-          };
-          astro = {
-            type = "remote";
-            url = "https://mcp.docs.astro.build/mcp";
-            enabled = false;
-          };
-          learn = {
-            type = "remote";
-            url = "https://learn.microsoft.com/api/mcp";
-            enabled = false;
-          };
-          burp = {
-            type = "remote";
-            url = "http://127.0.0.1:9876";
-            enabled = false;
-          };
-          firecrawl = {
-            type = "local";
-            command = [
-              "${pkgs.coreutils}/bin/env"
-              "FIRECRAWL_API_URL=https://firecrawl.zaza.haahr.me"
-              "npx"
-              "-y"
-              "firecrawl-mcp"
-            ];
-            enabled = true;
-          };
-        };
-        permission.websearch = "allow";
-        provider."llama.cpp" = {
-          npm = "@ai-sdk/openai-compatible";
-          options = {
-            apiKey = "local";
-            baseURL = "http://127.0.0.1:8081/v1";
-          };
-          models = {
-            "qwen3-14b".tool_call = true;
-            "qwen3.6-35b-a3b".tool_call = true;
+      home = {
+        packages = [
+          pkgs.nodejs
+          opencode
+        ];
+        file = {
+          "${configDir}/AGENTS.md".source = agentsSourceDir + "/AGENTS.md";
+          "${configDir}/README.md".source = agentsSourceDir + "/README.md";
+          "${configDir}/agents".source = agentsSourceDir + "/agents";
+          "${configDir}/commands".source = agentsSourceDir + "/commands";
+          "${configDir}/plugins".source = agentsSourceDir + "/plugins";
+          "${configDir}/skills".source = mergedSkillsDir;
+          "${configDir}/opencode.json".text = builtins.toJSON {
+            "$schema" = "https://opencode.ai/config.json";
+            autoupdate = false;
+            instructions = [ "AGENTS*.md" ];
+            skills.paths = [ ".skills" ];
+            mcp = {
+              context7 = {
+                type = "remote";
+                url = "https://mcp.context7.com/mcp";
+                enabled = false;
+              };
+              shadcn = {
+                type = "local";
+                command = [
+                  "bunx"
+                  "shadcn@latest"
+                  "mcp"
+                ];
+                enabled = false;
+              };
+              astro = {
+                type = "remote";
+                url = "https://mcp.docs.astro.build/mcp";
+                enabled = false;
+              };
+              learn = {
+                type = "remote";
+                url = "https://learn.microsoft.com/api/mcp";
+                enabled = false;
+              };
+              burp = {
+                type = "remote";
+                url = "http://127.0.0.1:9876";
+                enabled = false;
+              };
+              firecrawl = {
+                type = "local";
+                command = [
+                  "${pkgs.coreutils}/bin/env"
+                  "FIRECRAWL_API_URL=https://firecrawl.zaza.haahr.me"
+                  "npx"
+                  "-y"
+                  "firecrawl-mcp"
+                ];
+                enabled = true;
+              };
+            };
+            permission.websearch = "allow";
+            provider."llama.cpp" = {
+              npm = "@ai-sdk/openai-compatible";
+              options = {
+                apiKey = "local";
+                baseURL = "http://127.0.0.1:8081/v1";
+              };
+              models = {
+                "qwen3-14b".tool_call = true;
+                "qwen3.6-35b-a3b".tool_call = true;
+              };
+            };
           };
         };
       };

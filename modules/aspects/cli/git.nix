@@ -1,4 +1,4 @@
-{ ... }: {
+_: {
   flake.modules.homeManager.git = {
     home.file.".gitignore-global".text = ''
       .env

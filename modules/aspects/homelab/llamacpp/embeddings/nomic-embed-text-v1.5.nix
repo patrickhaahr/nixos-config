@@ -1,4 +1,4 @@
-{ ... }: {
+_: {
   flake.modules.nixos.homelab-llamacpp-embeddings-nomic-embed-text-v1-5 =
     let
       app = "llamacpp-embeddings-nomic";

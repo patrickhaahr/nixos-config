@@ -1,5 +1,5 @@
-{ ... }: {
-  flake.modules.nixos.openssh = { ... }: {
+_: {
+  flake.modules.nixos.openssh = _: {
     services.openssh = {
       enable = true;
       settings = {
@@ -17,7 +17,7 @@
     };
   };
 
-  flake.modules.homeManager.openssh = { ... }: {
+  flake.modules.homeManager.openssh = _: {
     programs.ssh = {
       enable = true;
       enableDefaultConfig = false;

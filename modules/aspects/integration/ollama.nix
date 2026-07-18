@@ -1,4 +1,4 @@
-{ ... }: {
+_: {
   flake.modules.nixos.ollama = { pkgs, ... }: {
     services.ollama = {
       enable = true;

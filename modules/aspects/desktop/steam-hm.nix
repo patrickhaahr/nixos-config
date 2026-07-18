@@ -1,4 +1,4 @@
-{ ... }: {
+_: {
   flake.modules.homeManager.steam-hm = {
     home.file.".local/share/Steam/steam_dev.cfg".text = ''
       @nClientDownloadEnableHTTP2PlatformLinux 0

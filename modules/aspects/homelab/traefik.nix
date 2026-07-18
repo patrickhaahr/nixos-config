@@ -1,4 +1,4 @@
-{ ... }: {
+_: {
   flake.modules.nixos.homelab-traefik = { config, pkgs, ... }: {
     sops.secrets.cloudflare_dns_api_token = { };
 
