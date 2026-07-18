@@ -46,8 +46,3 @@ Prefer 40% coverage with meaningful tests over 100% shallow coverage. Design for
 - Read files before editing. Preserve existing formatting and conventions.
 - Handle errors explicitly; no silent failures.
 - Never create files unnecessarily — edit existing ones.
-
-## Tooling
-- **Discovery**: Use the `explore` subagent for file discovery or codebase navigation. Do not use glob/grep directly.
-- **Knowledge**: Check relevant skills first. If unsure, use `websearch` / `codesearch`.
-- **Project-specific rules**: Check `AGENTS.md` in the project root.l
