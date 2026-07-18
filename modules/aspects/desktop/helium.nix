@@ -14,6 +14,7 @@
               --add-flags "--password-store=${cfg.passwordStore}"
           '';
         };
+      bitwardenExtension = "nngceckbapebfimnlniiiahkandclblb";
     in {
       options.programs.helium = {
         enable = lib.mkEnableOption "Helium browser";
@@ -29,7 +30,7 @@
           type = lib.types.nullOr lib.types.str;
           default = "basic";
           example = "gnome-libsecret";
-          description = "Value passed to Helium via --password-store. Set to null to disable local wrapping.";
+          description = "Value passed to Helium via --password-store. Set to null to disable this launch flag.";
         };
 
         launcherPackage = lib.mkOption {
@@ -46,6 +47,9 @@
         (lib.mkIf cfg.enable {
           programs.helium.launcherPackage = launcherPackage;
           environment.systemPackages = [ launcherPackage ];
+          environment.etc."chromium/policies/managed/helium.json".text = builtins.toJSON {
+            ExtensionInstallForcelist = [ "${bitwardenExtension};https://clients2.google.com/service/update2/crx" ];
+          };
         })
       ];
     };
