@@ -14,7 +14,6 @@ in
       self.modules.homeManager.git
       self.modules.homeManager.jj
       self.modules.homeManager.nushell
-      self.modules.homeManager.nixfmt
       self.modules.homeManager.nvf
       self.modules.homeManager.opencode
       self.modules.homeManager.openssh
