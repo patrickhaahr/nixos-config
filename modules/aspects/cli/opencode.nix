@@ -1,11 +1,20 @@
 { inputs, ... }:
 let
-  opencodeSourceDir = ../../../agent;
-  localSkillsDir = opencodeSourceDir + "/skills";
+  agentsSourceDir = ../../../agents;
+  configDir = ".agents";
+  localSkillsDir = agentsSourceDir + "/skills";
 in {
-  flake.modules.homeManager.opencode = { lib, pkgs, ... }:
+  flake.modules.homeManager.opencode = { config, lib, pkgs, ... }:
     let
-      externalSkills = import (opencodeSourceDir + "/skill-sources") { inherit inputs lib pkgs; };
+      opencode = pkgs.writeShellApplication {
+        name = "opencode";
+        text = ''
+          export OPENCODE_CONFIG_DIR="${config.home.homeDirectory}/${configDir}"
+          exec ${pkgs.opencode}/bin/opencode "$@"
+        '';
+      };
+
+      externalSkills = import (agentsSourceDir + "/skill-sources") { inherit inputs lib pkgs; };
 
       localSkillNames = builtins.attrNames (
         lib.filterAttrs (name: type:
@@ -26,18 +35,16 @@ in {
     in {
       home.packages = [
         pkgs.nodejs
-        pkgs.opencode
+        opencode
       ];
 
-      home.sessionVariables.OPENCODE_ENABLE_EXA = "1";
-
-      home.file.".config/opencode/AGENTS.md".source = opencodeSourceDir + "/AGENTS.md";
-      home.file.".config/opencode/README.md".source = opencodeSourceDir + "/README.md";
-      home.file.".config/opencode/agents".source = opencodeSourceDir + "/agents";
-      home.file.".config/opencode/commands".source = opencodeSourceDir + "/commands";
-      home.file.".config/opencode/plugins".source = opencodeSourceDir + "/plugins";
-      home.file.".config/opencode/skills".source = mergedSkillsDir;
-      home.file.".config/opencode/opencode.json".text = builtins.toJSON {
+      home.file."${configDir}/AGENTS.md".source = agentsSourceDir + "/AGENTS.md";
+      home.file."${configDir}/README.md".source = agentsSourceDir + "/README.md";
+      home.file."${configDir}/agents".source = agentsSourceDir + "/agents";
+      home.file."${configDir}/commands".source = agentsSourceDir + "/commands";
+      home.file."${configDir}/plugins".source = agentsSourceDir + "/plugins";
+      home.file."${configDir}/skills".source = mergedSkillsDir;
+      home.file."${configDir}/opencode.json".text = builtins.toJSON {
         "$schema" = "https://opencode.ai/config.json";
         autoupdate = false;
         instructions = [ "AGENTS*.md" ];
