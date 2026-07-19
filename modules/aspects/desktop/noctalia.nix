@@ -158,6 +158,7 @@
             id = "weather-card";
           }
         ];
+        colorSchemes.useWallpaperColors = true;
         controlCenter = {
           cards = [
             {
@@ -442,7 +443,11 @@
           tooltipsEnabled = true;
           wifiDetailsViewMode = "grid";
         };
-        wallpaper.enabled = true;
+        wallpaper = {
+          enabled = true;
+          directory = "/home/ph/nixos-config/wallpaper";
+          wallpaperChangeMode = "random";
+        };
       };
     };
   };
