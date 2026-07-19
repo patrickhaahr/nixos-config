@@ -52,7 +52,7 @@ Imu carries the minimal identity of the user: Nushell, Home Manager, Agents conf
 
 ### 🐉 `loki` — The Accursed Prince
 
-Laptop host: Niri, Helium, Ghostty, the bare dendrite. He is Nidhogg, enemy of the gods, who will fly out during Ragnarok, the end of the world.
+Laptop host: Niri, Helium, Ghostty, the bare dendrite needed to survive on battery and WiFi. He is Nidhogg, enemy of the gods, who will fly out during Ragnarok, the end of the world.
 
 ---
 
