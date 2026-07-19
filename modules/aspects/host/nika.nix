@@ -25,6 +25,7 @@
         self.modules.nixos.home-manager
         self.modules.nixos.helium
         self.modules.nixos.lanzaboote
+        self.modules.nixos.losslesscut
         self.modules.nixos.nix-ld
         self.modules.nixos.nix-features
         self.modules.nixos.nix-maintenance
