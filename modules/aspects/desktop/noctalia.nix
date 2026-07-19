@@ -238,7 +238,7 @@
           allowPanelsOnScreenWithoutBar = true;
           animationDisabled = false;
           animationSpeed = 1;
-          avatarImage = "${../../../wallpaper/profile.jpeg}";
+          avatarImage = "${../../../assets/nika.jpeg}";
           boxRadiusRatio = 1;
           compactLockScreen = false;
           dimmerOpacity = 0.15;
