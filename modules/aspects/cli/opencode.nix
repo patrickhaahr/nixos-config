@@ -13,11 +13,37 @@ in
       ...
     }:
     let
+      bunX64Baseline = pkgs.bun.overrideAttrs (old: {
+        src = pkgs.fetchurl {
+          url = "https://github.com/oven-sh/bun/releases/download/bun-v${old.version}/bun-linux-x64-baseline.zip";
+          hash = "sha256-nYokKSpwaAkCBdqsCloiP19pc29Sh+N7+I07QDHtx1A=";
+        };
+        sourceRoot = null;
+      });
+
+      needsX64BaselineBun = pkgs.stdenv.hostPlatform.system == "x86_64-linux";
+
+      opencodePackage =
+        (pkgs.opencode.override {
+          # The default Bun x64 binary uses AVX instructions. Loki's Celeron N4120
+          # lacks AVX, so build OpenCode with Bun's x64 baseline runtime instead.
+          bun = if needsX64BaselineBun then bunX64Baseline else pkgs.bun;
+        }).overrideAttrs
+          (old: {
+            env =
+              (old.env or { })
+              // lib.optionalAttrs needsX64BaselineBun {
+                # Building OpenCode's embedded web UI can exceed Node's default heap on
+                # memory-constrained laptops; allow it to spill into swap during builds.
+                NODE_OPTIONS = "--max-old-space-size=4096";
+              };
+          });
+
       opencode = pkgs.writeShellApplication {
         name = "opencode";
         text = ''
           export OPENCODE_CONFIG_DIR="${config.home.homeDirectory}/${configDir}"
-          exec ${pkgs.opencode}/bin/opencode "$@"
+          exec ${opencodePackage}/bin/opencode "$@"
         '';
       };
 
