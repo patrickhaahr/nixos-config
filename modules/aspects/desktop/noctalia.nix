@@ -5,6 +5,7 @@
       package = pkgs.noctalia-shell.overrideAttrs {
         name = "vjnoctalia2";
       };
+      outOfStoreConfig = "/home/ph/.config/noctalia";
       env = {
         NOCTALIA_CACHE_DIR = "/home/ph/.cache/noctalia/";
       };
