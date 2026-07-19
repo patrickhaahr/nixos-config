@@ -302,6 +302,7 @@
                 "Super+F"."maximize-window-to-edges" = _: { };
                 "Mod+Space".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call launcher toggle";
                 "Mod+S".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call controlCenter toggle";
+                "Mod+O"."toggle-overview" = _: { };
                 "Mod+F9".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call brightness decrease";
                 "Mod+Shift+F9".spawn-sh =
                   "${lib.getExe self'.packages.noctalia-shell} ipc call brightness increase";
