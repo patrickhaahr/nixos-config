@@ -1,3 +1,7 @@
+
+
+
+
 <p align="center">
   <img src="assets/nixos_logo.png" alt="NixOS logo" width="120" />
 </p>
@@ -7,6 +11,8 @@
 <p align="center">
   A personal NixOS flake built around the <strong>dendritic pattern</strong>: thin host entrypoints, rich aspect-oriented modules.
 </p>
+
+https://github.com/user-attachments/assets/90c5a803-7604-4490-8005-ecd1ff37b9c2
 
 > *"Reproducibility is not a bug—it is the whole operating system."*
 
