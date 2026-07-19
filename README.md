@@ -12,6 +12,8 @@
   A personal NixOS flake built around the <strong>dendritic pattern</strong>: thin host entrypoints, rich aspect-oriented modules.
 </p>
 
+https://github.com/user-attachments/assets/d449fe92-917e-4daf-9fb3-98bd118eadcc
+
 > *"Reproducibility is not a bug—it is the whole operating system."*
 
 ---
