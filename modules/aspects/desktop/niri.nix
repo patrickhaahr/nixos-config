@@ -305,9 +305,8 @@
                 "Mod+Shift+F9".spawn-sh =
                   "${lib.getExe self'.packages.noctalia-shell} ipc call brightness increase";
                 "Mod+Alt+F10".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call nightLight toggle";
-                "Mod+W".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call wallpaper toggle";
-                "Mod+Shift+W".spawn-sh =
-                  "${lib.getExe self'.packages.noctalia-shell} ipc call wallpaper random all";
+                "Super+W".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call wallpaper random all";
+                "Super+Shift+W".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call wallpaper toggle";
               }
               // lib.optionalAttrs (!minimalProfile) {
                 "Mod+E".spawn = "nautilus";
