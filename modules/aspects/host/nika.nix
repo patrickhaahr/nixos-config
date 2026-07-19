@@ -35,6 +35,7 @@
         self.modules.nixos.openhome
         self.modules.nixos.openlinkhub
         self.modules.nixos.opentabletdriver
+        self.modules.nixos.obs
         self.modules.nixos.openssh
         self.modules.nixos.tailscale
         self.modules.nixos.niri
