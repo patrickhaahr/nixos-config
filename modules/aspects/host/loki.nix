@@ -21,6 +21,7 @@
         self.modules.nixos.openssh
         self.modules.nixos.tailscale
         self.modules.nixos.cascadia-code
+        self.modules.nixos.mpv
         self.modules.nixos.niri
         self.modules.nixos.signal
       ];
