@@ -22,6 +22,7 @@
         self.modules.nixos.tailscale
         self.modules.nixos.cascadia-code
         self.modules.nixos.niri
+        self.modules.nixos.signal
       ];
 
       networking.hostName = "loki";
