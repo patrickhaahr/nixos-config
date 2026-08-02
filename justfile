@@ -45,28 +45,27 @@ rollback *args:
 
 [group('rebuild')]
 [no-exit-message]
-deploy host action="switch" *args:
+deploy host target=host action="switch" *args:
     #!/usr/bin/env bash
     set -euo pipefail
 
-    build_host="${BUILD_HOST:-{{ host }}}"
-    before="$(ssh -q {{ host }} 'readlink -e /run/current-system || true')"
+    build_host="${BUILD_HOST:-{{ target }}}"
+    before="$(ssh -q {{ target }} 'readlink -e /run/current-system || true')"
 
     nixos-rebuild "{{ action }}" \
       --flake {{ flake }}#{{ host }} \
-      --target-host {{ host }} \
+      --target-host {{ target }} \
       --build-host "$build_host" \
       --use-substitutes \
       --elevate {{ deploy-elevate }} \
       --ask-elevate-password \
-      --log-format internal-json \
       {{ args }}
 
-    after="$(ssh -q {{ host }} 'readlink -e /run/current-system || true')"
+    after="$(ssh -q {{ target }} 'readlink -e /run/current-system || true')"
     if [[ -n "$before" && -n "$after" && "$before" != "$after" ]]; then
       echo
-      echo "===== {{ host }} ({{ action }}) ====="
-      ssh {{ host }} TERM=xterm-256color nix store diff-closures "$before" "$after" || true
+      echo "===== {{ target }} ({{ action }}) ====="
+      ssh {{ target }} TERM=xterm-256color nix store diff-closures "$before" "$after" || true
     fi
 
 # ------------------------------------------------------------------------------
