@@ -22,8 +22,12 @@ _: {
             "sd_mod"
           ];
           kernelModules = [ ];
-          luks.devices."luks-0e5e6701-d2d8-47b3-be56-858b04a7453e".device =
-            "/dev/disk/by-uuid/0e5e6701-d2d8-47b3-be56-858b04a7453e";
+          luks.devices = {
+            "luks-0297540b-bcab-4f68-a9ed-552dc962faa8".device =
+              "/dev/disk/by-uuid/0297540b-bcab-4f68-a9ed-552dc962faa8";
+            "luks-0e5e6701-d2d8-47b3-be56-858b04a7453e".device =
+              "/dev/disk/by-uuid/0e5e6701-d2d8-47b3-be56-858b04a7453e";
+          };
         };
         kernelModules = [ "kvm-intel" ];
         extraModulePackages = [ ];
