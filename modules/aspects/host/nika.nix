@@ -94,6 +94,7 @@
       boot.kernelPackages = pkgs.linuxPackages_latest;
       # Docker and Bluetooth gamepads need these before kernel module locking kicks in.
       boot.kernelModules = [
+        "cp210x"
         "hid_playstation"
         "hidp"
         "ip_tables"

@@ -13,6 +13,7 @@ in
 
       users.users.${userName}.extraGroups = [
         "networkmanager"
+        "dialout"
         "i2c"
         "docker"
       ];
