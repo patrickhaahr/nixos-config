@@ -192,7 +192,7 @@ _: {
               desc = "Toggle Builtin Undotree";
             }
             {
-              key = "-";
+              key = "<leader>e";
               mode = "n";
               lua = true;
               action = ''function() require("mini.files").open() end'';
