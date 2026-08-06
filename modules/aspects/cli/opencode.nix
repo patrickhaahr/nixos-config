@@ -125,6 +125,15 @@ in
                 ];
                 enabled = true;
               };
+              computer-use-linux = {
+                type = "local";
+                command = [
+                  "computer-use-linux"
+                  "mcp"
+                ];
+                enabled = true;
+                timeout = 120000;
+              };
             };
             permission.websearch = "allow";
             provider."llama.cpp" = {

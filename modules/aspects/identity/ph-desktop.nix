@@ -15,6 +15,7 @@ in
         "networkmanager"
         "dialout"
         "i2c"
+        "input"
         "docker"
       ];
       home-manager.users.${userName} = {
