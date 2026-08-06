@@ -20,6 +20,7 @@
         self.modules.nixos.cascadia-code
         self.modules.nixos.containers
         self.modules.nixos.computer-use-linux
+        self.modules.nixos.fritzing
         self.modules.nixos.doas
         #self.modules.nixos.hacking
         self.modules.nixos.screenshot-ocr
