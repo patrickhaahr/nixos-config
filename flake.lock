@@ -316,6 +316,22 @@
         "type": "github"
       }
     },
+    "jakubkrehel-skills": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1786019786,
+        "narHash": "sha256-jD6pu3ExkarkbFrULwANPordzOYDw3y5sMsyOBCetHs=",
+        "owner": "jakubkrehel",
+        "repo": "skills",
+        "rev": "d01493b0a7b976a74bfcedc80c783d60c7995910",
+        "type": "github"
+      },
+      "original": {
+        "owner": "jakubkrehel",
+        "repo": "skills",
+        "type": "github"
+      }
+    },
     "lanzaboote": {
       "inputs": {
         "crane": "crane",
@@ -579,6 +595,7 @@
         "helium": "helium",
         "home-manager": "home-manager",
         "import-tree": "import-tree_2",
+        "jakubkrehel-skills": "jakubkrehel-skills",
         "lanzaboote": "lanzaboote",
         "lumen": "lumen",
         "mattpocock-skills": "mattpocock-skills",

@@ -61,6 +61,11 @@
       flake = false;
     };
 
+    jakubkrehel-skills = {
+      url = "github:jakubkrehel/skills";
+      flake = false;
+    };
+
     lumen = {
       url = "github:jnsahaj/lumen";
       inputs.nixpkgs.follows = "nixpkgs";
