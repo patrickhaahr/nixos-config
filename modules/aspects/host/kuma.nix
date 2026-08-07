@@ -22,9 +22,12 @@
         self.modules.nixos.mpv
         self.modules.nixos.niri
         self.modules.nixos.signal
+        self.modules.nixos.yazi
+        self.modules.nixos.zed
       ];
 
       networking.hostName = "kuma";
+      home-manager.users.ph.imports = [ self.modules.homeManager.agent-browser ];
       networking.networkmanager.enable = true;
       time.timeZone = "Europe/Copenhagen";
       i18n.defaultLocale = "en_DK.UTF-8";
