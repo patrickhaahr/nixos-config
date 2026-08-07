@@ -10,22 +10,26 @@ let
     }:
     let
       cfg = config.services.openhome;
-      mkOpenhomeIr =
-        command:
-        pkgs.writeShellScriptBin "openhome-ir-${command}" ''
+      mkOpenhomeRequest =
+        name: endpoint: payload:
+        pkgs.writeShellScriptBin name ''
           OPENHOME_TOKEN="$(<"/home/${userName}/.config/secrets/openhome")"
-          exec ${lib.getExe pkgs.curl} -X POST https://openhome.haahr.me/api/ir/send \
+          exec ${lib.getExe pkgs.curl} -X POST https://openhome.haahr.me${endpoint} \
             --connect-timeout 5 \
             --max-time 10 \
             -H "Authorization: Bearer $OPENHOME_TOKEN" \
             -H "Content-Type: application/json" \
-            -d '${builtins.toJSON { inherit command; }}'
+            -d '${builtins.toJSON payload}'
         '';
+      mkOpenhomeIr =
+        remote: command:
+        mkOpenhomeRequest "openhome-ir-${remote}-${command}" "/api/ir/${remote}" { inherit command; };
+      mkOpenhomeLight = state: mkOpenhomeRequest "openhome-lights-${state}" "/api/lights/${state}" { };
       mkOpenhomeIrRetryScript =
         name: command:
         pkgs.writeShellScript name ''
           for _ in $(seq 1 30); do
-            if ${lib.getExe (mkOpenhomeIr command)} >/dev/null 2>&1; then
+            if ${lib.getExe (mkOpenhomeIr "edifier" command)} >/dev/null 2>&1; then
               exit 0
             fi
 
@@ -40,11 +44,14 @@ let
 
       config = lib.mkIf cfg.enable {
         environment.systemPackages = [
-          (mkOpenhomeIr "mute")
-          (mkOpenhomeIr "bluetooth")
-          (mkOpenhomeIr "optical")
-          (mkOpenhomeIr "volume-up")
-          (mkOpenhomeIr "volume-down")
+          (mkOpenhomeIr "edifier" "mute")
+          (mkOpenhomeIr "edifier" "bluetooth")
+          (mkOpenhomeIr "edifier" "optical")
+          (mkOpenhomeIr "edifier" "volume-up")
+          (mkOpenhomeIr "edifier" "volume-down")
+          (mkOpenhomeIr "lgtv" "power")
+          (mkOpenhomeLight "on")
+          (mkOpenhomeLight "off")
         ];
 
         systemd.services.openhome-bluetooth-at-boot = {
@@ -106,6 +113,9 @@ in
       bluetoothBootService = openhomeEval.config.systemd.services.openhome-bluetooth-at-boot;
       opticalShutdownService = openhomeEval.config.systemd.services.openhome-optical-at-shutdown;
       bluetoothIrPackage = builtins.elemAt openhomeEval.config.environment.systemPackages 1;
+      tvPowerPackage = builtins.elemAt openhomeEval.config.environment.systemPackages 5;
+      lightsOnPackage = builtins.elemAt openhomeEval.config.environment.systemPackages 6;
+      lightsOffPackage = builtins.elemAt openhomeEval.config.environment.systemPackages 7;
     in
     {
       checks = lib.optionalAttrs pkgs.stdenv.isLinux {
@@ -120,8 +130,14 @@ in
             exit 1
             ;;
           esac
-          grep -F -- '--connect-timeout 5' '${bluetoothIrPackage}/bin/openhome-ir-bluetooth'
-          grep -F -- '--max-time 10' '${bluetoothIrPackage}/bin/openhome-ir-bluetooth'
+          grep -F -- '--connect-timeout 5' '${bluetoothIrPackage}/bin/openhome-ir-edifier-bluetooth'
+          grep -F -- '--max-time 10' '${bluetoothIrPackage}/bin/openhome-ir-edifier-bluetooth'
+          grep -F -- 'https://openhome.haahr.me/api/ir/edifier' '${bluetoothIrPackage}/bin/openhome-ir-edifier-bluetooth'
+          grep -F -- '"command":"bluetooth"' '${bluetoothIrPackage}/bin/openhome-ir-edifier-bluetooth'
+          grep -F -- 'https://openhome.haahr.me/api/ir/lgtv' '${tvPowerPackage}/bin/openhome-ir-lgtv-power'
+          grep -F -- '"command":"power"' '${tvPowerPackage}/bin/openhome-ir-lgtv-power'
+          grep -F -- 'https://openhome.haahr.me/api/lights/on' '${lightsOnPackage}/bin/openhome-lights-on'
+          grep -F -- 'https://openhome.haahr.me/api/lights/off' '${lightsOffPackage}/bin/openhome-lights-off'
 
           touch "$out"
         '';

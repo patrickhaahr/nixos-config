@@ -324,11 +324,14 @@
                 };
               }
               // lib.optionalAttrs openhomeEnabled {
-                "Super+M".spawn = "openhome-ir-mute";
-                "Super+Left".spawn = "openhome-ir-bluetooth";
-                "Super+Right".spawn = "openhome-ir-optical";
-                "Super+Up".spawn = "openhome-ir-volume-up";
-                "Super+Down".spawn = "openhome-ir-volume-down";
+                "Super+M".spawn = "openhome-ir-edifier-mute";
+                "Super+Left".spawn = "openhome-ir-edifier-bluetooth";
+                "Super+Right".spawn = "openhome-ir-edifier-optical";
+                "Super+Up".spawn = "openhome-ir-edifier-volume-up";
+                "Super+Down".spawn = "openhome-ir-edifier-volume-down";
+                "Super+T".spawn = "openhome-ir-lgtv-power";
+                "Super+Shift+Up".spawn = "openhome-lights-on";
+                "Super+Shift+Down".spawn = "openhome-lights-off";
               }
             )
             // {
