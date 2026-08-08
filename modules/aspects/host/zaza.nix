@@ -33,6 +33,9 @@
     };
     networking.hostName = "zaza";
     networking.networkmanager.enable = true;
+    users.users.ph.openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIA9QHax4U5wGvtHs+J12lX6VwSfRAboJCAXVuUiNnM0+ nika-to-zaza"
+    ];
     users.users.ph.extraGroups = [ "networkmanager" ];
     time.timeZone = "Europe/Copenhagen";
     i18n.defaultLocale = "en_DK.UTF-8";

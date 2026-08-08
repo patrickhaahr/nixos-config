@@ -52,6 +52,12 @@ _: {
           IdentityFile = "~/.ssh/id_ed25519_uranus";
           IdentitiesOnly = true;
         };
+        "zaza" = {
+          User = "ph";
+          IdentityAgent = "none";
+          IdentityFile = "~/.ssh/id_ed25519_zaza";
+          IdentitiesOnly = true;
+        };
       };
     };
 

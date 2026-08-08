@@ -21,8 +21,10 @@ _: {
             "sd_mod"
           ];
           kernelModules = [ ];
-          luks.devices."luks-4b887d46-af7b-4153-9105-3f9286df520d".device =
-            "/dev/disk/by-uuid/4b887d46-af7b-4153-9105-3f9286df520d";
+          luks.devices."luks-4b887d46-af7b-4153-9105-3f9286df520d" = {
+            device = "/dev/disk/by-uuid/4b887d46-af7b-4153-9105-3f9286df520d";
+            crypttabExtraOpts = [ "tpm2-device=auto" ];
+          };
         };
         kernelModules = [ "kvm-intel" ];
         extraModulePackages = [ ];
@@ -46,6 +48,10 @@ _: {
           size = 8192;
         }
       ];
+      networking.interfaces.enp2s0.wakeOnLan = {
+        enable = true;
+        policy = [ "magic" ];
+      };
       nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
       hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
     };
