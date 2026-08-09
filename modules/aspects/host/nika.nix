@@ -48,7 +48,6 @@
         self.modules.nixos.steam
         self.modules.nixos.sunshine
         self.modules.nixos.wl-clipboard
-        self.modules.nixos.yazi
         self.modules.nixos."niri-dp1-1080p"
       ];
 

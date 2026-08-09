@@ -1,5 +1,5 @@
 _: {
-  flake.modules.nixos.yazi = { pkgs, ... }: {
-    environment.systemPackages = [ pkgs.yazi ];
+  flake.modules.homeManager.yazi = { pkgs, ... }: {
+    home.packages = [ pkgs.yazi ];
   };
 }

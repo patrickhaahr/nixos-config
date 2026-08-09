@@ -22,7 +22,6 @@
         self.modules.nixos.mpv
         self.modules.nixos.niri
         self.modules.nixos.signal
-        self.modules.nixos.yazi
         self.modules.nixos.zed
       ];
 
