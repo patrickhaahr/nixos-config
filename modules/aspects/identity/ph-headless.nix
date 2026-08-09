@@ -12,6 +12,7 @@ in
       self.modules.homeManager.fastfetch
       self.modules.homeManager.gh
       self.modules.homeManager.git
+      self.modules.homeManager.herdr
       self.modules.homeManager.jj
       self.modules.homeManager.nushell
       self.modules.homeManager.nvf
