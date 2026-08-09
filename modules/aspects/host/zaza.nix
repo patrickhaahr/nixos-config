@@ -7,16 +7,16 @@
       self.modules.nixos.home-manager
       self.modules.nixos.homelab-excalidraw
       self.modules.nixos.homelab-firecrawl
-      self.modules.nixos.homelab-grafana
+      # self.modules.nixos.homelab-grafana
       self.modules.nixos.homelab-hermes
-      self.modules.nixos.homelab-honcho
+      # self.modules.nixos.homelab-honcho
       self.modules.nixos.homelab-librespeed
-      self.modules.nixos.homelab-llamacpp
-      self.modules.nixos.homelab-openconcho
-      self.modules.nixos.homelab-prometheus
+      # self.modules.nixos.homelab-llamacpp
+      # self.modules.nixos.homelab-openconcho
+      # self.modules.nixos.homelab-prometheus
       self.modules.nixos.homelab-searxng
       self.modules.nixos.homelab-traefik
-      self.modules.nixos.homelab-wazuh
+      # self.modules.nixos.homelab-wazuh
       self.modules.nixos.identity-ph-headless
       self.modules.nixos.k3s
       self.modules.nixos.k3s-nvidia

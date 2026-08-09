@@ -28,6 +28,12 @@
         pythonPackages.httpx
       ]);
       pythonSitePackages = "${honchoPython}/${pkgs.python313.sitePackages}";
+      brainrotImageTag = builtins.substring 0 12 (
+        builtins.hashString "sha256" "${brainrotPlugin}${pkgs.busybox}"
+      );
+      mediaToolsImageTag = builtins.substring 0 12 (
+        builtins.hashString "sha256" "${pkgs.busybox}${pkgs.ffmpeg}${honchoPython}${pkgs.yt-dlp}"
+      );
       enabledPlugins = [
         "brainrot-summarizer"
         honchoPlugin.name
@@ -51,22 +57,24 @@
       services.k3s.images = [
         (pkgs.dockerTools.buildLayeredImage {
           name = "hermes-brainrot-plugin";
-          tag = "latest";
+          tag = brainrotImageTag;
           contents = [
             pkgs.busybox
             brainrotPlugin
           ];
+          config.Env = [ "PATH=${pkgs.busybox}/bin" ];
           config.Cmd = [ "${pkgs.busybox}/bin/true" ];
         })
         (pkgs.dockerTools.buildLayeredImage {
           name = "hermes-media-tools";
-          tag = "latest";
+          tag = mediaToolsImageTag;
           contents = [
             pkgs.busybox
             pkgs.ffmpeg
             honchoPython
             pkgs.yt-dlp
           ];
+          config.Env = [ "PATH=${pkgs.busybox}/bin" ];
           config.Cmd = [ "${pkgs.busybox}/bin/true" ];
         })
       ];
@@ -81,8 +89,20 @@
           Type = "oneshot";
           RemainAfterExit = true;
         };
-        path = [ pkgs.k3s ];
+        path = [
+          pkgs.k3s
+          pkgs.gnugrep
+        ];
         script = ''
+          # K3s applies manifests before it has finished importing services.k3s.images.
+          # Keep these local-only init images from falling back to Docker Hub on boot.
+          while ! k3s ctr --namespace k8s.io images list --quiet \
+            | grep --fixed-strings --quiet 'docker.io/library/hermes-brainrot-plugin:${brainrotImageTag}' \
+            || ! k3s ctr --namespace k8s.io images list --quiet \
+              | grep --fixed-strings --quiet 'docker.io/library/hermes-media-tools:${mediaToolsImageTag}'; do
+            sleep 1
+          done
+
           k3s kubectl create namespace hermes --dry-run=client --output yaml \
             | k3s kubectl apply --filename -
 
@@ -107,7 +127,7 @@
             | k3s kubectl apply --filename -
 
           if k3s kubectl --namespace hermes get deployment hermes >/dev/null 2>&1; then
-            k3s kubectl --namespace hermes rollout restart deployment/hermes
+            k3s kubectl --namespace hermes scale deployment/hermes --replicas=1
           fi
         '';
       };
@@ -182,7 +202,8 @@
             labels.app = "hermes";
           };
           spec = {
-            replicas = 1;
+            # The secret-sync service scales up only after local OCI images are imported.
+            replicas = 0;
             strategy.type = "Recreate";
             selector.matchLabels.app = "hermes";
             template = {
@@ -406,9 +427,9 @@
                   }
                   {
                     name = "hermes-brainrot-plugin";
-                    image = "hermes-brainrot-plugin:latest";
+                    image = "hermes-brainrot-plugin:${brainrotImageTag}";
                     imagePullPolicy = "IfNotPresent";
-                    command = [ "${pkgs.busybox}/bin/sh" ];
+                    command = [ "sh" ];
                     args = [
                       "-c"
                       ''
@@ -489,9 +510,9 @@
                   }
                   {
                     name = "hermes-media-tools";
-                    image = "hermes-media-tools:latest";
+                    image = "hermes-media-tools:${mediaToolsImageTag}";
                     imagePullPolicy = "IfNotPresent";
-                    command = [ "${pkgs.busybox}/bin/sh" ];
+                    command = [ "sh" ];
                     args = [
                       "-c"
                       ''
