@@ -22,6 +22,7 @@
         self.modules.nixos.mpv
         self.modules.nixos.niri
         self.modules.nixos.signal
+        self.modules.nixos.virtual-machines
         self.modules.nixos.zed
       ];
 
