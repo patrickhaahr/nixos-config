@@ -8,10 +8,12 @@ _: {
           code = "opencode -c";
           cd = "z";
           c = "clear";
+          cls = "clear";
           ".." = "cd ..";
           "..." = "cd ../..";
           "...." = "cd ../../..";
           e = "nautilus .";
+          sudo = "doas";
         };
         environmentVariables.EDITOR = "nvim";
         extraConfig = ''
