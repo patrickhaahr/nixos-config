@@ -1,6 +1,6 @@
 ---
 name: qa-browser
-description: Tests web applications in a real browser, reproduces UI defects, and reports user-visible regressions with evidence. Use for browser QA, exploratory testing, visual checks, and validating web flows.
+description: Invoke this subagent whenever browser QA or UI/UX QA is needed, including exploratory testing, visual and interaction checks, reproducing UI defects, validating user flows, and reporting user-visible regressions with evidence.
 mode: subagent
 model: github-copilot/gpt-5.6-terra
 variant: medium
