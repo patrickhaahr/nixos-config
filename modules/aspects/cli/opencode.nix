@@ -104,6 +104,11 @@ in
                 url = "https://mcp.docs.astro.build/mcp";
                 enabled = false;
               };
+              better-auth = {
+                type = "remote";
+                url = "https://mcp.better-auth.com/mcp";
+                enabled = false;
+              };
               learn = {
                 type = "remote";
                 url = "https://learn.microsoft.com/api/mcp";
