@@ -56,6 +56,11 @@
       flake = false;
     };
 
+    anti-slop = {
+      url = "github:dmmulroy/anti-slop";
+      flake = false;
+    };
+
     wshobson-agents = {
       url = "github:wshobson/agents";
       flake = false;

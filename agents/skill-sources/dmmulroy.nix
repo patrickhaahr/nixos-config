@@ -1,5 +1,7 @@
 { inputs, pkgs }:
 {
+  install-anti-slop = inputs.anti-slop + "/skills/install-anti-slop";
+
   code-standards-typescript = pkgs.runCommand "code-standards-typescript-skill" { } ''
     mkdir -p "$out"
     {

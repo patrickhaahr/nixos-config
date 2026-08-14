@@ -134,6 +134,31 @@ in
                 enabled = true;
                 timeout = 120000;
               };
+              cloudflare = {
+                type = "remote";
+                url = "https://mcp.cloudflare.com/mcp";
+                enabled = false;
+              };
+              cloudflare-docs = {
+                type = "remote";
+                url = "https://docs.mcp.cloudflare.com/mcp";
+                enabled = false;
+              };
+              cloudflare-bindings = {
+                type = "remote";
+                url = "https://bindings.mcp.cloudflare.com/mcp";
+                enabled = false;
+              };
+              cloudflare-builds = {
+                type = "remote";
+                url = "https://builds.mcp.cloudflare.com/mcp";
+                enabled = false;
+              };
+              cloudflare-observability = {
+                type = "remote";
+                url = "https://observability.mcp.cloudflare.com/mcp";
+                enabled = false;
+              };
             };
             permission.websearch = "allow";
             provider."llama.cpp" = {

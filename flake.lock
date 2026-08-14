@@ -16,6 +16,22 @@
         "type": "github"
       }
     },
+    "anti-slop": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1786559163,
+        "narHash": "sha256-7V5E0cYgckq3zNORZk5J6R4yO/C374FpYpw1mW1HzZg=",
+        "owner": "dmmulroy",
+        "repo": "anti-slop",
+        "rev": "abaeb63b29e63062f778771d5447bd2e9c3c680f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "dmmulroy",
+        "repo": "anti-slop",
+        "type": "github"
+      }
+    },
     "bun2nix": {
       "inputs": {
         "flake-parts": "flake-parts_2",
@@ -607,6 +623,7 @@
     "root": {
       "inputs": {
         "anthropic-skills": "anthropic-skills",
+        "anti-slop": "anti-slop",
         "claude-skill-typst": "claude-skill-typst",
         "dmmulroy-coding-standards": "dmmulroy-coding-standards",
         "dotnet-skillz": "dotnet-skillz",
