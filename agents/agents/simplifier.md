@@ -2,6 +2,7 @@
 name: simplifier
 description: Simplifies and refines code for clarity, consistency, and maintainability while preserving all functionality. Focuses on recently modified code unless instructed otherwise.
 mode: subagent
+variant: medium
 permission:
   edit: deny
 ---
