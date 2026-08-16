@@ -11,3 +11,8 @@ OpenCode uses `OPENCODE_CONFIG_DIR=~/.agents` and Pi natively discovers
 External skill providers are configured under `agents/skill-sources/`. Each provider gets
 its own `.nix` file there, and `default.nix` merges them into the final OpenCode skills
 directory.
+
+Agent files under `agents/agents/` are shared by OpenCode and Pi. Keep shared
+frontmatter limited to fields accepted by both runtimes. Express runtime-specific
+capability restrictions in separate runtime configuration rather than mixing their
+frontmatter schemas in these files.

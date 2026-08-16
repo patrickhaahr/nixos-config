@@ -11,7 +11,6 @@ in
   diagnosing-bugs = engineering "diagnosing-bugs";
   domain-modeling = engineering "domain-modeling";
   grill-with-docs = engineering "grill-with-docs";
-  implement = engineering "implement";
   improve-codebase-architecture = engineering "improve-codebase-architecture";
   prototype = engineering "prototype";
   research = engineering "research";

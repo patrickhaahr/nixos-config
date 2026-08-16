@@ -11,6 +11,7 @@ let
     (import ./dotnet-skillz.nix { inherit inputs; })
     (import ./frontend-slides.nix { inherit inputs; })
     (import ./jakubkrehel.nix { inherit inputs; })
+    (import ./kitlangton.nix { inherit inputs; })
     (import ./mattpocock.nix { inherit inputs; })
     (import ./rhys-sullivan.nix { inherit inputs; })
     (import ./sentry.nix { inherit inputs; })

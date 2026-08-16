@@ -11,6 +11,11 @@
       flake = false;
     };
 
+    kitlangton-skills = {
+      url = "github:kitlangton/skills";
+      flake = false;
+    };
+
     vercel-agent-skills = {
       url = "github:vercel-labs/agent-skills";
       flake = false;

@@ -369,6 +369,22 @@
         "type": "github"
       }
     },
+    "kitlangton-skills": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1784431981,
+        "narHash": "sha256-34OuHrDN2F0+r0biwmuhtONE+eV862+UJ2xBEx1WuTE=",
+        "owner": "kitlangton",
+        "repo": "skills",
+        "rev": "0cace2ae0bd65e0cb03ab12860b62ae5e043f0df",
+        "type": "github"
+      },
+      "original": {
+        "owner": "kitlangton",
+        "repo": "skills",
+        "type": "github"
+      }
+    },
     "lanzaboote": {
       "inputs": {
         "crane": "crane",
@@ -635,6 +651,7 @@
         "home-manager": "home-manager",
         "import-tree": "import-tree_2",
         "jakubkrehel-skills": "jakubkrehel-skills",
+        "kitlangton-skills": "kitlangton-skills",
         "lanzaboote": "lanzaboote",
         "lumen": "lumen",
         "mattpocock-skills": "mattpocock-skills",
