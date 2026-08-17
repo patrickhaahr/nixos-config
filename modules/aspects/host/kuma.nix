@@ -21,8 +21,10 @@
         self.modules.nixos.cascadia-code
         self.modules.nixos.mpv
         self.modules.nixos.niri
+        self.modules.nixos.screenshot-ocr
         self.modules.nixos.signal
         self.modules.nixos.virtual-machines
+        self.modules.nixos.wl-clipboard
         self.modules.nixos.zed
       ];
 
