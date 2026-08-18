@@ -58,6 +58,13 @@ _: {
           IdentityFile = "~/.ssh/id_ed25519_zaza";
           IdentitiesOnly = true;
         };
+        "hermes" = {
+          HostName = "zaza";
+          User = "hermes";
+          IdentityAgent = "none";
+          IdentityFile = "~/.ssh/nika-to-hermes";
+          IdentitiesOnly = true;
+        };
       };
     };
 
