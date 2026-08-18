@@ -429,6 +429,22 @@
         "type": "github"
       }
     },
+    "marketing-skills": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1785178741,
+        "narHash": "sha256-NfHll8eEj5QZt0ubURhJdIhms1RuMAoAKHXOsss3U4s=",
+        "owner": "coreyhaines31",
+        "repo": "marketingskills",
+        "rev": "7868cb9251fad80a73d26e488a5ad5f6c4a9f335",
+        "type": "github"
+      },
+      "original": {
+        "owner": "coreyhaines31",
+        "repo": "marketingskills",
+        "type": "github"
+      }
+    },
     "mattpocock-skills": {
       "flake": false,
       "locked": {
@@ -654,6 +670,7 @@
         "kitlangton-skills": "kitlangton-skills",
         "lanzaboote": "lanzaboote",
         "lumen": "lumen",
+        "marketing-skills": "marketing-skills",
         "mattpocock-skills": "mattpocock-skills",
         "nixos-wsl": "nixos-wsl",
         "nixpkgs": "nixpkgs",

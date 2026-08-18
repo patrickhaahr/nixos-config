@@ -76,6 +76,11 @@
       flake = false;
     };
 
+    marketing-skills = {
+      url = "github:coreyhaines31/marketingskills";
+      flake = false;
+    };
+
     lumen = {
       url = "github:jnsahaj/lumen";
       inputs.nixpkgs.follows = "nixpkgs";
