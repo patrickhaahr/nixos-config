@@ -132,6 +132,11 @@ in
                 ];
                 enabled = true;
               };
+              resend = {
+                type = "remote";
+                url = "https://mcp.resend.com/mcp";
+                enabled = false;
+              };
               computer-use-linux = {
                 type = "local";
                 command = [
