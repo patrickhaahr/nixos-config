@@ -89,6 +89,22 @@
         "type": "github"
       }
     },
+    "diagram-design": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1787254946,
+        "narHash": "sha256-e5nsgq64nO7zxTdPZT939so+hJ+ysFyK1JJ1pi79rNs=",
+        "owner": "cathrynlavery",
+        "repo": "diagram-design",
+        "rev": "5538b35116bf5392cabe2cd68bdbc3cf3d09cc9a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cathrynlavery",
+        "repo": "diagram-design",
+        "type": "github"
+      }
+    },
     "dmmulroy-coding-standards": {
       "flake": false,
       "locked": {
@@ -657,6 +673,7 @@
         "anthropic-skills": "anthropic-skills",
         "anti-slop": "anti-slop",
         "claude-skill-typst": "claude-skill-typst",
+        "diagram-design": "diagram-design",
         "dmmulroy-coding-standards": "dmmulroy-coding-standards",
         "dotnet-skillz": "dotnet-skillz",
         "flake-parts": "flake-parts",

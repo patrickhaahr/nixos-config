@@ -31,6 +31,11 @@
       flake = false;
     };
 
+    diagram-design = {
+      url = "github:cathrynlavery/diagram-design";
+      flake = false;
+    };
+
     anthropic-skills = {
       url = "github:anthropics/skills";
       flake = false;
