@@ -5,6 +5,9 @@
       [terminal]
       default_shell = "nu"
 
+      [update]
+      version_check = false
+
       [ui.toast]
       delivery = "system"
     '';
