@@ -46,6 +46,11 @@
       flake = false;
     };
 
+    cloudflare-skills = {
+      url = "github:cloudflare/skills";
+      flake = false;
+    };
+
     sentry-skills = {
       url = "github:getsentry/skills";
       flake = false;

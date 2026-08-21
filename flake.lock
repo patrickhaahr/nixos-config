@@ -90,6 +90,22 @@
         "type": "github"
       }
     },
+    "cloudflare-skills": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1786124673,
+        "narHash": "sha256-r8HeH9XWV9qhbMq3fPASNfT5Y1mrfsgBI5STiUi/LVA=",
+        "owner": "cloudflare",
+        "repo": "skills",
+        "rev": "f96bff754e428838818017f75817f0f9428acd48",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cloudflare",
+        "repo": "skills",
+        "type": "github"
+      }
+    },
     "crane": {
       "locked": {
         "lastModified": 1784564969,
@@ -706,6 +722,7 @@
         "anti-slop": "anti-slop",
         "better-auth-skills": "better-auth-skills",
         "claude-skill-typst": "claude-skill-typst",
+        "cloudflare-skills": "cloudflare-skills",
         "cursor-plugins": "cursor-plugins",
         "diagram-design": "diagram-design",
         "dmmulroy-coding-standards": "dmmulroy-coding-standards",
