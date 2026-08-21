@@ -32,6 +32,22 @@
         "type": "github"
       }
     },
+    "better-auth-skills": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1783728238,
+        "narHash": "sha256-8s2bagpmNOtTaYHWfvR+wEPlDX+2umQEAqI/l5r+it0=",
+        "owner": "better-auth",
+        "repo": "skills",
+        "rev": "17dfe3a1da1c3982de723098ba1015d67f35694c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "better-auth",
+        "repo": "skills",
+        "type": "github"
+      }
+    },
     "bun2nix": {
       "inputs": {
         "flake-parts": "flake-parts_2",
@@ -672,6 +688,7 @@
       "inputs": {
         "anthropic-skills": "anthropic-skills",
         "anti-slop": "anti-slop",
+        "better-auth-skills": "better-auth-skills",
         "claude-skill-typst": "claude-skill-typst",
         "diagram-design": "diagram-design",
         "dmmulroy-coding-standards": "dmmulroy-coding-standards",
