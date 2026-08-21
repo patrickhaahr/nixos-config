@@ -52,4 +52,4 @@ Prefer 40% coverage with meaningful tests over 100% shallow coverage. Design for
 - Give subagents the change scope, acceptance criteria, and unresolved findings; do not repeat full conversation history.
 - Resume an existing subagent session for follow-up work instead of creating a fresh session for the same role.
 - Follow-up reviews inspect only fixes and unresolved findings. Do not repeat broad reviews of unchanged code.
-- Reviewer findings below medium severity are advisory and do not trigger another worker or review round.
+- Reviewer findings below medium severity are advisory and do not trigger another review round.

@@ -2,8 +2,7 @@
 name: reviewer
 description: Reviews changed code for blocker, high, and medium correctness issues.
 mode: subagent
-model: github-copilot/gpt-5.6-terra
-variant: medium
+variant: high
 temperature: 0.1
 ---
 

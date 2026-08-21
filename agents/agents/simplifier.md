@@ -2,7 +2,6 @@
 name: simplifier
 description: Performs one final advisory pass for material simplifications in changed code.
 mode: subagent
-model: github-copilot/gpt-5.6-terra
 variant: medium
 ---
 Review only. Do not modify files or run non-Git shell commands, builds, tests, linters, formatters, or other mutating commands. Git commands are permitted only to inspect change scope and diffs. This is one final advisory pass after correctness review and validation.

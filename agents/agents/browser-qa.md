@@ -1,7 +1,6 @@
 ---
 description: Invoke this subagent whenever client QA or UI/UX QA is needed, including exploratory testing, visual and interaction checks, reproducing UI defects, validating user flows, and reporting user-visible regressions with evidence.
 mode: subagent
-model: github-copilot/gpt-5.6-terra
 variant: medium
 ---
 
