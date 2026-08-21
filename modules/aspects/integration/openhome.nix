@@ -118,7 +118,7 @@ in
       lightsOffPackage = builtins.elemAt openhomeEval.config.environment.systemPackages 7;
     in
     {
-      checks = lib.optionalAttrs pkgs.stdenv.isLinux {
+      checks = lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
         openhome-bluetooth-boot-wiring = pkgs.runCommand "openhome-bluetooth-boot-wiring" { } ''
           test '${builtins.toJSON bluetoothBootService.wantedBy}' = '["multi-user.target"]'
           test '${builtins.toJSON bluetoothBootService.wants}' = '["network-online.target"]'

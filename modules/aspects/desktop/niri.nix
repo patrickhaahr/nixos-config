@@ -357,7 +357,7 @@
         };
     in
     {
-      checks = lib.optionalAttrs pkgs.stdenv.isLinux {
+      checks = lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
         niri-handy-startup-wiring = pkgs.runCommand "niri-handy-startup-wiring" { } ''
           test '${builtins.toJSON self.nixosConfigurations.nika.config.home-manager.users.ph.services.handy.enable}' = 'true'
 
@@ -388,7 +388,7 @@
         '';
       };
 
-      packages = lib.optionalAttrs pkgs.stdenv.isLinux {
+      packages = lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
         myNiri = lib.makeOverridable (
           {
             openhomeEnabled ? false,
