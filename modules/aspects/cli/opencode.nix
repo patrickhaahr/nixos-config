@@ -83,7 +83,6 @@ in
             "$schema" = "https://opencode.ai/config.json";
             autoupdate = false;
             instructions = [ "AGENTS*.md" ];
-            model = "github-copilot/gpt-5.6-sol";
             plugin = [ "@dietrichgebert/ponytail" ];
             skills.paths = [ ".skills" ];
             mcp = {
