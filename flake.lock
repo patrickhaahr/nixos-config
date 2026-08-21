@@ -105,6 +105,22 @@
         "type": "github"
       }
     },
+    "cursor-plugins": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1787281804,
+        "narHash": "sha256-rTkT/2dliMzvwDkza2+JNhSIzcTr9fXjvK2zwi/lRl8=",
+        "owner": "cursor",
+        "repo": "plugins",
+        "rev": "46125561306434d8a1d7745d540d8932ab0cd2a2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cursor",
+        "repo": "plugins",
+        "type": "github"
+      }
+    },
     "diagram-design": {
       "flake": false,
       "locked": {
@@ -690,6 +706,7 @@
         "anti-slop": "anti-slop",
         "better-auth-skills": "better-auth-skills",
         "claude-skill-typst": "claude-skill-typst",
+        "cursor-plugins": "cursor-plugins",
         "diagram-design": "diagram-design",
         "dmmulroy-coding-standards": "dmmulroy-coding-standards",
         "dotnet-skillz": "dotnet-skillz",

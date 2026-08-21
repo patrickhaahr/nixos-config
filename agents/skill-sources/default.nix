@@ -8,6 +8,7 @@ let
     (import ./agent-browser.nix { inherit inputs; })
     (import ./anthropic.nix { inherit inputs; })
     (import ./better-auth.nix { inherit inputs; })
+    (import ./cursor.nix { inherit inputs; })
     (import ./diagram-design.nix { inherit inputs; })
     (import ./dmmulroy.nix { inherit inputs pkgs; })
     (import ./dotnet-skillz.nix { inherit inputs; })

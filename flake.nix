@@ -76,6 +76,11 @@
       flake = false;
     };
 
+    cursor-plugins = {
+      url = "github:cursor/plugins";
+      flake = false;
+    };
+
     wshobson-agents = {
       url = "github:wshobson/agents";
       flake = false;
