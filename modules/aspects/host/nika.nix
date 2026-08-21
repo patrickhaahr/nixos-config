@@ -47,8 +47,10 @@
         self.modules.nixos.signal
         self.modules.nixos.steam
         self.modules.nixos.sunshine
+        self.modules.nixos.t3code
         self.modules.nixos.wl-clipboard
         self.modules.nixos."niri-dp1-1080p"
+        self.modules.nixos.zed
       ];
 
       networking.networkmanager.enable = true;
@@ -103,6 +105,7 @@
         "overlay"
         "uinput"
         "xt_addrtype"
+        "xt_comment"
       ];
       security.lockKernelModules = true;
       hardware.bluetooth = {
