@@ -16,7 +16,7 @@ _: {
           Group = "hermes";
           Restart = "on-failure";
           RestartSec = 5;
-          ExecStart = "${pkgs.signal-cli}/bin/signal-cli daemon --http 127.0.0.1:8080 --config /home/hermes/.signal-cli";
+          ExecStart = "${pkgs.signal-cli}/bin/signal-cli --config /home/hermes/.signal-cli daemon --http 127.0.0.1:8080";
         };
       };
     };

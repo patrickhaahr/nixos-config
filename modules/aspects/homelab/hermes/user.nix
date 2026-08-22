@@ -19,5 +19,11 @@ _: {
       };
 
       services.openssh.settings.AllowUsers = [ "hermes" ];
+
+      environment.etc."profile.d/hermes-venv.sh".text = ''
+        if [ "$USER" = hermes ] && [ -d "$HOME/.venv/bin" ]; then
+          export PATH="$HOME/.venv/bin:$PATH"
+        fi
+      '';
     };
 }

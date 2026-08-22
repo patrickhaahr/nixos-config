@@ -24,6 +24,7 @@ _: {
 
           signal_account="$(tr -d "\r\n" < ${config.sops.secrets.hermes_signal_account.path})"
           api_key="$(tr -d "\r\n" < ${config.sops.secrets.hermes_api_server_key.path})"
+          opencode_go_key="$(tr -d "\r\n" < ${config.sops.secrets.hermes_opencode_go_api_key.path})"
           dash_user="$(tr -d "\r\n" < ${config.sops.secrets.hermes_dashboard_basic_auth_username.path})"
           dash_pass="$(tr -d "\r\n" < ${config.sops.secrets.hermes_dashboard_basic_auth_password.path})"
           dash_secret="$(tr -d "\r\n" < ${config.sops.secrets.hermes_dashboard_basic_auth_secret.path})"
@@ -35,10 +36,11 @@ _: {
             printf 'HERMES_DASHBOARD_BASIC_AUTH_USERNAME=%s\n' "$dash_user"
             printf 'HERMES_DASHBOARD_BASIC_AUTH_PASSWORD=%s\n' "$dash_pass"
             printf 'HERMES_DASHBOARD_BASIC_AUTH_SECRET=%s\n' "$dash_secret"
-          } > /home/hermes/secrets.env
+          } > /home/hermes/.hermes/.env
 
-          chown hermes:hermes /home/hermes/secrets.env
-          chmod 600 /home/hermes/secrets.env
+          printf 'OPENCODE_GO_API_KEY=%s\n' "$opencode_go_key" >> /home/hermes/.hermes/.env
+          chown hermes:hermes /home/hermes/.hermes/.env
+          chmod 600 /home/hermes/.hermes/.env
         '';
       };
     };

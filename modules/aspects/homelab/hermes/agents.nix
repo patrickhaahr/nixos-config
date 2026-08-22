@@ -69,7 +69,7 @@ _: {
             User = "hermes";
             Group = "hermes";
             WorkingDirectory = hermesHome;
-            EnvironmentFile = "${hermesHome}/secrets.env";
+            EnvironmentFile = "${hermesHome}/.hermes/.env";
             ExecStartPre = "-${pkgs.procps}/bin/pkill -u hermes -f '/bin/hermes gateway'";
             ExecStart = "${hermesVenvBin}/hermes gateway run";
             Restart = "on-failure";
@@ -96,7 +96,7 @@ _: {
             User = "hermes";
             Group = "hermes";
             WorkingDirectory = hermesHome;
-            EnvironmentFile = "${hermesHome}/secrets.env";
+            EnvironmentFile = "${hermesHome}/.hermes/.env";
             ExecStartPre = "-${pkgs.procps}/bin/pkill -u hermes -f '/bin/hermes dashboard'";
             ExecStart = "${hermesVenvBin}/hermes dashboard --host 0.0.0.0 --port 9119 --no-open";
             Restart = "on-failure";
