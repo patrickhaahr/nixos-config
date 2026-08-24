@@ -13,6 +13,9 @@ in
       self.modules.homeManager.gh
       self.modules.homeManager.git
       self.modules.homeManager.herdr
+      self.modules.homeManager.hunk
+      self.modules.homeManager.python3
+      self.modules.homeManager.ripgrep
       self.modules.homeManager.jj
       self.modules.homeManager.nushell
       self.modules.homeManager.nvf
