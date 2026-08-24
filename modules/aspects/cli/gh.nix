@@ -1,6 +1,6 @@
 _: {
-  flake.modules.homeManager.gh = { pkgs, ... }: {
-    home.packages = [ pkgs.gh ];
+  flake.modules.homeManager.gh = {
+    programs.gh.enable = true;
 
     home.sessionVariables = {
       GH_TELEMETRY = "false";

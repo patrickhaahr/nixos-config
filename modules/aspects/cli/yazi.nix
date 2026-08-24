@@ -1,5 +1,5 @@
 _: {
-  flake.modules.homeManager.yazi = { pkgs, ... }: {
-    home.packages = [ pkgs.yazi ];
+  flake.modules.homeManager.yazi = {
+    programs.yazi.enable = true;
   };
 }
