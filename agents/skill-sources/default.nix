@@ -14,6 +14,7 @@ let
     (import ./dmmulroy.nix { inherit inputs pkgs; })
     (import ./dotnet-skillz.nix { inherit inputs; })
     (import ./frontend-slides.nix { inherit inputs; })
+    (import ./hunk.nix { inherit inputs pkgs; })
     (import ./jakubkrehel.nix { inherit inputs; })
     (import ./kitlangton.nix { inherit inputs; })
     (import ./mattpocock.nix { inherit inputs; })

@@ -1,5 +1,5 @@
 { inputs, ... }: {
-  flake.modules.homeManager.hunk = { pkgs, ... }: {
+  flake.modules.homeManager.hunk = {
     imports = [ inputs.hunk.homeManagerModules.default ];
     programs.hunk = {
       enable = true;
@@ -10,8 +10,5 @@
         tab_width = 4;
       };
     };
-    home.file.".agents/skills/hunk-review".source = "${
-      inputs.hunk.packages.${pkgs.stdenv.hostPlatform.system}.default
-    }/skills/hunk-review";
   };
 }
