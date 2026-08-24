@@ -1,8 +1,0 @@
-name: brainrot-summarizer
-version: "0.1.0"
-description: Summarize TikTok and Instagram videos from Hermes messages.
-provides_tools:
-  - brainrot_analyze_video
-provides_hooks:
-  - pre_gateway_dispatch
-  - pre_llm_call

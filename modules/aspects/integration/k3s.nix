@@ -1,8 +1,10 @@
 _: {
   flake.modules.nixos.k3s = {
-    users.groups.k3s-admin = { };
-
-    users.users.ph.extraGroups = [ "k3s-admin" ];
+    users = {
+      groups.k3s-admin = { };
+      users.ph.extraGroups = [ "k3s-admin" ];
+      users.hermes.extraGroups = [ "k3s-admin" ];
+    };
 
     networking.firewall.trustedInterfaces = [
       "cni0"

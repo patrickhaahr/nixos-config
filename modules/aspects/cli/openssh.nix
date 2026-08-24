@@ -3,7 +3,10 @@ _: {
     services.openssh = {
       enable = true;
       settings = {
-        AllowUsers = [ "ph" ];
+        AllowUsers = [
+          "ph"
+          "hermes"
+        ];
         PasswordAuthentication = false;
         KbdInteractiveAuthentication = false;
         PermitRootLogin = "no";
@@ -64,7 +67,7 @@ _: {
             HostName = "zaza";
             User = "hermes";
             IdentityAgent = "none";
-            IdentityFile = "~/.ssh/nika-to-hermes";
+            IdentityFile = "~/.ssh/nika-to-hermes-auto";
             IdentitiesOnly = true;
           };
         };

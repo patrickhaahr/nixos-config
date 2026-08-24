@@ -1,9 +1,28 @@
 keys:
   - &zaza age154rksuth9fmyx7q80dxljvwl92gufz8pu9sxdxwrhwenht2n4akq69s3wx
   - &nika age1mlnknujmm56sllxfuau457tv4yl8f5p59a5zr4x4jasagsfkwdts2sjyz0
+  - &nika-host age1vyh9hyk9f7meyyqxlvjlr5v4h7045skv8nrghw363zzvy9n58uqqka9hug
+  - &hermes age1w8kuwqr6qmx2wwfd2djhr52g9m82ut5x7fmm0e47mc4jfxjkg5wqv8twa8
 
 creation_rules:
-  - path_regex: secrets/zaza\.yaml$
+  # Hermes bootstrap secrets (SSH keys + the hermes age key itself):
+  # decryptable by ph, both host keys — NOT by hermes.
+  - path_regex: secrets/hermes/ssh\.yaml$
+    key_groups:
+      - age:
+          - *nika
+          - *nika-host
+          - *zaza
+  # Hermes runtime secrets: additionally encrypted to the hermes user key so
+  # the HM sops module can decrypt them with the rendered keys.txt.
+  - path_regex: secrets/hermes/env\.yaml$
+    key_groups:
+      - age:
+          - *hermes
+          - *nika
+          - *nika-host
+          - *zaza
+  - path_regex: secrets/.*\.yaml$
     key_groups:
       - age:
           - *zaza
