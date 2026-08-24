@@ -9,6 +9,7 @@
 ## Dendritic Rules
 - Keep modules aspect-oriented. Add to an existing aspect before creating a new one.
 - Use `flake.modules.nixos.<aspect>` for NixOS aspects and `flake.modules.homeManager.<aspect>` for Home Manager aspects.
+- In Home Manager aspects, prefer `programs.<tool>.enable` when the HM option exists; fall back to `home.packages` only when it does not.
 - Keep host composition thin. `modules/aspects/host/zaza.nix` should select aspects, not hold feature details.
 - Put user-specific wiring in `modules/aspects/identity/ph.nix`.
 - Put WM-specific logic in `modules/aspects/desktop/<wm>.nix`. `niri` is the current selected WM; a future `hyprland.nix` should be a parallel module, not mixed into `niri.nix`.
