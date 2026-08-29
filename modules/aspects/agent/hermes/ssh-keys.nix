@@ -37,6 +37,13 @@
     { pkgs, ... }:
     let
       sshConfig = pkgs.writeText "hermes-ssh-config" ''
+        Host forgejo.haahr.me
+          Port 2222
+          User git
+          IdentityFile ~/.ssh/id_ed25519_hermes_git
+          IdentitiesOnly yes
+          StrictHostKeyChecking accept-new
+
         Host github.com
           User git
           IdentityFile ~/.ssh/id_ed25519_hermes_git
