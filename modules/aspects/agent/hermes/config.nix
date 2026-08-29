@@ -14,23 +14,58 @@
       };
 
       settings = {
+        approvals.mode = "off";
         model = {
-          provider = "opencode-zen";
-          default = "ox-alpha";
+          provider = "opencode-go";
+          default = "glm-5.3-flash";
         };
         fallback_providers = [
           {
             provider = "openrouter";
-            model = "stealth/ox-alpha";
+            model = "z-ai/glm-5.3-flash";
           }
           {
             provider = "opencode-go";
             model = "gpt-5.6-luna";
           }
         ];
-        agent.max_turns = 150;
+        delegation = {
+          subagent_auto_approve = true;
+        };
+        moa = {
+          default_preset = "default";
+          presets = {
+            default = {
+              reference_models = [
+                {
+                  provider = "opencode-go";
+                  model = "deepseek-v4-flash";
+                }
+                {
+                  provider = "opencode-go";
+                  model = "glm-5.3-flash";
+                }
+                {
+                  provider = "opencode-go";
+                  model = "kimi-k2.5";
+                }
+              ];
+              aggregator = {
+                provider = "opencode-go";
+                model = "grok-4.6";
+              };
+              max_tokens = 4096;
+              enabled = true;
+            };
+          };
+        };
+        agent.max_turns = 90;
         display.tool_progress = "all";
         session_reset.mode = "none";
+        browser = {
+          backend = "browser-use";
+          cdp_url = "http://127.0.0.1:9222";
+        };
         platforms.signal.enabled = true;
         dashboard.basic_auth = {
           username = "ph";
