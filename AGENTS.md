@@ -25,10 +25,11 @@
 ## Layout
 - `modules/aspects/integration/home-manager.nix`: imports/configures Home Manager for NixOS.
 - `modules/aspects/identity/ph.nix`: user account, HM imports, standalone `homeConfigurations.ph`.
-- `modules/aspects/cli/`: CLI aspects (`git.nix`, `nushell.nix`).
+- `modules/aspects/cli/`: CLI aspects (`git.nix`, `nushell.nix`, `agent-browser.nix`).
+- `modules/aspects/agent/`: agent aspects. `agent/hermes/` is the hermes sub-aspect (package, config, secrets, channels, git, dev-workspace); compose hosts via its `host.nix` seam (`agent-hermes-host`). `agent/browser-use/` packages the Browser Use CLI with uv2nix (vendored uv.lock; regenerate with `uv lock --python 3.12` when bumping).
 - `modules/aspects/desktop/`: desktop aspects (`niri.nix`, `noctalia.nix`, `ghostty.nix`, `cursor.nix`).
 - `modules/aspects/host/`: host composition (`nika.nix`, `zaza.nix`, `imu.nix`, `zaza-hardware.nix`, `workstation.nix`).
-- `modules/aspects/homelab/`: homelab service aspects (`k3s.nix`, `traefik.nix`, `excalidraw.nix`, `searxng.nix`, `hermes.nix`).
+- `modules/aspects/homelab/`: homelab service aspects (`k3s.nix`, `traefik.nix`, `excalidraw.nix`, `searxng.nix`; hermes itself lives under `modules/aspects/identity/hermes.nix` + `modules/aspects/agent/hermes/`).
 
 ## Verification
 - Run validation from the repository root using the root `justfile`. With direnv enabled, `.envrc` loads the flake dev shell and provides `just`.
@@ -38,6 +39,6 @@
 ## Known Wiring
 - The primary exported NixOS host is `nixosConfigurations.nika` from `modules/hosts/nika/default.nix`.
 - `modules/aspects/host/nika.nix` currently imports `nika-hardware`, `audio-output`, `home-manager`, `identity-ph`, `handy`, `openhome`, `openlinkhub`, `openssh`, `tailscale`, `niri`, `niri-dp1-1080p`, `workstation`, and related desktop aspects.
-- `modules/aspects/host/zaza.nix` wires the headless k3s homelab host.
+- `modules/aspects/host/zaza.nix` wires the headless k3s homelab host via `agent-hermes-host`, which chains `identity-hermes` → the hermes Home Manager aspect imports (including `agent-browser-use`).
 - `modules/aspects/host/imu.nix` wires the WSL host.
 - `modules/aspects/identity/ph.nix` wires the `ph` user through Home Manager inside the NixOS hosts.
