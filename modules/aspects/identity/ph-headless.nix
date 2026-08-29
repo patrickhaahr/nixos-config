@@ -17,6 +17,7 @@ in
       self.modules.homeManager.python3
       self.modules.homeManager.ripgrep
       self.modules.homeManager.jj
+      self.modules.homeManager.less
       self.modules.homeManager.nushell
       self.modules.homeManager.nvf
       self.modules.homeManager.opencode
