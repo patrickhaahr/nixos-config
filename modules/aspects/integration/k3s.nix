@@ -21,7 +21,7 @@ _: {
       enable = true;
       role = "server";
       extraFlags = [
-        "--node-ip=10.0.20.3"
+        "--node-ip=10.0.10.3"
         "--write-kubeconfig-group=k3s-admin"
         "--write-kubeconfig-mode=0640"
       ];
