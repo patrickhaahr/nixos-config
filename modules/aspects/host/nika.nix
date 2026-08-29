@@ -43,7 +43,7 @@
         self.modules.nixos.tailscale
         self.modules.nixos.niri
         self.modules.nixos.mpv
-        self.modules.nixos.poweroff-scheduler
+        #self.modules.nixos.poweroff-scheduler
         self.modules.nixos.signal
         self.modules.nixos.steam
         self.modules.nixos.sunshine
@@ -78,7 +78,7 @@
           speaker = "bluez_output.FC_E8_06_72_4E_85.1";
         };
         openhome.enable = true;
-        llamacpp.nika.model = "qwen3-6-35b-a3b";
+        llamacpp.nika.model = "qwen3-14b";
         greetd = {
           enable = true;
           settings.default_session = {
