@@ -13,7 +13,10 @@
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMWIIdTomMDrLElXLqDg68u7h8Ila5Rjg5TZIngPMUeH ph@loki"
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBow0SMe+E5nrSuhmq45vcb/CzYEHQsPANx5vGNRksR8 grapheneos"
       ];
-      extraGroups = [ "systemd-journal" ];
+      extraGroups = [
+        "systemd-journal"
+        "wheel"
+      ];
     };
 
     home-manager.users.hermes = {
