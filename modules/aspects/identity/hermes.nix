@@ -19,6 +19,7 @@
     home-manager.users.hermes = {
       imports = [
         self.modules.homeManager.agent-hermes
+        self.modules.homeManager.bash
         self.modules.homeManager.direnv
         self.modules.homeManager.opencode
         self.modules.homeManager.pi
