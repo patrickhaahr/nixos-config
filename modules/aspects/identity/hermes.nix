@@ -38,7 +38,6 @@
         self.modules.homeManager.unzip
         self.modules.homeManager.sqlite
         self.modules.homeManager.tree
-        self.modules.homeManager.hunk
       ];
       home.stateVersion = "25.11";
     };
