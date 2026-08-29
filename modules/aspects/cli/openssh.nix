@@ -1,5 +1,8 @@
 _: {
   flake.modules.nixos.openssh = _: {
+    # OpenSSH rejects systemd's store-owned proxy drop-in for non-root users.
+    programs.ssh.systemd-ssh-proxy.enable = false;
+
     services.openssh = {
       enable = true;
       settings = {
@@ -48,18 +51,25 @@ _: {
           ];
           IdentitiesOnly = true;
         };
-        "uranus" = {
-          HostName = "100.118.180.74";
+        # Prefer the router-specific key once it is authorized.
+        "router" = {
           User = "root";
-          IdentityAgent = "none";
-          IdentityFile = "~/.ssh/id_ed25519_uranus";
+          IdentityFile = [
+            "~/.ssh/id_ed25519_router"
+            "~/.ssh/id_ed25519"
+          ];
           IdentitiesOnly = true;
         };
+        # Ghostty's TERM=xterm-ghostty is meaningless to hosts without its
+        # terminfo (e.g. headless zaza); downgrade for these destinations.
         "zaza" = {
           User = "ph";
           IdentityAgent = "none";
           IdentityFile = "~/.ssh/id_ed25519_zaza";
           IdentitiesOnly = true;
+          SetEnv = {
+            TERM = "xterm-256color";
+          };
         };
         "hermes" = {
           HostName = "zaza";
@@ -67,6 +77,9 @@ _: {
           IdentityAgent = "none";
           IdentityFile = "~/.ssh/nika-to-hermes-auto";
           IdentitiesOnly = true;
+          SetEnv = {
+            TERM = "xterm-256color";
+          };
         };
       };
     };
