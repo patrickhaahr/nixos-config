@@ -324,14 +324,52 @@
                 };
               }
               // lib.optionalAttrs openhomeEnabled {
-                "Super+M".spawn = "openhome-ir-edifier-mute";
-                "Super+Left".spawn = "openhome-ir-edifier-bluetooth";
-                "Super+Right".spawn = "openhome-ir-edifier-optical";
-                "Super+Up".spawn = "openhome-ir-edifier-volume-up";
-                "Super+Down".spawn = "openhome-ir-edifier-volume-down";
-                "Super+T".spawn = "openhome-ir-lgtv-power";
-                "Super+Shift+Up".spawn = "openhome-lights-on";
-                "Super+Shift+Down".spawn = "openhome-lights-off";
+                "Super+M".spawn = [
+                  "openhome"
+                  "ir"
+                  "edifier"
+                  "mute"
+                ];
+                "Super+Left".spawn = [
+                  "openhome"
+                  "ir"
+                  "edifier"
+                  "bluetooth"
+                ];
+                "Super+Right".spawn = [
+                  "openhome"
+                  "ir"
+                  "edifier"
+                  "optical"
+                ];
+                "Super+Up".spawn = [
+                  "openhome"
+                  "ir"
+                  "edifier"
+                  "volume-up"
+                ];
+                "Super+Down".spawn = [
+                  "openhome"
+                  "ir"
+                  "edifier"
+                  "volume-down"
+                ];
+                "Super+T".spawn = [
+                  "openhome"
+                  "ir"
+                  "lgtv"
+                  "power"
+                ];
+                "Super+Shift+Up".spawn = [
+                  "openhome"
+                  "lights"
+                  "on"
+                ];
+                "Super+Shift+Down".spawn = [
+                  "openhome"
+                  "lights"
+                  "off"
+                ];
               }
             )
             // {
@@ -386,6 +424,61 @@
 
           touch "$out"
         '';
+
+        niri-openhome-bindings =
+          let
+            binds = (mkSettings { openhomeEnabled = true; }).binds;
+            spawns = builtins.toJSON (
+              map (key: binds.${key}.spawn) [
+                "Super+M"
+                "Super+Left"
+                "Super+Right"
+                "Super+Up"
+                "Super+Down"
+                "Super+T"
+                "Super+Shift+Up"
+                "Super+Shift+Down"
+              ]
+            );
+          in
+          pkgs.runCommand "niri-openhome-bindings" { } ''
+            test 'true' = '${builtins.toJSON self.nixosConfigurations.nika.config.services.openhome.enable}'
+
+            case '${spawns}' in
+              *'["openhome","ir","edifier","mute"]'*) ;;
+              *) exit 1 ;;
+            esac
+            case '${spawns}' in
+              *'["openhome","ir","edifier","bluetooth"]'*) ;;
+              *) exit 1 ;;
+            esac
+            case '${spawns}' in
+              *'["openhome","ir","edifier","optical"]'*) ;;
+              *) exit 1 ;;
+            esac
+            case '${spawns}' in
+              *'["openhome","ir","edifier","volume-up"]'*) ;;
+              *) exit 1 ;;
+            esac
+            case '${spawns}' in
+              *'["openhome","ir","edifier","volume-down"]'*) ;;
+              *) exit 1 ;;
+            esac
+            case '${spawns}' in
+              *'["openhome","ir","lgtv","power"]'*) ;;
+              *) exit 1 ;;
+            esac
+            case '${spawns}' in
+              *'["openhome","lights","on"]'*) ;;
+              *) exit 1 ;;
+            esac
+            case '${spawns}' in
+              *'["openhome","lights","off"]'*) ;;
+              *) exit 1 ;;
+            esac
+
+            touch "$out"
+          '';
       };
 
       packages = lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {

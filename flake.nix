@@ -156,6 +156,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    openhome = {
+      url = "github:patrickhaahr/openhome";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     pyproject-nix = {
       url = "github:pyproject-nix/pyproject.nix";
       inputs.nixpkgs.follows = "nixpkgs";

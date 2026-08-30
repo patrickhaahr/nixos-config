@@ -114,7 +114,10 @@
       };
       networking.hostName = "nika";
       #networking.extraHosts = ''    '';
-      home-manager.users.ph.imports = [ self.modules.homeManager.spicetify ];
+      home-manager.users.ph.imports = [
+        self.modules.homeManager.spicetify
+        self.modules.homeManager.openhome
+      ];
       programs.handy.autostart = true;
       system.stateVersion = "25.11";
     };
