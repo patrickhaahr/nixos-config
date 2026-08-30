@@ -906,11 +906,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1788120378,
-        "narHash": "sha256-N12QYWJThZlK+I/HTEMmZXOOYQoyJJYIM6SUpOSyZ8Y=",
+        "lastModified": 1788125920,
+        "narHash": "sha256-fPN4KrnPwhzapzEkPQ60sY7wZakpeZcPKGZSOs0HNms=",
         "owner": "patrickhaahr",
         "repo": "openhome",
-        "rev": "789ad8fc05fb0515338b3d33d0b51b6a9cbb5254",
+        "rev": "217d64cd4ce10c2408ed053c37fd83a6083eb5b8",
         "type": "github"
       },
       "original": {
