@@ -19,6 +19,7 @@ let
     (import ./kitlangton.nix { inherit inputs; })
     (import ./mattpocock.nix { inherit inputs; })
     (import ./marketing.nix { inherit inputs; })
+    (import ./openhome.nix { inherit inputs; })
     (import ./rhys-sullivan.nix { inherit inputs; })
     (import ./sentry.nix { inherit inputs; })
     (import ./typst.nix { inherit inputs; })

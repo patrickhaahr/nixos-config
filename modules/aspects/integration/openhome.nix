@@ -117,7 +117,7 @@ in
       hermesSops = zazaHermes.sops;
       hermesSettings = zazaHermes.services.hermes-agent.settings;
       hermesSkillsDir = zazaHermes.home.file.".agents/skills".source;
-      openhomeSkill = ./../../../agents/skills/openhome/SKILL.md;
+      openhomeSkill = inputs.openhome + "/skills/openhome/SKILL.md";
     in
     {
       checks = lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
