@@ -28,6 +28,7 @@ in
           self.modules.homeManager.cursor
           self.modules.homeManager.osu-lazer
           self.modules.homeManager.steam-hm
+          self.modules.homeManager.agent-hermes-desktop
         ];
 
         services.handy = lib.mkIf (handyConfigured && config.programs.handy.autostart) {
