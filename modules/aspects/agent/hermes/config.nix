@@ -72,6 +72,12 @@
           backend = "browser-use";
           cdp_url = "http://127.0.0.1:9222";
         };
+        # Executor MCP (selfhosted k3s, see aspects/homelab/executor.nix).
+        # ${EXECUTOR_API_KEY} expands from the sops-owned .hermes/.env.
+        mcp_servers.executor = {
+          url = "https://executor.zaza.haahr.me/mcp";
+          headers.Authorization = "Bearer \${EXECUTOR_API_KEY}";
+        };
         platforms.signal.enabled = true;
         dashboard.basic_auth = {
           username = "ph";
