@@ -19,6 +19,7 @@
       # self.modules.nixos.homelab-wazuh
       self.modules.nixos.identity-ph-headless
       self.modules.nixos.agent-hermes-host
+      self.modules.nixos.openhome
       self.modules.nixos.k3s
       self.modules.nixos.k3s-nvidia
       self.modules.nixos.nix-maintenance
@@ -42,6 +43,9 @@
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIA9QHax4U5wGvtHs+J12lX6VwSfRAboJCAXVuUiNnM0+ nika-to-zaza"
     ];
     users.users.ph.extraGroups = [ "networkmanager" ];
+    # OpenHome CLI for Hermes; the Nika-only speaker lifecycle automations
+    # stay disabled.
+    services.openhome.enable = true;
     time.timeZone = "Europe/Copenhagen";
     i18n.defaultLocale = "en_DK.UTF-8";
     console.keyMap = "dk-latin1";

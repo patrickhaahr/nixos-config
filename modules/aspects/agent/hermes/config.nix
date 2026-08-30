@@ -1,5 +1,5 @@
 { inputs, ... }: {
-  flake.modules.homeManager.agent-hermes = {
+  flake.modules.homeManager.agent-hermes = { config, ... }: {
     imports = [ inputs.hermes-agent.homeManagerModules.default ];
 
     home.sessionVariables.KUBECONFIG = "/etc/rancher/k3s/k3s.yaml";
@@ -14,6 +14,10 @@
       };
 
       settings = {
+        # The shared declarative skills source, projected to ~/.agents/skills
+        # by the opencode aspect. Hermes discovers local skills (including
+        # the OpenHome skill) from there as an external skill directory.
+        skills.external_dirs = [ "${config.home.homeDirectory}/.agents/skills" ];
         approvals.mode = "off";
         model = {
           provider = "opencode-go";
