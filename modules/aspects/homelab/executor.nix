@@ -71,7 +71,7 @@ _: {
                 };
               }
             ];
-            volumes = [
+            spec.volumes = [
               {
                 name = "data";
                 persistentVolumeClaim.claimName = "executor-data";
