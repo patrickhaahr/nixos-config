@@ -11,6 +11,7 @@
         # declarative (see config.nix), not a secret.
         path = ".hermes/.env";
       };
+      secrets.openhome_api_key.path = ".config/openhome/api-key";
     };
   };
 }
