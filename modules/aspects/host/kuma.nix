@@ -9,6 +9,7 @@
     {
       imports = [
         self.modules.nixos.kuma-hardware
+        self.modules.nixos.containers
         self.modules.nixos.doas
         self.modules.nixos.home-manager
         self.modules.nixos.nix-features
