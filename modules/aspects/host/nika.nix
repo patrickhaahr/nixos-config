@@ -31,7 +31,7 @@
         self.modules.nixos.nix-ld
         self.modules.nixos.nix-features
         self.modules.nixos.nix-maintenance
-        self.modules.nixos.homelab-llamacpp-nika
+        #self.modules.nixos.homelab-llamacpp-nika
         self.modules.nixos.identity-ph-desktop
         self.modules.nixos.handy
         self.modules.nixos.nautilus
@@ -78,7 +78,7 @@
           speaker = "bluez_output.FC_E8_06_72_4E_85.1";
         };
         openhome.enable = true;
-        llamacpp.nika.model = "qwen3-14b";
+        #llamacpp.nika.model = "qwen3-14b";
         greetd = {
           enable = true;
           settings.default_session = {
