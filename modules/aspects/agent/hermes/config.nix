@@ -25,12 +25,12 @@
         };
         fallback_providers = [
           {
-            provider = "openrouter";
-            model = "z-ai/glm-5.3-flash";
+            provider = "opencode-zen";
+            model = "gpt-5.3-flash";
           }
           {
-            provider = "opencode-go";
-            model = "gpt-5.6-luna";
+            provider = "openrouter";
+            model = "z-ai/glm-5.3-flash";
           }
         ];
         delegation = {
