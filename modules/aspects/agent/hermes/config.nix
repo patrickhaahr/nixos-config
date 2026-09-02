@@ -25,8 +25,8 @@
         };
         fallback_providers = [
           {
-            provider = "opencode-zen";
-            model = "gpt-5.3-flash";
+            provider = "opencode";
+            model = "gemini-3.8-flash";
           }
           {
             provider = "openrouter";
