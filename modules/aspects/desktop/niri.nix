@@ -430,7 +430,7 @@
 
         niri-openhome-bindings =
           let
-            binds = (mkSettings { openhomeEnabled = true; }).binds;
+            inherit ((mkSettings { openhomeEnabled = true; })) binds;
             spawns = builtins.toJSON (
               map (key: binds.${key}.spawn) [
                 "Super+M"
