@@ -120,6 +120,25 @@ update *inputs:
     fi
     nix flake update --flake {{ flake }}
     just update-browser-use
+    just update-hermes
+
+# Bump hermes-agent to its latest upstream tag: rewrites the tag pin in
+# flake.nix and refreshes the lock entry. (openhome follows master, so the
+# plain `nix flake update` above already covers it.)
+[group('dev')]
+[no-exit-message]
+update-hermes:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    latest="$(curl -fsSL https://api.github.com/repos/NousResearch/hermes-agent/releases/latest |
+      sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p')"
+    [[ -n "$latest" ]] || { echo "cannot read latest hermes-agent release" >&2; exit 1; }
+    if grep -q "hermes-agent/$latest\";" flake.nix; then
+      echo "hermes-agent $latest already latest"
+    else
+      sed -i "s|hermes-agent/[^\"]*\";|hermes-agent/$latest\";|" flake.nix
+      nix flake update hermes-agent --flake {{ flake }}
+    fi
 
 # Bump browser-use to its latest upstream tag: rewrites version + source
 # hash in agent/browser-use/default.nix and regenerates the vendored uv.lock.
