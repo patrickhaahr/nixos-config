@@ -160,6 +160,9 @@
           };
 
           spawn-at-startup = startupApps { inherit handyEnabled heliumCommand minimalProfile; };
+          spawn-sh-at-startup = [
+            "sleep 5 && ${lib.getExe self'.packages.noctalia-shell} ipc call wallpaper random all"
+          ];
 
           xwayland-satellite.path = lib.getExe pkgs.xwayland-satellite;
 

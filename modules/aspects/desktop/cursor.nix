@@ -3,16 +3,7 @@ _: {
     home.pointerCursor = {
       enable = true;
       name = "Bibata-Modern-Classic";
-      package = pkgs.stdenvNoCC.mkDerivation {
-        pname = "bibata-modern-classic";
-        version = "local";
-        src = ../../../cursor/Bibata-Modern-Classic;
-
-        installPhase = ''
-          mkdir -p "$out/share/icons/Bibata-Modern-Classic"
-          cp -r . "$out/share/icons/Bibata-Modern-Classic"
-        '';
-      };
+      package = pkgs.bibata-cursors;
       size = 24;
       gtk.enable = true;
       x11.enable = true;

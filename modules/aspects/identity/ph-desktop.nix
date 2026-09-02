@@ -26,6 +26,7 @@ in
           self.modules.homeManager.handy
           self.modules.homeManager.ghostty
           self.modules.homeManager.cursor
+          self.modules.homeManager.noctalia-wallpapers
           self.modules.homeManager.osu-lazer
           self.modules.homeManager.steam-hm
           self.modules.homeManager.agent-hermes-desktop
@@ -47,12 +48,6 @@ in
       enable = true;
       gtk3.extraConfig.gtk-application-prefer-dark-theme = 1;
       gtk4.extraConfig.gtk-application-prefer-dark-theme = 1;
-    };
-    home.file.".cache/noctalia/wallpapers.json".text = builtins.toJSON {
-      defaultWallpaper = "/home/ph/nixos-config/wallpaper/a_woman_holding_a_sword.jpg";
-      wallpapers = {
-        "HDMI-A-1" = "/home/ph/nixos-config/wallpaper/a_woman_holding_a_sword.jpg";
-      };
     };
   };
 }
