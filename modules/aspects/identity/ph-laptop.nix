@@ -15,6 +15,7 @@ in
         self.modules.homeManager.cursor
         self.modules.homeManager.noctalia-wallpapers
         self.modules.homeManager.ghostty
+        self.modules.homeManager.agent-hermes-desktop
       ];
     };
   };
