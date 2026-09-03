@@ -13,6 +13,7 @@
         self.modules.nixos.doas
         self.modules.nixos.home-manager
         self.modules.nixos.nix-features
+        self.modules.nixos.nix-ld
         self.modules.nixos.nix-maintenance
         self.modules.nixos.identity-ph-laptop
         self.modules.nixos.helium
