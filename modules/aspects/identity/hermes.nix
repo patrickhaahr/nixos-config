@@ -31,14 +31,14 @@
         self.modules.homeManager.yt-dlp
         self.modules.homeManager.jq
         self.modules.homeManager.less
-        # no `python3` aspect here: browser-use-env already provides `bin/python3`
-        # and a second interpreter collides in the buildEnv (home-manager-path)
+        self.modules.homeManager.nvf
         self.modules.homeManager.ripgrep
         self.modules.homeManager.fd
         self.modules.homeManager.file
         self.modules.homeManager.unzip
         self.modules.homeManager.sqlite
         self.modules.homeManager.tree
+        self.modules.homeManager.yazi
       ];
       home.stateVersion = "25.11";
     };
