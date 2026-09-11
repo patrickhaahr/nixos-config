@@ -1,5 +1,5 @@
 { inputs, ... }: {
-  flake.modules.homeManager.agent-hermes = { config, ... }: {
+  flake.modules.homeManager.agent-hermes = { config, pkgs, ... }: {
     imports = [ inputs.hermes-agent.homeManagerModules.default ];
 
     home.sessionVariables.KUBECONFIG = "/etc/rancher/k3s/k3s.yaml";
@@ -23,10 +23,30 @@
           provider = "opencode-go";
           default = "glm-5.3-flash";
         };
+        auxiliary.vision = {
+          fallback_chain = [
+            {
+              provider = "opencode-go";
+              model = "glm-5.3-flash";
+            }
+            {
+              provider = "opencode-zen";
+              model = "glm-5.3-flash";
+            }
+            {
+              provider = "openrouter";
+              model = "z-ai/glm-5.3-flash";
+            }
+          ];
+        };
         fallback_providers = [
           {
-            provider = "opencode";
-            model = "gemini-3.8-flash";
+            provider = "opencode-go";
+            model = "glm-5.3-flash";
+          }
+          {
+            provider = "opencode-zen";
+            model = "glm-5.3-flash";
           }
           {
             provider = "openrouter";
@@ -81,6 +101,30 @@
         mcp_servers.executor = {
           url = "https://executor.zaza.haahr.me/mcp";
           headers.Authorization = "Bearer \${EXECUTOR_API_KEY}";
+        };
+        # Blender MCP (Blender + addon socket run on nika, localhost:9876).
+        # The addon socket binds localhost with no auth, and nika's sshd has
+        # AllowTcpForwarding off, so no -L tunnel can reach it. Instead the
+        # MCP server itself runs on nika, with MCP stdio carried over ssh.
+        # Quoting: sshd runs the login shell (nushell) -c, hence bash -l -c
+        # with a single-quoted inner command. Passphrase-free via ssh-keys.nix.
+        mcp_servers.blender = {
+          command = "${pkgs.openssh}/bin/ssh";
+          args = [
+            "-o"
+            "BatchMode=yes"
+            "-o"
+            "ConnectTimeout=10"
+            "-o"
+            "ServerAliveInterval=30"
+            "-o"
+            "ServerAliveCountMax=3"
+            "ph@nika"
+            "bash"
+            "-l"
+            "-c"
+            "'DISABLE_TELEMETRY=true uvx blender-mcp'"
+          ];
         };
         platforms.signal.enabled = true;
         dashboard.basic_auth = {
