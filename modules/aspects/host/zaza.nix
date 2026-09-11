@@ -4,6 +4,7 @@
       self.modules.nixos.zaza-hardware
       self.modules.nixos.doas
       self.modules.nixos.nix-features
+      self.modules.nixos.nix-ld
       self.modules.nixos.home-manager
       self.modules.nixos.homelab-excalidraw
       self.modules.nixos.homelab-executor
