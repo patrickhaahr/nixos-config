@@ -70,6 +70,7 @@ in
       home = {
         packages = [
           pkgs.nodejs
+          pkgs.uv
           opencode
         ];
         file = {
@@ -178,6 +179,15 @@ in
                 type = "remote";
                 url = "https://observability.mcp.cloudflare.com/mcp";
                 enabled = false;
+              };
+              blender = {
+                type = "local";
+                command = [
+                  "uvx"
+                  "blender-mcp"
+                ];
+                enabled = false;
+                timeout = 120000;
               };
             };
             permission.websearch = "allow";
