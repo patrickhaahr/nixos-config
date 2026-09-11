@@ -12,13 +12,10 @@ in
   domain-modeling = engineering "domain-modeling";
   grill-with-docs = engineering "grill-with-docs";
   improve-codebase-architecture = engineering "improve-codebase-architecture";
-  prototype = engineering "prototype";
   research = engineering "research";
-  setup-matt-pocock-skills = engineering "setup-matt-pocock-skills";
   tdd = engineering "tdd";
   to-spec = engineering "to-spec";
   to-tickets = engineering "to-tickets";
-  wayfinder = engineering "wayfinder";
 
   grilling = productivity "grilling";
   handoff = productivity "handoff";
