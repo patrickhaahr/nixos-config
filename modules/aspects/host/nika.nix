@@ -41,6 +41,7 @@
         self.modules.nixos.opentabletdriver
         self.modules.nixos.obs
         self.modules.nixos.openssh
+        self.modules.nixos.pavucontrol
         self.modules.nixos.tailscale
         self.modules.nixos.niri
         self.modules.nixos.mpv
