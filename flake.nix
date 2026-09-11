@@ -56,18 +56,8 @@
       flake = false;
     };
 
-    dotnet-skillz = {
-      url = "github:davidfowl/dotnet-skillz";
-      flake = false;
-    };
-
     claude-skill-typst = {
       url = "github:lucifer1004/claude-skill-typst";
-      flake = false;
-    };
-
-    rhys-sullivan-skills = {
-      url = "github:RhysSullivan/skills";
       flake = false;
     };
 

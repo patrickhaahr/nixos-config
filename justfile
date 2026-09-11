@@ -130,8 +130,7 @@ update *inputs:
 update-hermes:
     #!/usr/bin/env bash
     set -euo pipefail
-    latest="$(curl -fsSL https://api.github.com/repos/NousResearch/hermes-agent/releases/latest |
-      sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p')"
+    latest="$(gh api repos/NousResearch/hermes-agent/releases/latest --jq .tag_name)"
     [[ -n "$latest" ]] || { echo "cannot read latest hermes-agent release" >&2; exit 1; }
     if grep -q "hermes-agent/$latest\";" flake.nix; then
       echo "hermes-agent $latest already latest"
@@ -148,8 +147,7 @@ update-browser-use:
     #!/usr/bin/env bash
     set -euo pipefail
     aspect="{{ justfile_directory() }}/modules/aspects/agent/browser-use"
-    latest="$(curl -fsSL https://api.github.com/repos/browser-use/browser-use/releases/latest |
-      sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p')"
+    latest="$(gh api repos/browser-use/browser-use/releases/latest --jq .tag_name)"
     [[ -n "$latest" ]] || { echo "cannot read latest browser-use release" >&2; exit 1; }
     current="$(sed -n 's/^[[:space:]]*version = "\(.*\)";$/\1/p' "$aspect/default.nix")"
     if [[ "$latest" == "$current" ]]; then
