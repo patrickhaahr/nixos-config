@@ -39,6 +39,7 @@
         self.modules.homeManager.sqlite
         self.modules.homeManager.tree
         self.modules.homeManager.yazi
+        self.modules.homeManager.herdr
       ];
       home.stateVersion = "25.11";
     };
