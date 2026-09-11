@@ -2,7 +2,7 @@
   flake.modules.homeManager.browser-use =
     { pkgs, lib, ... }:
     let
-  version = "0.13.10";
+      version = "0.13.10";
 
       src = pkgs.fetchFromGitHub {
         owner = "browser-use";
