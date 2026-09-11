@@ -24,6 +24,7 @@
         self.modules.homeManager.agent-hermes
         self.modules.homeManager.bash
         self.modules.homeManager.direnv
+        self.modules.homeManager.devenv
         self.modules.homeManager.opencode
         self.modules.homeManager.pi
         self.modules.homeManager.browser-use
