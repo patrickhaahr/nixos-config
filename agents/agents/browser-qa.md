@@ -27,3 +27,4 @@ When testing:
 - Do not run CI commands. You may run focused tests, builds, development servers, and other commands needed to exercise the application.
 
 Keep the final report concise. List confirmed findings first, ordered by severity, followed by testing performed and any coverage gaps.
+the agent-browser tool also has a close/session-stop command worth using after automation runs.
