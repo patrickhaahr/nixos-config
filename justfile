@@ -121,6 +121,7 @@ update *inputs:
     nix flake update --flake {{ flake }}
     just update-browser-use
     just update-hermes
+    just update-osu
 
 # Bump hermes-agent to its latest upstream tag: rewrites the tag pin in
 # flake.nix and refreshes the lock entry. (openhome follows master, so the
@@ -168,6 +169,29 @@ update-browser-use:
     (cd "$workdir" && nix shell nixpkgs#uv -c uv lock --python 3.12)
     cp "$workdir/uv.lock" "$aspect/uv.lock"
     echo "browser-use $current -> $latest"
+
+# Bump osu-tachyon to the latest tachyon stream tag: rewrites version, tag URL
+# and AppImage hash in desktop/osu-lazer.nix. (Stable osu-lazer tracks nixpkgs.)
+[group('dev')]
+[no-exit-message]
+update-osu:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    aspect="{{ justfile_directory() }}/modules/aspects/desktop/osu-lazer.nix"
+    latest="$(gh api repos/ppy/osu/releases --jq '[.[] | select(.prerelease)][0].tag_name')"
+    [[ -n "$latest" ]] || { echo "cannot read latest osu tachyon release" >&2; exit 1; }
+    ver="${latest%-tachyon}"
+    current="$(sed -n 's/^[[:space:]]*version = "\(.*\)";$/\1/p' "$aspect")"
+    if [[ "$ver" == "$current" ]]; then
+      echo "osu-tachyon $current already latest"
+      exit 0
+    fi
+    meta="$(nix store prefetch-file --json "https://github.com/ppy/osu/releases/download/$latest/osu.AppImage")"
+    hash="$(sed -n 's/.*"hash": *"\([^"]*\)".*/\1/p' <<<"$meta")"
+    sed -i "s|version = \".*\";|version = \"$ver\";|" "$aspect"
+    sed -i "s|releases/download/[^\"]*/osu.AppImage|releases/download/$latest/osu.AppImage|" "$aspect"
+    sed -i "s|hash = \"sha256-.*\";|hash = \"$hash\";|" "$aspect"
+    echo "osu-tachyon $current -> $ver"
 
 [group('dev')]
 [no-exit-message]
