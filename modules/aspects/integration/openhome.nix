@@ -163,6 +163,10 @@ in
           # assertions inspect configuration only; the key value is never
           # decrypted, read, or printed here.
           test 'true' = '${builtins.toJSON nika.services.openhome.enable}'
+          # The speaker lifecycle automations must stay wired on nika.
+          test 'true' = '${builtins.toJSON nika.services.openhome.automations.enable}'
+          test 'true' = '${builtins.toJSON (nika.systemd.services ? "openhome-bluetooth-at-boot")}'
+          test 'true' = '${builtins.toJSON (nika.systemd.services ? "openhome-optical-at-shutdown")}'
           test '.config/openhome/api-key' = '${toString phSops.secrets.openhome_api_key.path}'
           case '${phSops.defaultSopsFile}' in
             *-nika.yaml) ;;

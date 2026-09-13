@@ -79,7 +79,10 @@
           headphones = "alsa_output.usb-SteelSeries_Arctis_Pro_Wireless-00.analog-stereo";
           speaker = "bluez_output.FC_E8_06_72_4E_85.1";
         };
-        openhome.enable = true;
+        openhome = {
+          enable = true;
+          automations.enable = true;
+        };
         #llamacpp.nika.model = "qwen3-14b";
         greetd = {
           enable = true;
