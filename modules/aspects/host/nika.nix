@@ -40,6 +40,7 @@
         self.modules.nixos.openlinkhub
         self.modules.nixos.opentabletdriver
         self.modules.nixos.obs
+        self.modules.nixos.obsidian
         self.modules.nixos.openssh
         self.modules.nixos.pavucontrol
         self.modules.nixos.tailscale
