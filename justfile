@@ -124,8 +124,10 @@ update *inputs:
     just update-osu
 
 # Bump hermes-agent to its latest upstream tag: rewrites the tag pin in
-# flake.nix and refreshes the lock entry. (openhome follows master, so the
-# plain `nix flake update` above already covers it.)
+# flake.nix and refreshes the lock entry, then syncs the vendored openwakeword
+# pin (hermes' lazy_deps.py) and the hey_hermes.onnx model rev in
+# agent/hermes/openwakeword.nix. (openhome follows master, so the plain
+# `nix flake update` above already covers it.)
 [group('dev')]
 [no-exit-message]
 update-hermes:
@@ -138,6 +140,32 @@ update-hermes:
     else
       sed -i "s|hermes-agent/[^\"]*\";|hermes-agent/$latest\";|" flake.nix
       nix flake update hermes-agent --flake {{ flake }}
+    fi
+    aspect="{{ justfile_directory() }}/modules/aspects/agent/hermes/openwakeword.nix"
+    rev="$(nix flake metadata {{ flake }} --json | python3 -c 'import json,sys; print(json.load(sys.stdin)["locks"]["nodes"]["hermes-agent"]["locked"]["rev"])')"
+    pin="$(curl -sL "https://raw.githubusercontent.com/NousResearch/hermes-agent/$rev/tools/lazy_deps.py" \
+      | sed -n 's/.*"openwakeword==\([^"]*\)".*/\1/p')"
+    [[ -n "$pin" ]] || { echo "cannot read openwakeword pin from hermes $rev" >&2; exit 1; }
+    current="$(sed -n 's/^[[:space:]]*version = "\(.*\)";$/\1/p' "$aspect")"
+    if [[ "$pin" != "$current" ]]; then
+      url_digest="$(curl -sL "https://pypi.org/pypi/openwakeword/$pin/json" | python3 -c '
+        import json, sys
+        u = [x for x in json.load(sys.stdin)["urls"] if x["filename"].endswith("-py3-none-any.whl")][0]
+        print(u["url"], u["digests"]["sha256"])')"
+      read -r url digest <<<"$url_digest"
+      sri="$(nix hash convert --hash-algo sha256 --to sri "$digest")"
+      sed -i "s|^\([[:space:]]*version = \)".*";|\1\"$pin\";|" "$aspect"
+      sed -i "s|https://files.pythonhosted.org/[^\"]*openwakeword-[^\"]*\.whl|$url|" "$aspect"
+      sed -i "/py3-none-any.whl/{n;s|hash = \"[^\"]*\"|hash = \"$sri\"|;}" "$aspect"
+      echo "openwakeword $current -> $pin"
+    fi
+    oldrev="$(grep -oP 'hermes-agent/\K[0-9a-f]{40}' "$aspect" | head -1)"
+    if [[ -n "$oldrev" && "$rev" != "$oldrev" ]]; then
+      meta="$(nix store prefetch-file --json "https://raw.githubusercontent.com/NousResearch/hermes-agent/$rev/tools/wakewords/hey_hermes.onnx")"
+      hash="$(sed -n 's/.*"hash": *"\([^"]*\)".*/\1/p' <<<"$meta")"
+      sed -i "s|hermes-agent/$oldrev/tools/wakewords/hey_hermes.onnx|hermes-agent/$rev/tools/wakewords/hey_hermes.onnx|" "$aspect"
+      sed -i "/hey_hermes.onnx\";/{n;s|hash = \"[^\"]*\"|hash = \"$hash\"|;}" "$aspect"
+      echo "hey_hermes.onnx re-pinned to hermes $rev"
     fi
 
 # Bump browser-use to its latest upstream tag: rewrites version + source

@@ -1,6 +1,9 @@
-{ inputs, ... }: {
+{ inputs, self, ... }: {
   flake.modules.homeManager.agent-hermes = { config, pkgs, ... }: {
-    imports = [ inputs.hermes-agent.homeManagerModules.default ];
+    imports = [
+      inputs.hermes-agent.homeManagerModules.default
+      self.modules.homeManager.agent-hermes-wake-word
+    ];
 
     home.sessionVariables.KUBECONFIG = "/etc/rancher/k3s/k3s.yaml";
 
