@@ -25,6 +25,7 @@ in
       self.modules.homeManager.openssh
       self.modules.homeManager.pi
       self.modules.homeManager.sops
+      self.modules.homeManager.typesafe
       self.modules.homeManager.yazi
     ];
   };

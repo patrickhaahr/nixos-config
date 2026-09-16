@@ -21,6 +21,7 @@ let
     (import ./openhome.nix { inherit inputs; })
     (import ./sentry.nix { inherit inputs; })
     (import ./typst.nix { inherit inputs; })
+    (import ./typesafe-ai.nix { inherit inputs; })
     (import ./vercel.nix { inherit inputs; })
   ];
 in
