@@ -71,6 +71,15 @@ _: {
             TERM = "xterm-256color";
           };
         };
+        "pi" = {
+          User = "ph";
+          IdentityAgent = "none";
+          IdentityFile = "~/.ssh/id_ed25519_pi";
+          IdentitiesOnly = true;
+          SetEnv = {
+            TERM = "xterm-256color";
+          };
+        };
         "hermes" = {
           HostName = "zaza";
           User = "hermes";
