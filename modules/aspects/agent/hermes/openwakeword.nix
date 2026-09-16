@@ -46,7 +46,7 @@
               # tools/wakewords/, so the engine's bundled-model path does
               # not exist in sealed venvs.
               "hey_hermes.onnx" = hermesPkgs.fetchurl {
-                url = "https://raw.githubusercontent.com/NousResearch/hermes-agent/939e45c91d751fadd94dcd1b873ac3cb44846213/tools/wakewords/hey_hermes.onnx";
+                url = "https://raw.githubusercontent.com/NousResearch/hermes-agent/345cd2b057a452236de401d3534b8502a7465e8d/tools/wakewords/hey_hermes.onnx";
                 hash = "sha256-sPp7n8WdhVm4OzxNAL8i1YtQP5ZTqX7nHSdSjGYglt8=";
               };
             };
