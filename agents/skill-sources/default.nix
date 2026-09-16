@@ -12,6 +12,7 @@ let
     (import ./cursor.nix { inherit inputs; })
     (import ./diagram-design.nix { inherit inputs; })
     (import ./dmmulroy.nix { inherit inputs pkgs; })
+    (import ./emilkowalski.nix { inherit inputs; })
     (import ./frontend-slides.nix { inherit inputs; })
     (import ./jakubkrehel.nix { inherit inputs; })
     (import ./kitlangton.nix { inherit inputs; })

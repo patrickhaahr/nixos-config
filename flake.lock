@@ -197,6 +197,22 @@
         "url": "https://gist.github.com/dmmulroy/9c80f1f499b031aa0b6525b5d9ae25f0.git"
       }
     },
+    "emil-skills": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1789487530,
+        "narHash": "sha256-/t+rEm8Qk+mQW4jpUpI78s+WXlb8e77lZipRtHtX398=",
+        "owner": "emilkowalski",
+        "repo": "skills",
+        "rev": "85e8e2363b713506e1d5b6e07a0eb2da66be1bc3",
+        "type": "github"
+      },
+      "original": {
+        "owner": "emilkowalski",
+        "repo": "skills",
+        "type": "github"
+      }
+    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -1031,6 +1047,7 @@
         "cursor-plugins": "cursor-plugins",
         "diagram-design": "diagram-design",
         "dmmulroy-coding-standards": "dmmulroy-coding-standards",
+        "emil-skills": "emil-skills",
         "flake-parts": "flake-parts",
         "frontend-slides": "frontend-slides",
         "handy": "handy",
