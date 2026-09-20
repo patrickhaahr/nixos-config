@@ -26,6 +26,7 @@
         #self.modules.nixos.hacking
         self.modules.nixos.screenshot-ocr
         self.modules.nixos.home-manager
+        self.modules.nixos.losslesscut
         self.modules.nixos.helium
         self.modules.nixos.lanzaboote
         self.modules.nixos.kdenlive
