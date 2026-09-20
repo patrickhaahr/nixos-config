@@ -52,23 +52,21 @@ let
 
           openhome-optical-at-shutdown = {
             description = "Send OpenHome optical request at shutdown";
-            wantedBy = [
-              "halt.target"
-              "poweroff.target"
-              "reboot.target"
-            ];
+            # Start jobs are cancelled during the shutdown transaction, so the
+            # command runs from ExecStop of a RemainAfterExit oneshot instead,
+            # ordered before shutdown.target but before the network stops.
+            wantedBy = [ "multi-user.target" ];
             after = [ "network.target" ];
-            before = [
-              "halt.target"
-              "poweroff.target"
-              "reboot.target"
-            ];
+            conflicts = [ "shutdown.target" ];
+            before = [ "shutdown.target" ];
             unitConfig.DefaultDependencies = false;
             serviceConfig = {
               Type = "oneshot";
               User = userName;
-              ExecStart = mkOpenhomeIrRetryScript "optical";
-              TimeoutStartSec = 35;
+              RemainAfterExit = true;
+              ExecStart = "${pkgs.coreutils}/bin/true";
+              ExecStop = mkOpenhomeIrRetryScript "optical";
+              TimeoutStopSec = 35;
             };
           };
         };
@@ -141,12 +139,15 @@ in
         '';
 
         openhome-optical-shutdown-wiring = pkgs.runCommand "openhome-optical-shutdown-wiring" { } ''
-          test '${builtins.toJSON opticalShutdownService.wantedBy}' = '["halt.target","poweroff.target","reboot.target"]'
+          test '${builtins.toJSON opticalShutdownService.wantedBy}' = '["multi-user.target"]'
           test '${builtins.toJSON opticalShutdownService.after}' = '["network.target"]'
-          test '${builtins.toJSON opticalShutdownService.before}' = '["halt.target","poweroff.target","reboot.target"]'
+          test '${builtins.toJSON opticalShutdownService.conflicts}' = '["shutdown.target"]'
+          test '${builtins.toJSON opticalShutdownService.before}' = '["shutdown.target"]'
           test '${builtins.toJSON opticalShutdownService.unitConfig.DefaultDependencies}' = 'false'
-          test '${builtins.toJSON opticalShutdownService.serviceConfig.TimeoutStartSec}' = '35'
-          grep -F 'openhome ir edifier optical' '${opticalShutdownService.serviceConfig.ExecStart}'
+          test '${builtins.toJSON opticalShutdownService.serviceConfig.RemainAfterExit}' = 'true'
+          test '${builtins.toJSON opticalShutdownService.serviceConfig.TimeoutStopSec}' = '35'
+          grep -F 'openhome ir edifier optical' '${opticalShutdownService.serviceConfig.ExecStop}'
+          grep -F 'seq 1 30' '${opticalShutdownService.serviceConfig.ExecStop}'
 
           touch "$out"
         '';
