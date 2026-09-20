@@ -152,7 +152,9 @@
     };
 
     sops-nix = {
-      url = "github:Mic92/sops-nix";
+      # Pin to PR #984 until upstream merges: nixpkgs removed buildGo125Module (Go 1.25 EOL).
+      # Revert to github:Mic92/sops-nix once https://github.com/Mic92/sops-nix/pull/984 is merged.
+      url = "github:c2fc2f/sops-nix/buildGo126Module";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
