@@ -40,6 +40,7 @@ Prefer explicit, type-driven designs inspired by Rust, OCaml, and Effect. Use ta
 ### 6. Testing & Quality
 Prefer 40% coverage with meaningful tests over 100% shallow coverage. Design for testability: keep pure business logic separate from IO.
 - Write tests for new features.
+- No tautological tests.
 - Run tests before completing tasks.
 
 ### 7. Respect the Codebase
