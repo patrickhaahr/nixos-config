@@ -156,7 +156,7 @@
 
       # profile_routes are parsed literally by Hermes; substitute the SOPS-backed
       # group ID after the managed config merge, without storing it in the flake.
-      home.activation.hermes-signal-coach-route = lib.hm.dag.entryAfter [ "sops-nix" ] ''
+      home.activation.hermes-signal-coach-route = lib.hm.dag.entryAfter [ "sops-nix" "linkGeneration" ] ''
         route_config="$HOME/.hermes/config.yaml"
         env_file="$HOME/.hermes/.env"
         if [ -f "$route_config" ] && [ -f "$env_file" ]; then
