@@ -40,6 +40,13 @@
               chat_id = "group:__HOME_GID__";
               profile = "household";
             }
+            {
+              name = "signal-group-homelab";
+              platform = "signal";
+              # Homelab operations group; resolved from SOPS at activation.
+              chat_id = "group:__HOMELAB_GID__";
+              profile = "homelab";
+            }
           ];
           # The shared declarative skills source, projected to ~/.agents/skills
           # by the opencode aspect. Hermes discovers local skills (including
@@ -163,17 +170,21 @@
 
       # profile_routes are parsed literally by Hermes; substitute the SOPS-backed
       # group ID after the managed config merge, without storing it in the flake.
-      home.activation.hermes-signal-coach-route = lib.hm.dag.entryAfter [ "sops-nix" "linkGeneration" ] ''
-        route_config="$HOME/.hermes/config.yaml"
-        env_file="$HOME/.hermes/.env"
+      home.activation.hermes-signal-coach-route = lib.hm.dag.entryAfter [ "hermesAgentSetup" ] ''
+        route_config="${config.home.homeDirectory}/.hermes/config.yaml"
+        env_file="${config.home.homeDirectory}/.hermes/.env"
         if [ -f "$route_config" ] && [ -f "$env_file" ]; then
           group_id="$(grep '^SIGNAL_COACH_GROUP_ID=' "$env_file" | cut -d= -f2- | sed 's#^group:##' || true)"
           home_group_id="$(grep '^SIGNAL_HOME_GROUP_ID=' "$env_file" | cut -d= -f2- | sed 's#^group:##' || true)"
+          homelab_group_id="$(grep '^SIGNAL_HOMELAB_GROUP_ID=' "$env_file" | cut -d= -f2- | sed 's#^group:##' || true)"
           if [ -n "$group_id" ]; then
-            ${pkgs.perl}/bin/perl -0pi -e "s#group:__COACH_GID__#group:$group_id#g" "$route_config"
+            ${pkgs.perl}/bin/perl -0pi -e "s#(?m)^  - chat_id: .*?(?=\\n    name: signal-group-coach)#  - chat_id: group:$group_id#" "$route_config"
           fi
           if [ -n "$home_group_id" ]; then
-            ${pkgs.perl}/bin/perl -0pi -e "s#group:__HOME_GID__#group:$home_group_id#g" "$route_config"
+            ${pkgs.perl}/bin/perl -0pi -e "s#(?m)^  - chat_id: .*?(?=\\n    name: signal-group-home)#  - chat_id: group:$home_group_id#" "$route_config"
+          fi
+          if [ -n "$homelab_group_id" ]; then
+            ${pkgs.perl}/bin/perl -0pi -e "s#(?m)^  - chat_id: .*?(?=\\n    name: signal-group-homelab)#  - chat_id: group:$homelab_group_id#" "$route_config"
           fi
         fi
       '';
