@@ -33,6 +33,13 @@
               chat_id = "group:__COACH_GID__";
               profile = "coach";
             }
+            {
+              name = "signal-group-home";
+              platform = "signal";
+              # Household group; resolved from SOPS at activation.
+              chat_id = "group:__HOME_GID__";
+              profile = "home";
+            }
           ];
           # The shared declarative skills source, projected to ~/.agents/skills
           # by the opencode aspect. Hermes discovers local skills (including
@@ -161,8 +168,12 @@
         env_file="$HOME/.hermes/.env"
         if [ -f "$route_config" ] && [ -f "$env_file" ]; then
           group_id="$(grep '^SIGNAL_COACH_GROUP_ID=' "$env_file" | cut -d= -f2- | sed 's#^group:##')"
+          home_group_id="$(grep '^SIGNAL_HOME_GROUP_ID=' "$env_file" | cut -d= -f2- | sed 's#^group:##')"
           if [ -n "$group_id" ]; then
             ${pkgs.perl}/bin/perl -0pi -e "s#group:__COACH_GID__#group:$group_id#g" "$route_config"
+          fi
+          if [ -n "$home_group_id" ]; then
+            ${pkgs.perl}/bin/perl -0pi -e "s#group:__HOME_GID__#group:$home_group_id#g" "$route_config"
           fi
         fi
       '';
