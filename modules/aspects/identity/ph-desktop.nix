@@ -29,6 +29,7 @@ in
           self.modules.homeManager.noctalia-wallpapers
           self.modules.homeManager.osu-lazer
           self.modules.homeManager.steam-hm
+          self.modules.homeManager.typesafe
           self.modules.homeManager.agent-hermes-desktop
         ];
 
