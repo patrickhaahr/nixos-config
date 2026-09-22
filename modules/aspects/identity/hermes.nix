@@ -44,6 +44,17 @@
       home.stateVersion = "25.11";
     };
 
+    # Passwordless run0 elevation for hermes so it can `just switch` unattended.
+    # manage-units YES is what run0's transient root unit asks for.
+    security.polkit.extraConfig = ''
+      polkit.addRule(function(action, subject) {
+        if (subject.user == "hermes" &&
+            action.id == "org.freedesktop.systemd1.manage-units") {
+          return polkit.Result.YES;
+        }
+      });
+    '';
+
     systemd.tmpfiles.rules = [
       "d /home/hermes/.config 0700 hermes users -"
       "d /home/hermes/.local 0700 hermes users -"
