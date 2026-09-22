@@ -38,7 +38,7 @@
               platform = "signal";
               # Household group; resolved from SOPS at activation.
               chat_id = "group:__HOME_GID__";
-              profile = "home";
+              profile = "household";
             }
           ];
           # The shared declarative skills source, projected to ~/.agents/skills
