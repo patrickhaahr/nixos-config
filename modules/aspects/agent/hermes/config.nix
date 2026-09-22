@@ -167,8 +167,8 @@
         route_config="$HOME/.hermes/config.yaml"
         env_file="$HOME/.hermes/.env"
         if [ -f "$route_config" ] && [ -f "$env_file" ]; then
-          group_id="$(grep '^SIGNAL_COACH_GROUP_ID=' "$env_file" | cut -d= -f2- | sed 's#^group:##')"
-          home_group_id="$(grep '^SIGNAL_HOME_GROUP_ID=' "$env_file" | cut -d= -f2- | sed 's#^group:##')"
+          group_id="$(grep '^SIGNAL_COACH_GROUP_ID=' "$env_file" | cut -d= -f2- | sed 's#^group:##' || true)"
+          home_group_id="$(grep '^SIGNAL_HOME_GROUP_ID=' "$env_file" | cut -d= -f2- | sed 's#^group:##' || true)"
           if [ -n "$group_id" ]; then
             ${pkgs.perl}/bin/perl -0pi -e "s#group:__COACH_GID__#group:$group_id#g" "$route_config"
           fi
