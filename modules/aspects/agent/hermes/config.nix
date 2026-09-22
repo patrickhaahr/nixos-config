@@ -17,9 +17,16 @@
       };
 
       settings = {
-        # One gateway serves default + named profiles (coach bot). Signal groups
-        # route to a profile via gateway.profile_routes (chat_id = group:<id>).
-        gateway.multiplex_profiles = true;
+        gateway.profile_routes = [
+          {
+            name = "signal-group-coach";
+            platform = "signal";
+            # The group ID is secret-backed in HERMES_HOME/.env (sops), never
+            # in the repo: config expands ${VAR} at load time.
+            chat_id = "group:\${SIGNAL_COACH_GROUP_ID}";
+            profile = "coach";
+          }
+        ];
         # The shared declarative skills source, projected to ~/.agents/skills
         # by the opencode aspect. Hermes discovers local skills (including
         # the OpenHome skill) from there as an external skill directory.
