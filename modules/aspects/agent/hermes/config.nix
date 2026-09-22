@@ -30,7 +30,7 @@
               platform = "signal";
               # The group ID is secret-backed in HERMES_HOME/.env (sops), never
               # in the repo: config expands ${VAR} at load time.
-              chat_id = "group:\${SIGNAL_COACH_GROUP_ID}";
+              chat_id = "group:__COACH_GID__";
               profile = "coach";
             }
           ];
@@ -162,7 +162,7 @@
         if [ -f "$route_config" ] && [ -f "$env_file" ]; then
           group_id="$(grep '^SIGNAL_COACH_GROUP_ID=' "$env_file" | cut -d= -f2- | sed 's#^group:##')"
           if [ -n "$group_id" ]; then
-            ${pkgs.perl}/bin/perl -0pi -e "s#group:''${SIGNAL_COACH_GROUP_ID}#group:$group_id#g" "$route_config"
+            ${pkgs.perl}/bin/perl -0pi -e "s#group:__COACH_GID__#group:$group_id#g" "$route_config"
           fi
         fi
       '';
