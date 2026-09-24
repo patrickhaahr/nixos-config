@@ -16,6 +16,7 @@ in
       self.modules.homeManager.herdr
       self.modules.homeManager.hunk
       self.modules.homeManager.python3
+      self.modules.homeManager.codex
       self.modules.homeManager.ripgrep
       self.modules.homeManager.jj
       self.modules.homeManager.less

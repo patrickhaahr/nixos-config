@@ -1,4 +1,4 @@
-{ self, ... }: {
+{ self, inputs, ... }: {
   flake.modules.nixos.nika =
     {
       config,
@@ -55,6 +55,7 @@
         self.modules.nixos.wl-clipboard
         self.modules.nixos."niri-dp1-1080p"
         self.modules.nixos.zed
+        self.modules.nixos.codex-desktop
       ];
 
       networking.networkmanager.enable = true;

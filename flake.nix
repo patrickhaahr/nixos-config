@@ -126,6 +126,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    codex-desktop-linux.url = "github:ilysenko/codex-desktop-linux";
+
     spicetify-nix = {
       url = "github:Gerg-L/spicetify-nix";
       inputs.nixpkgs.follows = "nixpkgs";
