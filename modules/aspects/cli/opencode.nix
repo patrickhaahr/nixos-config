@@ -106,10 +106,6 @@ in
                 url = "https://mcp.docs.astro.build/mcp";
                 enabled = false;
               };
-              # Selfhosted executor MCP (aspects/homelab/executor.nix).
-              # First use triggers opencode's automatic MCP OAuth login;
-              # alternatively add headers.Authorization with an API key
-              # from the executor web console.
               executor = {
                 type = "remote";
                 url = "https://executor.zaza.haahr.me/mcp";
@@ -178,6 +174,11 @@ in
               cloudflare-observability = {
                 type = "remote";
                 url = "https://observability.mcp.cloudflare.com/mcp";
+                enabled = false;
+              };
+              better-learning = {
+                type = "remote";
+                url = "https://mcp-server-production-6a4c.up.railway.app/mcp";
                 enabled = false;
               };
               blender = {
