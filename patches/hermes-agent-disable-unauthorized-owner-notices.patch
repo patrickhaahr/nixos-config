@@ -1,0 +1,44 @@
+diff --git a/gateway/config.py b/gateway/config.py
+index e484102a..90a20aa3 100644
+--- a/gateway/config.py
++++ b/gateway/config.py
+@@ -807,6 +807,13 @@ class GatewayConfig:
+             return choice
+         return "ignore" if platform == Platform.EMAIL else self.unauthorized_dm_behavior
+ 
++    def get_unauthorized_dm_owner_notifications(self, platform: Optional[Platform] = None) -> bool:
++        """Whether ignored unauthorized DMs notify the owner in the platform home channel."""
++        platform_cfg = self.platforms.get(platform) if platform else None
++        if not platform_cfg or "unauthorized_dm_owner_notifications" not in platform_cfg.extra:
++            return True
++        return _coerce_bool(platform_cfg.extra.get("unauthorized_dm_owner_notifications"), default=True)
++
+     def get_notice_delivery(self, platform: Optional[Platform] = None) -> str:
+         """Effective notice-delivery mode ("public"/"private") for a platform."""
+         choice = self._extra_choice(platform, "notice_delivery", {"public", "private"}, "public")
+diff --git a/gateway/config_loader.py b/gateway/config_loader.py
+index 10bc91fa..e92ad75c 100644
+--- a/gateway/config_loader.py
++++ b/gateway/config_loader.py
+@@ -207,6 +207,7 @@ def _plain(*keys: str) -> tuple:
+ # ``"dm"`` defers to the global unauthorized_dm_behavior.
+ _SHARED_KEYS: tuple = (
+     ("unauthorized_dm_behavior", None, "dm"),
++    ("unauthorized_dm_owner_notifications", None, None),
+     ("notice_delivery", None, lambda v: _normalize_choice(v, {"public", "private"}, "public")),
+     *_plain("reply_prefix", "reply_in_thread", "cron_continuable_surface", "require_mention", "send_read_receipts"),
+     ("allowed_chats", _TELEGRAM, None),
+diff --git a/gateway/run_inbound.py b/gateway/run_inbound.py
+index 48d793d7..507ecbd4 100644
+--- a/gateway/run_inbound.py
++++ b/gateway/run_inbound.py
+@@ -152,6 +152,9 @@ class GatewayInboundMixin:
+             platform_name, source.user_id, source.user_name or "", hermes_home=display_hermes_home(),
+         )
+         logger.warning("Unauthorized user (ignored): %s", hint)
++        config = getattr(self, "config", None)
++        if config is not None and not config.get_unauthorized_dm_owner_notifications(source.platform):
++            return
+         notifier = getattr(self, "_unauthorized_owner_notifier", None)
+         if notifier is None:
+             notifier = self._unauthorized_owner_notifier = UnauthorizedOwnerNotifier()
