@@ -192,7 +192,12 @@
               "'DISABLE_TELEMETRY=true uvx blender-mcp'"
             ];
           };
-          platforms.signal.enabled = true;
+          platforms.signal = {
+            enabled = true;
+            # Silently drop unauthorized direct messages; never send pairing
+            # codes or decline bubbles to unknown Signal users.
+            unauthorized_dm_behavior = "ignore";
+          };
           dashboard.basic_auth = {
             username = "ph";
             password_hash = "scrypt$16384$8$1$M9G8Iaw1h0rCto5u539CDA==$Dig/ENDaIvTR2LUMb69z6FYkyV3WzS9iZKgtHQgx/B4=";
