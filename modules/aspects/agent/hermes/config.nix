@@ -194,9 +194,10 @@
           };
           platforms.signal = {
             enabled = true;
-            # Silently drop unauthorized direct messages; never send pairing
-            # codes or decline bubbles to unknown Signal users.
+            # Keep unauthorized DMs silent to the sender and suppress the owner-side
+            # Signal notice; the unauthorized event remains in gateway logs.
             unauthorized_dm_behavior = "ignore";
+            unauthorized_dm_owner_notifications = false;
           };
           dashboard.basic_auth = {
             username = "ph";
