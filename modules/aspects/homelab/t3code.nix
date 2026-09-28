@@ -15,7 +15,8 @@
           Type = "simple";
           # Agent state (projects, pairings) lives under the hermes home.
           User = "hermes";
-          ExecStartPre = "${pkgs.tailscale}/bin/tailscale set --operator=hermes";
+          # "+" runs this as root; setting operator needs root the first time.
+          ExecStartPre = "+${pkgs.tailscale}/bin/tailscale set --operator=hermes";
           ExecStart = "${pkgs.t3code}/bin/t3 serve --tailscale-serve --no-browser --mode web";
           Restart = "on-failure";
           RestartSec = 5;
