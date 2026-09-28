@@ -25,6 +25,8 @@
         self.modules.homeManager.bash
         self.modules.homeManager.direnv
         self.modules.homeManager.devenv
+        self.modules.homeManager.codex
+        self.modules.homeManager.claude-code
         self.modules.homeManager.opencode
         self.modules.homeManager.pi
         self.modules.homeManager.browser-use

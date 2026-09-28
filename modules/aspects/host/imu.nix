@@ -12,6 +12,7 @@
 
     networking.hostName = "imu";
     nixpkgs.hostPlatform = "x86_64-linux";
+    nixpkgs.config.allowUnfree = true;
 
     wsl = {
       enable = true;
