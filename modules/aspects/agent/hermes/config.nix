@@ -17,34 +17,48 @@
 
         # profile_routes are parsed literally by Hermes; substitute the SOPS-backed
         # group ID after the managed config merge, without storing it in the flake.
-        activation.hermes-signal-coach-route = lib.hm.dag.entryAfter [ "hermesAgentSetup" ] ''
-          route_config="${config.home.homeDirectory}/.hermes/config.yaml"
-          env_file="${config.home.homeDirectory}/.hermes/.env"
-          if [ -f "$route_config" ] && [ -f "$env_file" ]; then
-            group_id="$(grep '^SIGNAL_COACH_GROUP_ID=' "$env_file" | cut -d= -f2- | sed 's#^group:##' || true)"
-            home_group_id="$(grep '^SIGNAL_HOME_GROUP_ID=' "$env_file" | cut -d= -f2- | sed 's#^group:##' || true)"
-            homelab_group_id="$(grep '^SIGNAL_HOMELAB_GROUP_ID=' "$env_file" | cut -d= -f2- | sed 's#^group:##' || true)"
-            if [ -n "$group_id" ]; then
-              ${pkgs.perl}/bin/perl -0pi -e "s#(?m)^  - chat_id: .*?(?=\\n    name: signal-group-coach)#  - chat_id: group:$group_id#" "$route_config"
+        activation = {
+          hermes-signal-coach-route = lib.hm.dag.entryAfter [ "hermesAgentSetup" ] ''
+            route_config="${config.home.homeDirectory}/.hermes/config.yaml"
+            env_file="${config.home.homeDirectory}/.hermes/.env"
+            if [ -f "$route_config" ] && [ -f "$env_file" ]; then
+              group_id="$(grep '^SIGNAL_COACH_GROUP_ID=' "$env_file" | cut -d= -f2- | sed 's#^group:##' || true)"
+              home_group_id="$(grep '^SIGNAL_HOME_GROUP_ID=' "$env_file" | cut -d= -f2- | sed 's#^group:##' || true)"
+              homelab_group_id="$(grep '^SIGNAL_HOMELAB_GROUP_ID=' "$env_file" | cut -d= -f2- | sed 's#^group:##' || true)"
+              if [ -n "$group_id" ]; then
+                ${pkgs.perl}/bin/perl -0pi -e "s#(?m)^  - chat_id: .*?(?=\\n    name: signal-group-coach)#  - chat_id: group:$group_id#" "$route_config"
+              fi
+              if [ -n "$home_group_id" ]; then
+                ${pkgs.perl}/bin/perl -0pi -e "s#(?m)^  - chat_id: .*?(?=\\n    name: signal-group-home)#  - chat_id: group:$home_group_id#" "$route_config"
+              fi
+              if [ -n "$homelab_group_id" ]; then
+                ${pkgs.perl}/bin/perl -0pi -e "s#(?m)^  - chat_id: .*?(?=\\n    name: signal-group-homelab)#  - chat_id: group:$homelab_group_id#" "$route_config"
+              fi
             fi
-            if [ -n "$home_group_id" ]; then
-              ${pkgs.perl}/bin/perl -0pi -e "s#(?m)^  - chat_id: .*?(?=\\n    name: signal-group-home)#  - chat_id: group:$home_group_id#" "$route_config"
-            fi
-            if [ -n "$homelab_group_id" ]; then
-              ${pkgs.perl}/bin/perl -0pi -e "s#(?m)^  - chat_id: .*?(?=\\n    name: signal-group-homelab)#  - chat_id: group:$homelab_group_id#" "$route_config"
-            fi
-          fi
-        '';
+          '';
 
-        # Only the shared default profile owns the Signal adapter. Named profiles
-        # are targets of group routes, not independent Signal bots. A stale
-        # profile .env must not make the homelab profile receive DMs.
-        activation.hermes-homelab-signal-isolation = lib.hm.dag.entryAfter [ "hermesAgentSetup" ] ''
-          profile_config="${config.home.homeDirectory}/.hermes/profiles/homelab/config.yaml"
-          if [ -f "$profile_config" ]; then
-            ${pkgs.perl}/bin/perl -0pi -e 's#(?m)^  signal:\\n    enabled: true$#  signal:\\n    enabled: false#' "$profile_config"
-          fi
-        '';
+          # Enable the installed Live Voice plugin in the shared config and every
+          # existing named profile. Named profiles have their own config.yaml,
+          # so the Home Manager-owned setting alone does not reach them.
+          hermes-live-voice-plugin = lib.hm.dag.entryAfter [ "hermesAgentSetup" ] ''
+            for route_config in "${config.home.homeDirectory}/.hermes/config.yaml" "${config.home.homeDirectory}/.hermes"/profiles/*/config.yaml; do
+              [ -f "$route_config" ] || continue
+              if ! grep -q '^  - talk-desktop$' "$route_config"; then
+                ${pkgs.perl}/bin/perl -0pi -e 's#^plugins:\n  enabled: \[\]$#plugins:\n  enabled:\n  - talk-desktop#mg' "$route_config"
+              fi
+            done
+          '';
+
+          # Only the shared default profile owns the Signal adapter. Named profiles
+          # are targets of group routes, not independent Signal bots. A stale
+          # profile .env must not make the homelab profile receive DMs.
+          hermes-homelab-signal-isolation = lib.hm.dag.entryAfter [ "hermesAgentSetup" ] ''
+            profile_config="${config.home.homeDirectory}/.hermes/profiles/homelab/config.yaml"
+            if [ -f "$profile_config" ]; then
+              ${pkgs.perl}/bin/perl -0pi -e 's#(?m)^  signal:\\n    enabled: true$#  signal:\\n    enabled: false#' "$profile_config"
+            fi
+          '';
+        };
       };
 
       services.hermes-agent = {
@@ -57,6 +71,7 @@
         };
 
         settings = {
+          plugins.enabled = [ "talk-desktop" ];
           gateway.profile_routes = [
             {
               name = "signal-group-coach";
