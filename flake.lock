@@ -32,6 +32,22 @@
         "type": "github"
       }
     },
+    "apollo-skills": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1790290138,
+        "narHash": "sha256-gb9eW0nOs43lNbTX8+q6mJHx4aZE0CpwYJiU4oCFYLc=",
+        "owner": "apollographql",
+        "repo": "skills",
+        "rev": "6b51584fb648d4463b1573e8e9c325c24f44c5b1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "apollographql",
+        "repo": "skills",
+        "type": "github"
+      }
+    },
     "better-auth-skills": {
       "flake": false,
       "locked": {
@@ -1094,6 +1110,7 @@
       "inputs": {
         "anthropic-skills": "anthropic-skills",
         "anti-slop": "anti-slop",
+        "apollo-skills": "apollo-skills",
         "better-auth-skills": "better-auth-skills",
         "claude-skill-typst": "claude-skill-typst",
         "cloudflare-skills": "cloudflare-skills",

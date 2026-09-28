@@ -6,6 +6,7 @@
 let
   providers = [
     (import ./agent-browser.nix { inherit inputs; })
+    (import ./apollo.nix { inherit inputs; })
     (import ./better-auth.nix { inherit inputs; })
     (import ./cloudflare.nix { inherit inputs; })
     (import ./diagram-design.nix { inherit inputs; })
@@ -18,8 +19,8 @@ let
     (import ./marketing.nix { inherit inputs; })
     (import ./openhome.nix { inherit inputs; })
     (import ./sentry.nix { inherit inputs; })
-    (import ./typst.nix { inherit inputs; })
-    (import ./typesafe-ai.nix { inherit inputs; })
+    #(import ./typst.nix { inherit inputs; })
+    #(import ./typesafe-ai.nix { inherit inputs; })
     (import ./vercel.nix { inherit inputs; })
   ];
 in

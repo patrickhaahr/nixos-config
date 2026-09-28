@@ -41,6 +41,11 @@
       flake = false;
     };
 
+    apollo-skills = {
+      url = "github:apollographql/skills";
+      flake = false;
+    };
+
     better-auth-skills = {
       url = "github:better-auth/skills";
       flake = false;
