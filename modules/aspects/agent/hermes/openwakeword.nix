@@ -60,6 +60,14 @@
             rm $out/${sitePackages}/openwakeword/custom_verifier_model.py
           '';
       };
+      hermesGateway = hermesPkgs.runCommand "hermes-gateway-owner-notice" { } ''
+        mkdir -p $out/${hermesPkgs.python312.sitePackages}/gateway
+        cp ${inputs.hermes-agent}/gateway/__init__.py $out/${hermesPkgs.python312.sitePackages}/gateway/
+        cp ${inputs.hermes-agent}/gateway/config.py $out/${hermesPkgs.python312.sitePackages}/gateway/
+        cp ${inputs.hermes-agent}/gateway/config_loader.py $out/${hermesPkgs.python312.sitePackages}/gateway/
+        cp ${inputs.hermes-agent}/gateway/run_inbound.py $out/${hermesPkgs.python312.sitePackages}/gateway/
+        patch -d $out -p1 < ${../../../../patches/hermes-agent-disable-unauthorized-owner-notices.patch}
+      '';
     in
     {
       # Override the package, not services.extraPythonPackages: the module's
@@ -67,7 +75,10 @@
       # dependency groups (messaging, voice, ...) with the option defaults.
       services.hermes-agent = {
         package = inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default.override {
-          extraPythonPackages = [ openwakeword ];
+          extraPythonPackages = [
+            openwakeword
+            hermesGateway
+          ];
         };
         settings.wake_word.openwakeword.model = "${openwakeword}/${hermesPkgs.python312.sitePackages}/openwakeword/resources/models/hey_hermes.onnx";
       };
