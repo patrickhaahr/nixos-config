@@ -37,15 +37,17 @@
             fi
           '';
 
-          # Enable the installed Live Voice plugin in the shared config and every
-          # existing named profile. Named profiles have their own config.yaml,
-          # so the Home Manager-owned setting alone does not reach them.
+          # Enable the installed Live Voice plugin in the shared config and
+          # every named profile: named profiles have their own config.yaml, so
+          # the Home Manager-owned setting alone does not reach them. Covers
+          # enabled-with-items, empty list, and key-absent shapes.
           hermes-live-voice-plugin = lib.hm.dag.entryAfter [ "hermesAgentSetup" ] ''
             for route_config in "${config.home.homeDirectory}/.hermes/config.yaml" "${config.home.homeDirectory}/.hermes"/profiles/*/config.yaml; do
               [ -f "$route_config" ] || continue
-              if ! grep -q '^  - talk-desktop$' "$route_config"; then
-                ${pkgs.perl}/bin/perl -0pi -e 's#^plugins:\n  enabled: \[\]$#plugins:\n  enabled:\n  - talk-desktop#mg' "$route_config"
-              fi
+              grep -q '^  - talk-desktop$' "$route_config" && continue
+              ${pkgs.gnugrep}/bin/grep -q '^plugins:' "$route_config" ||
+                printf '\nplugins:\n  enabled:\n  - talk-desktop\n' >> "$route_config"
+              ${pkgs.perl}/bin/perl -0pi -e 's#^(plugins:\n  enabled:)\n(  - (?!talk-desktop))#$1\n  - talk-desktop\n$2#m; s#(plugins:\n  enabled:) \[\]$#$1\n  - talk-desktop#m' "$route_config"
             done
           '';
 
@@ -71,7 +73,10 @@
         };
 
         settings = {
-          plugins.enabled = [ "talk-desktop" ];
+          # talk-desktop is enabled per-config-file by the
+          # hermes-live-voice-plugin activation below, not via
+          # plugins.enabled here: a managed list would replace the
+          # runtime-enabled plugins globally (herdr-agent-state).
           gateway.profile_routes = [
             {
               name = "signal-group-coach";
