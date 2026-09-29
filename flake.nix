@@ -106,6 +106,11 @@
       flake = false;
     };
 
+    openclaw = {
+      url = "github:openclaw/openclaw";
+      flake = false;
+    };
+
     lumen = {
       url = "github:jnsahaj/lumen";
       inputs.nixpkgs.follows = "nixpkgs";

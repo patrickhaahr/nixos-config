@@ -967,6 +967,22 @@
         "type": "github"
       }
     },
+    "openclaw": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1790637489,
+        "narHash": "sha256-OvBDR51Nf9IQ77FrFLJ+GbCKo12yXHpepEIuMbsNKsk=",
+        "owner": "openclaw",
+        "repo": "openclaw",
+        "rev": "78c83b538c5e7460954b1d5d511e3f853b05647e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "openclaw",
+        "repo": "openclaw",
+        "type": "github"
+      }
+    },
     "openhome": {
       "inputs": {
         "flake-utils": "flake-utils_3",
@@ -1138,6 +1154,7 @@
         "nixpkgs": "nixpkgs_3",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "nvf": "nvf",
+        "openclaw": "openclaw",
         "openhome": "openhome",
         "pyproject-build-systems": "pyproject-build-systems_2",
         "pyproject-nix": "pyproject-nix_2",
