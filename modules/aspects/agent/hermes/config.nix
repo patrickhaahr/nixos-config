@@ -51,13 +51,15 @@
             done
           '';
 
-          # Only the shared default profile owns the Signal adapter. Named profiles
-          # are targets of group routes, not independent Signal bots. A stale
-          # profile .env must not make the homelab profile receive DMs.
-          hermes-homelab-signal-isolation = lib.hm.dag.entryAfter [ "hermesAgentSetup" ] ''
+          # Signal is a shared gateway adapter in multiplex mode. Do not write
+          # platforms.signal.enabled=false into a named profile: Hermes reads
+          # that profile while constructing the shared gateway and disables the
+          # adapter for every routed group. Remove the old isolation key left by
+          # earlier generations instead.
+          hermes-remove-homelab-signal-disable = lib.hm.dag.entryAfter [ "hermesAgentSetup" ] ''
             profile_config="${config.home.homeDirectory}/.hermes/profiles/homelab/config.yaml"
             if [ -f "$profile_config" ]; then
-              ${pkgs.perl}/bin/perl -0pi -e 's#(?m)^  signal:\\n    enabled: true$#  signal:\\n    enabled: false#' "$profile_config"
+              ${pkgs.perl}/bin/perl -0pi -e 's#(?ms)^platforms:\x0a  signal:\x0a    enabled: false\x0a##' "$profile_config"
             fi
           '';
         };
