@@ -182,35 +182,41 @@
             backend = "browser-use";
             cdp_url = "http://127.0.0.1:9222";
           };
-          # Executor MCP (selfhosted k3s, see aspects/homelab/executor.nix).
-          # ${EXECUTOR_API_KEY} expands from the sops-owned .hermes/.env.
-          mcp_servers.executor = {
-            url = "https://executor.zaza.haahr.me/mcp";
-            headers.Authorization = "Bearer \${EXECUTOR_API_KEY}";
-          };
-          # Blender MCP (Blender + addon socket run on nika, localhost:9876).
-          # The addon socket binds localhost with no auth, and nika's sshd has
-          # AllowTcpForwarding off, so no -L tunnel can reach it. Instead the
-          # MCP server itself runs on nika, with MCP stdio carried over ssh.
-          # Quoting: sshd runs the login shell (nushell) -c, hence bash -l -c
-          # with a single-quoted inner command. Passphrase-free via ssh-keys.nix.
-          mcp_servers.blender = {
-            command = "${pkgs.openssh}/bin/ssh";
-            args = [
-              "-o"
-              "BatchMode=yes"
-              "-o"
-              "ConnectTimeout=10"
-              "-o"
-              "ServerAliveInterval=30"
-              "-o"
-              "ServerAliveCountMax=3"
-              "ph@nika"
-              "bash"
-              "-l"
-              "-c"
-              "'DISABLE_TELEMETRY=true uvx blender-mcp'"
-            ];
+          mcp_servers = {
+            executor = {
+              url = "https://executor.zaza.haahr.me/mcp";
+              headers.Authorization = "Bearer \${EXECUTOR_API_KEY}";
+            };
+            # OpenHome MCP (shared home-control API).
+            # ${OPENHOME_API_KEY} expands from the sops-owned .hermes/.env.
+            openhome = {
+              url = "https://openhome.haahr.me/mcp";
+              headers.Authorization = "Bearer \${OPENHOME_API_KEY}";
+            };
+            # Blender MCP (Blender + addon socket run on nika, localhost:9876).
+            # The addon socket binds localhost with no auth, and nika's sshd has
+            # AllowTcpForwarding off, so no -L tunnel can reach it. Instead the
+            # MCP server itself runs on nika, with MCP stdio carried over ssh.
+            # Quoting: sshd runs the login shell (nushell) -c, hence bash -l -c
+            # with a single-quoted inner command. Passphrase-free via ssh-keys.nix.
+            blender = {
+              command = "${pkgs.openssh}/bin/ssh";
+              args = [
+                "-o"
+                "BatchMode=yes"
+                "-o"
+                "ConnectTimeout=10"
+                "-o"
+                "ServerAliveInterval=30"
+                "-o"
+                "ServerAliveCountMax=3"
+                "ph@nika"
+                "bash"
+                "-l"
+                "-c"
+                "'DISABLE_TELEMETRY=true uvx blender-mcp'"
+              ];
+            };
           };
           platforms.signal = {
             enabled = true;
