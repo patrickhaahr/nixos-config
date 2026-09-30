@@ -297,6 +297,7 @@
                 };
                 "Mod+Shift+H".focus-monitor-left = _: { };
                 "Mod+Shift+L".focus-monitor-right = _: { };
+                "Mod+P"."move-column-to-monitor-left" = _: { };
                 "Mod+Ctrl+Shift+H".move-column-to-monitor-left = _: { };
                 "Mod+Ctrl+Shift+L".move-column-to-monitor-right = _: { };
                 "Mod+Ctrl+Shift+Left".move-column-to-monitor-left = _: { };
