@@ -51,6 +51,26 @@
             done
           '';
 
+          # Named profiles load their own .env, not the shared one, so
+          # ${OPENHOME_API_KEY} in a profile's openhome MCP header expands empty
+          # (401). Sync the sops-backed key into every profile that uses it.
+          hermes-profile-openhome-key = lib.hm.dag.entryAfter [ "hermesAgentSetup" ] ''
+            key_file="${config.sops.secrets.openhome_api_key.path}"
+            if [ -r "$key_file" ]; then
+              for profile_config in "${config.home.homeDirectory}/.hermes"/profiles/*/config.yaml; do
+                [ -f "$profile_config" ] || continue
+                ${pkgs.gnugrep}/bin/grep -q 'OPENHOME_API_KEY' "$profile_config" || continue
+                profile_env="$(dirname "$profile_config")/.env"
+                tmp_env="$(mktemp "$profile_env.XXXXXX")"
+                { [ -f "$profile_env" ] && ${pkgs.gnugrep}/bin/grep -v '^OPENHOME_API_KEY=' "$profile_env" || true
+                  printf 'OPENHOME_API_KEY=%s\n' "$(cat "$key_file")"
+                } > "$tmp_env"
+                chmod 600 "$tmp_env"
+                mv "$tmp_env" "$profile_env"
+              done
+            fi
+          '';
+
           # Only the shared default profile owns the Signal adapter. Named profiles
           # are targets of group routes, not independent Signal bots. A stale
           # profile .env must not make the homelab profile receive DMs.
