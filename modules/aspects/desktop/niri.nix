@@ -31,7 +31,6 @@
 
       config = {
         hardware.i2c.enable = true;
-        services.gnome.gnome-keyring.enable = lib.mkForce false;
 
         programs.niri = {
           enable = true;

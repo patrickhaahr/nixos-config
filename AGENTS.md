@@ -26,7 +26,7 @@
 - `modules/aspects/integration/home-manager.nix`: imports/configures Home Manager for NixOS.
 - `modules/aspects/identity/ph.nix`: user account, HM imports, standalone `homeConfigurations.ph`.
 - `modules/aspects/cli/`: CLI aspects (`git.nix`, `nushell.nix`, `agent-browser.nix`).
-- `modules/aspects/agent/`: agent aspects. `agent/hermes/` is the hermes sub-aspect (package, config, secrets, channels, git, dev-workspace); compose hosts via its `host.nix` seam (`agent-hermes-host`). `agent/browser-use/` packages the Browser Use CLI with uv2nix (vendored uv.lock; regenerate with `uv lock --python 3.12` when bumping).
+- `modules/aspects/agent/`: agent aspects. `agent/hermes/` is the hermes sub-aspect (package, config, secrets, channels, git, dev-workspace); compose hosts via its `host.nix` seam (`agent-hermes-host`). `agent/t3code.nix` runs T3 Code as a hermes user service behind traefik at `t3code.zaza.haahr.me` (`nixos.t3code-service` wires the HM unit + k3s ingress). `agent/browser-use/` packages the Browser Use CLI with uv2nix (vendored uv.lock; regenerate with `uv lock --python 3.12` when bumping).
 - `modules/aspects/desktop/`: desktop aspects (`niri.nix`, `noctalia.nix`, `ghostty.nix`, `cursor.nix`).
 - `modules/aspects/host/`: host composition (`nika.nix`, `zaza.nix`, `imu.nix`, `zaza-hardware.nix`, `workstation.nix`).
 - `modules/aspects/homelab/`: homelab service aspects (`k3s.nix`, `traefik.nix`, `excalidraw.nix`, `searxng.nix`; hermes itself lives under `modules/aspects/identity/hermes.nix` + `modules/aspects/agent/hermes/`).

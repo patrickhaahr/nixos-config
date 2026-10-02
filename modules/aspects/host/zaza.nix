@@ -16,7 +16,6 @@
       # self.modules.nixos.homelab-openconcho
       # self.modules.nixos.homelab-prometheus
       self.modules.nixos.homelab-searxng
-      self.modules.nixos.homelab-t3code-serve
       self.modules.nixos.homelab-traefik
       # self.modules.nixos.homelab-wazuh
       self.modules.nixos.identity-ph-headless
@@ -28,6 +27,7 @@
       self.modules.nixos.openssh
       self.modules.nixos.sops
       self.modules.nixos.tailscale
+      self.modules.nixos.t3code-service
     ];
 
     boot = {
