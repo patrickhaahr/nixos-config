@@ -106,22 +106,14 @@
           skills.external_dirs = [ ];
           approvals.mode = "off";
           model = {
-            provider = "opencode-go";
-            default = "glm-5.3-flash";
+            provider = "openai-codex";
+            default = "gpt-6-luna";
           };
           auxiliary.vision = {
             fallback_chain = [
               {
                 provider = "opencode-go";
                 model = "glm-5.3-flash";
-              }
-              {
-                provider = "opencode-zen";
-                model = "glm-5.3-flash";
-              }
-              {
-                provider = "openrouter";
-                model = "z-ai/glm-5.3-flash";
               }
             ];
           };
@@ -131,12 +123,8 @@
               model = "glm-5.3-flash";
             }
             {
-              provider = "opencode-zen";
-              model = "glm-5.3-flash";
-            }
-            {
-              provider = "openrouter";
-              model = "z-ai/glm-5.3-flash";
+              provider = "opencode-go";
+              model = "gpt-6-luna";
             }
           ];
           delegation = {
