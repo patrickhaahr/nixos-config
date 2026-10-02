@@ -34,6 +34,14 @@
               if [ -n "$homelab_group_id" ]; then
                 ${pkgs.perl}/bin/perl -0pi -e "s#(?m)^  - chat_id: .*?(?=\\n    name: signal-group-homelab)#  - chat_id: group:$homelab_group_id#" "$route_config"
               fi
+              # The uwu user is the allowed DM user who is not the owner (home channel).
+              # Resolve only when exactly one such user exists; otherwise the
+              # placeholder never matches and their DMs stay on the default.
+              home_channel="$(grep '^SIGNAL_HOME_CHANNEL=' "$env_file" | cut -d= -f2- || true)"
+              uwu_user_id="$(grep '^SIGNAL_ALLOWED_USERS=' "$env_file" | cut -d= -f2- | tr ',' '\n' | grep -vxF "$home_channel" | grep . || true)"
+              if [ -n "$uwu_user_id" ] && [ "$(printf '%s\n' "$uwu_user_id" | wc -l)" -eq 1 ]; then
+                ${pkgs.perl}/bin/perl -0pi -e "s#(?m)^  - chat_id: .*?(?=\\n    name: signal-dm-uwu)#  - chat_id: $uwu_user_id#" "$route_config"
+              fi
             fi
           '';
 
@@ -119,6 +127,15 @@
               # Homelab operations group; resolved from SOPS at activation.
               chat_id = "group:__HOMELAB_GID__";
               profile = "homelab";
+            }
+            {
+              name = "signal-dm-uwu";
+              platform = "signal";
+              # Signal DM chat_id is the sender ID, so this scopes to the uwu user's
+              # DMs only; their group messages keep the group's profile.
+              # Resolved from SIGNAL_ALLOWED_USERS (sops) at activation.
+              chat_id = "__UWU_UID__";
+              profile = "uwu";
             }
           ];
           # Keep the default Hermes profile limited to its local
