@@ -114,6 +114,21 @@
           sleep 1
         done
       '';
+      mirrorOtherOutput = pkgs.writeShellScriptBin "mirror-other-output" ''
+        if ${lib.getExe' pkgs.procps "pkill"} -x wl-mirror; then
+          exit 0
+        fi
+
+        focused=$(${lib.getExe pkgs.niri} msg --json focused-output | ${lib.getExe pkgs.jq} -r '.name')
+        target=$(${lib.getExe pkgs.niri} msg --json outputs | ${lib.getExe pkgs.jq} -r --arg focused "$focused" \
+          '[.[] | select(.logical != null and .name != $focused) | .name][0] // empty')
+
+        if [ -z "$target" ]; then
+          exit 1
+        fi
+
+        exec ${lib.getExe pkgs.wl-mirror} --fullscreen "$target"
+      '';
       startupApps =
         {
           handyEnabled ? false,
@@ -302,6 +317,7 @@
                 "Mod+Ctrl+Shift+L".move-column-to-monitor-right = _: { };
                 "Mod+Ctrl+Shift+Left".move-column-to-monitor-left = _: { };
                 "Mod+Ctrl+Shift+Right".move-column-to-monitor-right = _: { };
+                "Mod+Shift+M".spawn = lib.getExe mirrorOtherOutput;
                 "Super+F"."maximize-window-to-edges" = _: { };
                 "Mod+Space".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call launcher toggle";
                 "Mod+S".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call controlCenter toggle";
