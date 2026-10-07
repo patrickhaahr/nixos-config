@@ -10,6 +10,7 @@
       imports = [
         inputs.hermes-agent.homeManagerModules.default
         self.modules.homeManager.agent-hermes-wake-word
+        self.modules.homeManager.agent-hermes-gadget
       ];
 
       home = {
