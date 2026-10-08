@@ -1,5 +1,5 @@
 set shell := ["bash", "-c"]
-export NIX_CONFIG := "experimental-features = nix-command flakes"
+export NIX_CONFIG := env('NIX_CONFIG', '') + "\nextra-experimental-features = nix-command flakes"
 
 flake := env('FLAKE', justfile_directory())
 rebuild := "nixos-rebuild"
@@ -112,16 +112,28 @@ fmt:
 
 [group('dev')]
 [no-exit-message]
+[positional-arguments]
 update *inputs:
     #!/usr/bin/env bash
     set -euo pipefail
     if [[ $# -gt 0 ]]; then
-      exec nix flake update "$@" --flake {{ flake }}
+      exec just update-flake "$@"
     fi
-    nix flake update --flake {{ flake }}
+    just update-flake
     just update-browser-use
     just update-hermes
     just update-osu
+
+# Flake input resolution runs in the client, which needs its own GitHub token.
+[private]
+[no-exit-message]
+[positional-arguments]
+update-flake *inputs:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    token="$(gh auth token --hostname github.com)"
+    export NIX_CONFIG="${NIX_CONFIG}"$'\n'"extra-access-tokens = github.com=$token"
+    exec nix flake update "$@" --flake {{ flake }}
 
 # Bump hermes-agent to its latest upstream tag: rewrites the tag pin in
 # flake.nix and refreshes the lock entry, then syncs the vendored openwakeword
@@ -139,7 +151,7 @@ update-hermes:
       echo "hermes-agent $latest already latest"
     else
       sed -i "s|hermes-agent/[^\"]*\";|hermes-agent/$latest\";|" flake.nix
-      nix flake update hermes-agent --flake {{ flake }}
+      just update-flake hermes-agent
     fi
     aspect="{{ justfile_directory() }}/modules/aspects/agent/hermes/openwakeword.nix"
     rev="$(nix flake metadata {{ flake }} --json | python3 -c 'import json,sys; print(json.load(sys.stdin)["locks"]["nodes"]["hermes-agent"]["locked"]["rev"])')"
