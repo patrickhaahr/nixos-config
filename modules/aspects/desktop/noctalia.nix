@@ -42,9 +42,18 @@ in
     {
       packages.noctalia-shell = inputs.wrapper-modules.wrappers.noctalia-shell.wrap {
         inherit pkgs;
-        package = pkgs.noctalia-shell.overrideAttrs {
-          name = "vjnoctalia2";
-        };
+        package =
+          (pkgs.noctalia-shell.override {
+            # breakpad's processor tools fail to link with GCC 16; noctalia-qs only needs the client lib.
+            noctalia-qs = pkgs.noctalia-qs.override {
+              breakpad = pkgs.breakpad.overrideAttrs (old: {
+                configureFlags = (old.configureFlags or [ ]) ++ [ "--disable-processor" ];
+              });
+            };
+          }).overrideAttrs
+            {
+              name = "vjnoctalia2";
+            };
         outOfStoreConfig = "/home/ph/.config/noctalia";
         env = {
           NOCTALIA_CACHE_DIR = "/home/ph/.cache/noctalia/";
