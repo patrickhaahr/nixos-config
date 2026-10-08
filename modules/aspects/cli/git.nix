@@ -12,6 +12,7 @@ _: {
 
     programs.git = {
       enable = true;
+      lfs.enable = true;
       includes = [
         {
           condition = "gitdir:~/dev/work/";
@@ -38,12 +39,6 @@ _: {
         core = {
           editor = "nvim";
           excludesfile = "~/.gitignore-global";
-        };
-        filter.lfs = {
-          clean = "git-lfs clean -- %f";
-          smudge = "git-lfs smudge -- %f";
-          process = "git-lfs filter-process";
-          required = true;
         };
         pull.rebase = true;
         alias = {
