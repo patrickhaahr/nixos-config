@@ -30,6 +30,10 @@ in
             speak_replies = true;
             auto_home = true;
             unauthorized_dm_behavior = "pair";
+            # Paired phones may start subscription GPT-Live calls (Start call on
+            # the Android client). The gateway runs the talk-desktop plugin's
+            # call broker itself, on this host's Codex login.
+            live_calls = true;
           };
         };
 
