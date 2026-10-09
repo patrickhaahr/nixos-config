@@ -42,3 +42,10 @@
 - `modules/aspects/host/zaza.nix` wires the headless k3s homelab host via `agent-hermes-host`, which chains `identity-hermes` → the hermes Home Manager aspect imports (including `agent-browser-use`).
 - `modules/aspects/host/imu.nix` wires the WSL host.
 - `modules/aspects/identity/ph.nix` wires the `ph` user through Home Manager inside the NixOS hosts.
+
+## Android gadget on zaza
+
+- SDK source: `/home/hermes/dev/hermes-gadget-sdk`, fork branch `android/client`. The gateway loads a plain plugin copy in `~/.hermes/plugins/gadget`; source-checkout edits alone do not deploy it. For Python changes, copy `plugin/*.py` there and restart `hermes-agent` after accepted tasks have finished. `hermes plugins install` currently fails in the Nix package. Live Voice is a separate checkout in `~/.hermes/plugins/talk-desktop`.
+- `gadget.nix` enables subscription calls, but the phone chooses what a wake does. **Hermes voice** remains the default; **Live voice** must be selected on the phone. Host configuration does not override that choice, and a failed call never falls back. See the SDK's `docs/android.md` and `docs/hardware-validation.md` for controls and measured limits.
+- Build Android from the SDK root with `devenv shell -- bash -c 'cd android && ./gradlew assembleDebug'`. The root `.android` debug key matches the installed gadget. Install with `adb install -r`; never uninstall or run `connectedAndroidTest`, which removes identity/device-owner state. Wireless ADB changes ports; `10.0.10.156:39859` was used on 2026-10-09. The gadget URL stays `ws://10.0.10.3:8765/gadget`; it is independent of ADB.
+- `just switch` restarts both Hermes user services. Do not use it merely to select the phone's voice mode or install an APK, especially while accepted tasks run. For actual backend/configuration changes, follow verification and deployment as usual, then verify the paired phone reconnects.

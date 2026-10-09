@@ -2,9 +2,11 @@
 # gateway's gadget platform over a WebSocket on port 8765.
 # https://github.com/Adolanium/hermes-gadget-sdk
 #
-# The plugin itself is runtime-installed like talk-desktop:
-#   hermes plugins install https://github.com/Adolanium/hermes-gadget-sdk/tree/main/plugin
-# and approved devices live in HERMES_HOME (pairing store), not in the flake.
+# The Android Live implementation is on patrickhaahr/hermes-gadget-sdk,
+# branch android/client. The gateway loads a plain copy at ~/.hermes/plugins/gadget;
+# deploy plugin/*.py there and restart hermes-agent after host-code changes.
+# The Nix-packaged `hermes plugins install` currently fails. Deployment details
+# are in AGENTS.md; approved devices and credentials stay in HERMES_HOME.
 { self, ... }:
 let
   port = 8765;
@@ -30,8 +32,8 @@ in
             speak_replies = true;
             auto_home = true;
             unauthorized_dm_behavior = "pair";
-            # Paired phones may start subscription GPT-Live calls (Start call on
-            # the Android client). The gateway runs the talk-desktop plugin's
+            # Paired phones may start subscription GPT-Live calls (Start call or
+            # a local wake in the Android client's selected Live voice mode). The gateway runs the talk-desktop plugin's
             # call broker itself, on this host's Codex login.
             live_calls = true;
           };
