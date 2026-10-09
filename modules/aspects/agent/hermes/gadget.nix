@@ -52,8 +52,9 @@ in
         '';
       };
 
-    # Devices reach the gateway from the home LAN (the phone has no Tailscale)
-    # and over Tailscale. Pairing and per-device HMAC keys gate access.
+    # Devices reach the gateway from the home LAN and over Tailscale (the 8T
+    # runs the Tailscale app as node oneplus-8t; it uses the tailnet name
+    # zaza.taila757c4.ts.net). Pairing and per-device HMAC keys gate access.
     nixos.agent-hermes-gadget = {
       networking.firewall.interfaces = {
         "enp2s0".allowedTCPPorts = [ port ];
