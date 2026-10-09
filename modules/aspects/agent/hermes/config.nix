@@ -16,9 +16,29 @@
       home = {
         sessionVariables.KUBECONFIG = "/etc/rancher/k3s/k3s.yaml";
 
-        # profile_routes are parsed literally by Hermes; substitute the SOPS-backed
-        # group ID after the managed config merge, without storing it in the flake.
         activation = {
+          # Restart even when the unit text is unchanged, after config and units
+          # have been installed, so a switch cannot leave an old process alive.
+          hermes-restart =
+            lib.hm.dag.entryAfter
+              [
+                "reloadSystemd"
+                "hermes-signal-coach-route"
+                "hermes-live-voice-plugin"
+                "hermes-profile-openhome-key"
+                "hermes-homelab-signal-isolation"
+                "hermes-gadget-plugin"
+              ]
+              ''
+                if [ -S "/run/user/$(id -u)/bus" ]; then
+                  run env XDG_RUNTIME_DIR="/run/user/$(id -u)" \
+                    ${pkgs.systemd}/bin/systemctl --user restart \
+                    hermes-agent.service hermes-backend.service
+                fi
+              '';
+
+          # profile_routes are parsed literally by Hermes; substitute the SOPS-backed
+          # group ID after the managed config merge, without storing it in the flake.
           hermes-signal-coach-route = lib.hm.dag.entryAfter [ "hermesAgentSetup" ] ''
             route_config="${config.home.homeDirectory}/.hermes/config.yaml"
             env_file="${config.home.homeDirectory}/.hermes/.env"
