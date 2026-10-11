@@ -48,6 +48,26 @@
         "type": "github"
       }
     },
+    "artcraft": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1791535454,
+        "narHash": "sha256-PzFOo+8J/KV5ZIGiD4rUGobQz+iCpZwdysjFBLFlDEk=",
+        "owner": "Hy4ri",
+        "repo": "artcraft-flake",
+        "rev": "e88bf71914e1bb4bee6ac2f08aa3c15e357e12bc",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Hy4ri",
+        "repo": "artcraft-flake",
+        "type": "github"
+      }
+    },
     "better-auth-skills": {
       "flake": false,
       "locked": {
@@ -115,6 +135,22 @@
       "original": {
         "owner": "nix-community",
         "repo": "bun2nix",
+        "type": "github"
+      }
+    },
+    "cadcraft": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1791468140,
+        "narHash": "sha256-VFw6np9BSOdBQrKlIiNnQ0kKKNfGnYMctbceBpmE778=",
+        "owner": "storytold",
+        "repo": "cadcraft",
+        "rev": "59631c8d4f9ffe6c08c5c2065ea17504e53bf821",
+        "type": "github"
+      },
+      "original": {
+        "owner": "storytold",
+        "repo": "cadcraft",
         "type": "github"
       }
     },
@@ -1127,7 +1163,9 @@
         "anthropic-skills": "anthropic-skills",
         "anti-slop": "anti-slop",
         "apollo-skills": "apollo-skills",
+        "artcraft": "artcraft",
         "better-auth-skills": "better-auth-skills",
+        "cadcraft": "cadcraft",
         "claude-skill-typst": "claude-skill-typst",
         "cloudflare-skills": "cloudflare-skills",
         "codex-desktop-linux": "codex-desktop-linux",

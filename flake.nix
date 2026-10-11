@@ -136,6 +136,16 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    artcraft = {
+      url = "github:Hy4ri/artcraft-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    cadcraft = {
+      url = "github:storytold/cadcraft";
+      flake = false;
+    };
+
     codex-desktop-linux.url = "github:ilysenko/codex-desktop-linux";
 
     spicetify-nix = {
