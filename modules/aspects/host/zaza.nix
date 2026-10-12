@@ -12,6 +12,7 @@
       # self.modules.nixos.homelab-grafana
       # self.modules.nixos.homelab-honcho
       self.modules.nixos.homelab-librespeed
+      self.modules.nixos.homelab-openrouteservice
       # self.modules.nixos.homelab-llamacpp
       # self.modules.nixos.homelab-openconcho
       # self.modules.nixos.homelab-prometheus
