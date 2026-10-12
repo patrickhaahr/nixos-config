@@ -101,6 +101,11 @@
       flake = false;
     };
 
+    juliobsz-skills = {
+      url = "github:juliobsz/skills";
+      flake = false;
+    };
+
     marketing-skills = {
       url = "github:coreyhaines31/marketingskills";
       flake = false;

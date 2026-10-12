@@ -690,6 +690,22 @@
         "type": "github"
       }
     },
+    "juliobsz-skills": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1791824964,
+        "narHash": "sha256-F6KLFCaPYEGm0ZdvfA5pliMD3Sfbk3Z8Y3xSS6gGIjA=",
+        "owner": "juliobsz",
+        "repo": "skills",
+        "rev": "660432b48db04c277c782779ae31cc4db04e76ef",
+        "type": "github"
+      },
+      "original": {
+        "owner": "juliobsz",
+        "repo": "skills",
+        "type": "github"
+      }
+    },
     "kitlangton-skills": {
       "flake": false,
       "locked": {
@@ -1183,6 +1199,7 @@
         "hunk": "hunk",
         "import-tree": "import-tree_3",
         "jakubkrehel-skills": "jakubkrehel-skills",
+        "juliobsz-skills": "juliobsz-skills",
         "kitlangton-skills": "kitlangton-skills",
         "lanzaboote": "lanzaboote",
         "lumen": "lumen",
