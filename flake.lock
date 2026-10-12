@@ -138,22 +138,6 @@
         "type": "github"
       }
     },
-    "cadcraft": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1791817879,
-        "narHash": "sha256-kyNUKQvYg9SLE7E7LD/qBMAcxueEPdP9XRz9+H82I1M=",
-        "owner": "storytold",
-        "repo": "cadcraft",
-        "rev": "00c7613f1af3c73f7157fa91d9fe2635c6f23c06",
-        "type": "github"
-      },
-      "original": {
-        "owner": "storytold",
-        "repo": "cadcraft",
-        "type": "github"
-      }
-    },
     "claude-skill-typst": {
       "flake": false,
       "locked": {
@@ -1181,7 +1165,6 @@
         "apollo-skills": "apollo-skills",
         "artcraft": "artcraft",
         "better-auth-skills": "better-auth-skills",
-        "cadcraft": "cadcraft",
         "claude-skill-typst": "claude-skill-typst",
         "cloudflare-skills": "cloudflare-skills",
         "codex-desktop-linux": "codex-desktop-linux",

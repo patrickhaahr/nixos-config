@@ -57,7 +57,6 @@
         self.modules.nixos.zed
         self.modules.nixos.codex-desktop
         self.modules.nixos.artcraft
-        self.modules.nixos.cadcraft
       ];
 
       networking.networkmanager.enable = true;

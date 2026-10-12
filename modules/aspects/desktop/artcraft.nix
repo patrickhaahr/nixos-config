@@ -5,6 +5,7 @@
     {
       nixpkgs.overlays = [ inputs.artcraft.overlays.default ];
       environment.systemPackages = with pkgs; [
+        cadcraft
         filmcraft
         pdfcraft
         photocraft
