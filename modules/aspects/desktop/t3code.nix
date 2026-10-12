@@ -1,3 +1,4 @@
+{ self, ... }:
 {
   flake.modules.nixos.t3code =
     { pkgs, ... }:
@@ -23,6 +24,8 @@
           });
     in
     {
+      imports = [ self.modules.nixos.t3code-package ];
+
       environment.systemPackages = [ t3code ];
       # Opt out of PostHog telemetry; the desktop app inherits this for its server.
       environment.sessionVariables.T3CODE_TELEMETRY_ENABLED = "false";

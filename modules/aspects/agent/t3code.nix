@@ -4,6 +4,8 @@
   # (survives logout via the user's linger) running the nixpkgs build. Do not
   # use `t3 service`/`t3 update`; they install unmanaged downloaded releases.
   flake.modules.nixos.t3code-service = {
+    imports = [ self.modules.nixos.t3code-package ];
+
     home-manager.users.hermes.imports = [ self.modules.homeManager.t3code-service ];
 
     # https://t3code.zaza.haahr.me: traefik (in k3s) proxies to the host

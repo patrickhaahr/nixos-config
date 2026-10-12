@@ -123,6 +123,7 @@ update *inputs:
     just update-browser-use
     just update-hermes
     just update-osu
+    just update-t3
 
 # Flake input resolution runs in the client, which needs its own GitHub token.
 [private]
@@ -209,6 +210,62 @@ update-browser-use:
     (cd "$workdir" && nix shell nixpkgs#uv -c uv lock --python 3.12)
     cp "$workdir/uv.lock" "$aspect/uv.lock"
     echo "browser-use $current -> $latest"
+
+# Bump the shared desktop/server pin to the newest stable or nightly release.
+# Exclude maintainer previews and resolve both hashes before editing the pin.
+[group('dev')]
+[no-exit-message]
+update-t3:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    aspect="{{ justfile_directory() }}/modules/aspects/agent/t3code-package.nix"
+    latest="$(gh api 'repos/pingdotgg/t3code/releases?per_page=100' --paginate --jq \
+      '.[] | select(.draft == false) | select((.name // "" | test("preview"; "i")) | not) | select(.tag_name | test("^v[0-9]+\\.[0-9]+\\.[0-9]+(-nightly\\.[0-9]{8}\\.[0-9]+)?$")) | [.published_at, .tag_name] | @tsv' \
+      | sort -r | awk 'NR == 1 { print $2 }')"
+    [[ -n "$latest" ]] || { echo "cannot read latest T3 Code release" >&2; exit 1; }
+    ver="${latest#v}"
+    current="$(sed -n 's/^[[:space:]]*version = "\(.*\)";$/\1/p' "$aspect")"
+    if [[ "$ver" == "$current" ]]; then
+      echo "T3 Code $current already latest"
+      exit 0
+    fi
+    echo "Fetching T3 Code $ver and resolving its dependencies"
+    meta="$(nix store prefetch-file --unpack --hash-type sha256 --json "https://github.com/pingdotgg/t3code/archive/refs/tags/$latest.tar.gz")"
+    hash="$(python3 -c 'import json,sys; print(json.load(sys.stdin)["hash"])' <<<"$meta")"
+    workdir="$(mktemp -d)"
+    trap 'rm -rf "$workdir"' EXIT
+    export T3CODE_VERSION="$ver" T3CODE_SOURCE_HASH="$hash"
+    # A fixed-output build with a dummy hash reports the actual pnpm store hash.
+    if nix build --no-link --impure --expr '
+      let
+        flake = builtins.getFlake "{{ flake }}";
+        pkgs = flake.nixosConfigurations.zaza.pkgs;
+        version = builtins.getEnv "T3CODE_VERSION";
+      in pkgs.t3code.unwrapped.pnpmDeps.overrideAttrs {
+        inherit version;
+        src = pkgs.fetchFromGitHub {
+          owner = "pingdotgg";
+          repo = "t3code";
+          tag = "v${version}";
+          hash = builtins.getEnv "T3CODE_SOURCE_HASH";
+        };
+        outputHash = pkgs.lib.fakeHash;
+      }' 2>"$workdir/deps.log"; then
+      echo "expected a pnpm dependency hash mismatch" >&2
+      exit 1
+    fi
+    if ! grep -q "hash mismatch in fixed-output derivation '.*t3code-unwrapped-pnpm-deps.drv'" "$workdir/deps.log"; then
+      cat "$workdir/deps.log" >&2
+      exit 1
+    fi
+    deps_hash="$(sed -n 's/.*got:[[:space:]]*\(sha256-[A-Za-z0-9+/=]*\)$/\1/p' "$workdir/deps.log")"
+    [[ -n "$deps_hash" ]] || { cat "$workdir/deps.log" >&2; exit 1; }
+    sed -i \
+      -e "s|version = \".*\";|version = \"$ver\";|" \
+      -e "s|hash = \"sha256-.*\";|hash = \"$hash\";|" \
+      -e "s|outputHash = \"sha256-.*\";|outputHash = \"$deps_hash\";|" \
+      "$aspect"
+    echo "T3 Code $current -> $ver"
 
 # Bump osu-tachyon to the latest tachyon stream tag: rewrites version, tag URL
 # and AppImage hash in desktop/osu-lazer.nix. (Stable osu-lazer tracks nixpkgs.)
