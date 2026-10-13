@@ -154,6 +154,26 @@
         "type": "github"
       }
     },
+    "cliproxyapi": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1791834959,
+        "narHash": "sha256-FLBdmazUVNYrsvuyiFGRDWeuWNKKyXs/gKHkiO9aLEA=",
+        "owner": "omarcresp",
+        "repo": "cliproxyapi-flake",
+        "rev": "fde99b239e6abc6da883f3f2d645860b0a7254ad",
+        "type": "github"
+      },
+      "original": {
+        "owner": "omarcresp",
+        "repo": "cliproxyapi-flake",
+        "type": "github"
+      }
+    },
     "cloudflare-skills": {
       "flake": false,
       "locked": {
@@ -1166,6 +1186,7 @@
         "artcraft": "artcraft",
         "better-auth-skills": "better-auth-skills",
         "claude-skill-typst": "claude-skill-typst",
+        "cliproxyapi": "cliproxyapi",
         "cloudflare-skills": "cloudflare-skills",
         "codex-desktop-linux": "codex-desktop-linux",
         "cursor-plugins": "cursor-plugins",

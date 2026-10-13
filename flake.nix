@@ -131,6 +131,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    cliproxyapi = {
+      url = "github:omarcresp/cliproxyapi-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     wrapper-modules.url = "github:BirdeeHub/nix-wrapper-modules";
 
     helium.url = "github:schembriaiden/helium-browser-nix-flake";
