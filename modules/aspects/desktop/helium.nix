@@ -9,19 +9,21 @@
     let
       cfg = config.programs.helium;
       basePackage = inputs.helium.packages.${pkgs.stdenv.hostPlatform.system}.default;
-      launcherPackage =
-        if cfg.passwordStore == null then
-          cfg.package
-        else
-          pkgs.symlinkJoin {
-            name = "helium-launcher";
-            paths = [ cfg.package ];
-            nativeBuildInputs = [ pkgs.makeWrapper ];
-            postBuild = ''
-              wrapProgram "$out/bin/helium" \
-                --add-flags "--password-store=${cfg.passwordStore}"
-            '';
-          };
+      launcherPackage = pkgs.symlinkJoin {
+        name = "helium-launcher";
+        paths = [ cfg.package ];
+        nativeBuildInputs = [ pkgs.makeWrapper ];
+        # Helium needs the system Vulkan loader and driver manifests for native WebGPU.
+        postBuild = ''
+          wrapProgram "$out/bin/helium" \
+            --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [ pkgs.vulkan-loader ]}" \
+            --prefix XDG_DATA_DIRS : "/run/opengl-driver/share" ${
+              lib.optionalString (cfg.passwordStore != null) (
+                "--add-flags " + lib.escapeShellArg "--password-store=${cfg.passwordStore}"
+              )
+            }
+        '';
+      };
     in
     {
       options.programs.helium = {
@@ -38,13 +40,13 @@
           type = lib.types.nullOr lib.types.str;
           default = "basic";
           example = "gnome-libsecret";
-          description = "Value passed to Helium via --password-store. Set to null to disable local wrapping.";
+          description = "Value passed to Helium via --password-store. Set to null to omit the flag.";
         };
 
         launcherPackage = lib.mkOption {
           type = lib.types.package;
           readOnly = true;
-          description = "Helium package with the configured launch flags applied.";
+          description = "Helium package with Vulkan runtime paths and configured launch flags applied.";
         };
       };
 
