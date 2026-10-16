@@ -106,6 +106,11 @@
       flake = false;
     };
 
+    leonxlnx-taste-skill = {
+      url = "github:Leonxlnx/taste-skill";
+      flake = false;
+    };
+
     marketing-skills = {
       url = "github:coreyhaines31/marketingskills";
       flake = false;

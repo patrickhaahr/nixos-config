@@ -16,6 +16,7 @@ let
     (import ./jakubkrehel.nix { inherit inputs; })
     (import ./juliobsz.nix { inherit inputs; })
     (import ./kitlangton.nix { inherit inputs; })
+    (import ./leonxlnx.nix { inherit inputs; })
     (import ./mattpocock.nix { inherit inputs; })
     (import ./marketing.nix { inherit inputs; })
     (import ./openclaw.nix { inherit inputs; })
