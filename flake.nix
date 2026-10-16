@@ -215,7 +215,7 @@
       };
     };
 
-    hermes-agent.url = "github:NousResearch/hermes-agent/v0.21.7";
+    hermes-agent.url = "github:NousResearch/hermes-agent/v0.22.2";
   };
 
   outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } (inputs.import-tree ./modules);
