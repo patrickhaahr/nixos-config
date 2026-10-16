@@ -165,7 +165,7 @@
           approvals.mode = "off";
           model = {
             provider = "openai-codex";
-            default = "gpt-6-luna";
+            default = "gpt-6.1-sol";
           };
           auxiliary.vision = {
             fallback_chain = [
