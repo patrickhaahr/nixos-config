@@ -32,51 +32,66 @@ _: {
           selector.matchLabels.app = "executor";
           template = {
             metadata.labels.app = "executor";
-            spec.containers = [
-              {
-                name = "executor";
-                image = "ghcr.io/rhyssullivan/executor-selfhost:latest";
-                env = [
-                  {
-                    name = "EXECUTOR_WEB_BASE_URL";
-                    value = "https://executor.zaza.haahr.me";
-                  }
-                ];
-                ports = [
-                  {
-                    name = "http";
-                    containerPort = 4788;
-                  }
-                ];
-                resources = {
-                  requests = {
-                    cpu = "100m";
-                    memory = "256Mi";
+            spec = {
+              # Service env vars (EXECUTOR_PORT=tcp://...) collide with the app's own
+              # EXECUTOR_PORT setting. The image also defaults PORT=4400 and
+              # EXECUTOR_DATA_DIR=/app/data, so both are pinned to match the Service and PVC.
+              enableServiceLinks = false;
+              containers = [
+                {
+                  name = "executor";
+                  image = "ghcr.io/usefulsoftwareco/executor-selfhost:2.0.0-beta.14";
+                  env = [
+                    {
+                      name = "PORT";
+                      value = "4788";
+                    }
+                    {
+                      # v1 database still lives at /data; v2 starts fresh in a subdirectory.
+                      name = "EXECUTOR_DATA_DIR";
+                      value = "/data/v2";
+                    }
+                    {
+                      name = "EXECUTOR_WEB_BASE_URL";
+                      value = "https://executor.zaza.haahr.me";
+                    }
+                  ];
+                  ports = [
+                    {
+                      name = "http";
+                      containerPort = 4788;
+                    }
+                  ];
+                  resources = {
+                    requests = {
+                      cpu = "100m";
+                      memory = "256Mi";
+                    };
+                    limits.memory = "1Gi";
                   };
-                  limits.memory = "1Gi";
-                };
-                volumeMounts = [
-                  {
-                    name = "data";
-                    mountPath = "/data";
-                  }
-                ];
-                readinessProbe = {
-                  httpGet = {
-                    path = "/";
-                    port = 4788;
+                  volumeMounts = [
+                    {
+                      name = "data";
+                      mountPath = "/data";
+                    }
+                  ];
+                  readinessProbe = {
+                    httpGet = {
+                      path = "/";
+                      port = 4788;
+                    };
+                    initialDelaySeconds = 5;
+                    periodSeconds = 10;
                   };
-                  initialDelaySeconds = 5;
-                  periodSeconds = 10;
-                };
-              }
-            ];
-            spec.volumes = [
-              {
-                name = "data";
-                persistentVolumeClaim.claimName = "executor-data";
-              }
-            ];
+                }
+              ];
+              volumes = [
+                {
+                  name = "data";
+                  persistentVolumeClaim.claimName = "executor-data";
+                }
+              ];
+            };
           };
         };
       }
