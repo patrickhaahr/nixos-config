@@ -123,6 +123,7 @@ update *inputs:
     just update-browser-use
     just update-hermes
     just update-osu
+    just update-kaigen
     just update-t3
 
 # Flake input resolution runs in the client, which needs its own GitHub token.
@@ -210,6 +211,36 @@ update-browser-use:
     (cd "$workdir" && nix shell nixpkgs#uv -c uv lock --python 3.12)
     cp "$workdir/uv.lock" "$aspect/uv.lock"
     echo "browser-use $current -> $latest"
+
+# Bump kaigen-studio to the release pinned by the vendor's installer script
+# (https://api.kaigen3d.com/studio.sh): rewrites version + binary/icon sha512
+# pins in desktop/kaigen-studio.nix.
+[group('dev')]
+[no-exit-message]
+update-kaigen:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    aspect="{{ justfile_directory() }}/modules/aspects/desktop/kaigen-studio.nix"
+    script="$(curl -fsSL https://api.kaigen3d.com/studio.sh)"
+    latest="$(sed -n 's/^VERSION="\([^"]*\)"/\1/p' <<<"$script")"
+    studio_sha="$(sed -n 's/^STUDIO_SHA512="\([^"]*\)"/\1/p' <<<"$script")"
+    icon_sha="$(sed -n 's/^ICON_SHA512="\([^"]*\)"/\1/p' <<<"$script")"
+    [[ -n "$latest" && -n "$studio_sha" && -n "$icon_sha" ]] || { echo "cannot parse https://api.kaigen3d.com/studio.sh" >&2; exit 1; }
+    current="$(sed -n 's/^[[:space:]]*version = "\(.*\)";$/\1/p' "$aspect")"
+    if [[ "$latest" == "$current" ]]; then
+      echo "kaigen-studio $current already latest"
+      exit 0
+    fi
+    old_hashes="$(grep -oP 'sha512 = "\K[0-9a-f]{128}' "$aspect")"
+    old_studio="$(sed -n 1p <<<"$old_hashes")"
+    old_icon="$(sed -n 2p <<<"$old_hashes")"
+    [[ -n "$old_studio" && -n "$old_icon" ]] || { echo "cannot read current kaigen-studio pins from $aspect" >&2; exit 1; }
+    sed -i \
+      -e "s|version = \"$current\";|version = \"$latest\";|" \
+      -e "s|$old_studio|$studio_sha|" \
+      -e "s|$old_icon|$icon_sha|" \
+      "$aspect"
+    echo "kaigen-studio $current -> $latest"
 
 # Bump the shared desktop/server pin to the newest stable or nightly release.
 # Exclude maintainer previews and resolve both hashes before editing the pin.
