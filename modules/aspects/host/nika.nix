@@ -37,6 +37,7 @@
         self.modules.nixos.identity-ph-desktop
         self.modules.nixos.identity-ph-cliproxyapi
         self.modules.nixos.handy
+        self.modules.nixos.kaigen-studio
         self.modules.nixos.nautilus
         self.modules.nixos.openhome
         self.modules.nixos.openlinkhub
