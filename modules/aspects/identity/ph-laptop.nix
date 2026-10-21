@@ -13,7 +13,7 @@ in
     home-manager.users.${userName} = {
       imports = [
         self.modules.homeManager.cursor
-        self.modules.homeManager.noctalia-wallpapers
+        self.modules.homeManager.noctalia
         self.modules.homeManager.ghostty
         self.modules.homeManager.agent-hermes-desktop
       ];

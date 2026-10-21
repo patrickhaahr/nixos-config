@@ -144,7 +144,7 @@
         ]
         ++ [
           (lib.getExe focusWorkspace1)
-          (lib.getExe self'.packages.noctalia-shell)
+          (lib.getExe self'.packages.noctalia)
           (lib.getExe pkgs.ghostty)
         ]
         ++ lib.optional (heliumCommand != null) heliumCommand;
@@ -175,7 +175,7 @@
 
           spawn-at-startup = startupApps { inherit handyEnabled heliumCommand minimalProfile; };
           spawn-sh-at-startup = [
-            "sleep 5 && ${lib.getExe self'.packages.noctalia-shell} ipc call wallpaper random all"
+            "sleep 5 && ${lib.getExe self'.packages.noctalia} msg wallpaper-random"
           ];
 
           xwayland-satellite.path = lib.getExe pkgs.xwayland-satellite;
@@ -319,15 +319,14 @@
                 "Mod+Ctrl+Shift+Right".move-column-to-monitor-right = _: { };
                 "Mod+Shift+M".spawn = lib.getExe mirrorOtherOutput;
                 "Super+F"."maximize-window-to-edges" = _: { };
-                "Mod+Space".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call launcher toggle";
-                "Mod+S".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call controlCenter toggle";
+                "Mod+Space".spawn-sh = "${lib.getExe self'.packages.noctalia} msg panel-toggle launcher";
+                "Mod+S".spawn-sh = "${lib.getExe self'.packages.noctalia} msg panel-toggle control-center";
                 "Mod+Z"."toggle-overview" = _: { };
-                "Mod+F9".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call brightness decrease";
-                "Mod+Shift+F9".spawn-sh =
-                  "${lib.getExe self'.packages.noctalia-shell} ipc call brightness increase";
-                "Mod+Alt+F10".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call nightLight toggle";
-                "Super+W".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call wallpaper random all";
-                "Super+Shift+W".spawn-sh = "${lib.getExe self'.packages.noctalia-shell} ipc call wallpaper toggle";
+                "Mod+F9".spawn-sh = "${lib.getExe self'.packages.noctalia} msg brightness-down";
+                "Mod+Shift+F9".spawn-sh = "${lib.getExe self'.packages.noctalia} msg brightness-up";
+                "Mod+Alt+F10".spawn-sh = "${lib.getExe self'.packages.noctalia} msg nightlight-force-toggle";
+                "Super+W".spawn-sh = "${lib.getExe self'.packages.noctalia} msg wallpaper-random";
+                "Super+Shift+W".spawn-sh = "${lib.getExe self'.packages.noctalia} msg panel-toggle wallpaper";
               }
               // lib.optionalAttrs (!minimalProfile) {
                 "Mod+E".spawn = "nautilus";
