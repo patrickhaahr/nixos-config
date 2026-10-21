@@ -6,4 +6,5 @@ in
 {
   cloudflare = skill "cloudflare";
   wrangler = skill "wrangler";
+  security-audit = inputs.cloudflare-security-audit-skill + "/skills/security-audit";
 }

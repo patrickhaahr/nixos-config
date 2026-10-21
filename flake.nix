@@ -60,6 +60,11 @@
       flake = false;
     };
 
+    cloudflare-security-audit-skill = {
+      url = "github:cloudflare/security-audit-skill";
+      flake = false;
+    };
+
     sentry-skills = {
       url = "github:getsentry/skills";
       flake = false;
