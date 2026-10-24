@@ -1,7 +1,8 @@
+{ inputs, ... }:
 let
   agentsSourceDir = ../../../agents;
 in
-_: {
+{
   flake.modules.homeManager.pi =
     { pkgs, ... }:
     let
@@ -9,7 +10,7 @@ _: {
     in
     {
       home = {
-        packages = [ pkgs.pi-coding-agent ];
+        packages = [ inputs.llm-agents.packages.${pkgs.system}.pi ];
 
         file = {
           ".pi/agent/settings.json".source = settingsFormat.generate "pi-settings.json" {

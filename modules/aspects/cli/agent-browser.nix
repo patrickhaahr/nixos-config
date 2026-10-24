@@ -1,4 +1,4 @@
-{ self, ... }: {
+{ inputs, self, ... }: {
   flake.modules.homeManager.agent-browser =
     { pkgs, ... }:
     {
@@ -7,7 +7,7 @@
       home.packages = [
         (pkgs.symlinkJoin {
           name = "agent-browser-with-chromium";
-          paths = [ pkgs.agent-browser ];
+          paths = [ inputs.llm-agents.packages.${pkgs.system}.agent-browser ];
           nativeBuildInputs = [ pkgs.makeWrapper ];
           postBuild = ''
             wrapProgram "$out/bin/agent-browser" \
