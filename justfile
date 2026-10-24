@@ -125,6 +125,7 @@ update *inputs:
     just update-osu
     just update-kaigen
     just update-t3
+    just update-learnharness
 
 # Flake input resolution runs in the client, which needs its own GitHub token.
 [private]
@@ -320,6 +321,28 @@ update-osu:
     sed -i "s|releases/download/[^\"]*/osu.AppImage|releases/download/$latest/osu.AppImage|" "$aspect"
     sed -i "s|hash = \"sha256-.*\";|hash = \"$hash\";|" "$aspect"
     echo "osu-tachyon $current -> $ver"
+
+# Bump LearnHarness to its latest upstream release: rewrites version + AppImage
+# hash in desktop/learnharness.nix. (URL and artifact name interpolate version.)
+[group('dev')]
+[no-exit-message]
+update-learnharness:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    aspect="{{ justfile_directory() }}/modules/aspects/desktop/learnharness.nix"
+    latest="$(gh api repos/amosblomqvist/learnharness/releases/latest --jq .tag_name)"
+    [[ -n "$latest" ]] || { echo "cannot read latest learnharness release" >&2; exit 1; }
+    ver="${latest#v}"
+    current="$(sed -n 's/^[[:space:]]*version = "\(.*\)";$/\1/p' "$aspect")"
+    if [[ "$ver" == "$current" ]]; then
+      echo "learnharness $current already latest"
+      exit 0
+    fi
+    meta="$(nix store prefetch-file --json "https://github.com/amosblomqvist/learnharness/releases/download/v${ver}/LearnHarness-${ver}-x86_64.AppImage")"
+    hash="$(sed -n 's/.*"hash": *"\([^"]*\)".*/\1/p' <<<"$meta")"
+    sed -i "s|version = \".*\";|version = \"$ver\";|" "$aspect"
+    sed -i "s|hash = \"sha256-.*\";|hash = \"$hash\";|" "$aspect"
+    echo "learnharness $current -> $ver"
 
 [group('dev')]
 [no-exit-message]
