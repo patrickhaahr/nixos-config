@@ -165,8 +165,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    codex-desktop-linux.url = "github:ilysenko/codex-desktop-linux";
-
     spicetify-nix = {
       url = "github:Gerg-L/spicetify-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -224,7 +222,7 @@
       };
     };
 
-    hermes-agent.url = "github:NousResearch/hermes-agent/v0.22.2";
+    hermes-agent.url = "github:NousResearch/hermes-agent/v0.22.5";
 
     llm-agents = {
       url = "github:numtide/llm-agents.nix";
