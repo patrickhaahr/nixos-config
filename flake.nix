@@ -222,6 +222,11 @@
       };
     };
 
+    qqdict = {
+      url = "github:patrickhaahr/qqdict";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     hermes-agent.url = "github:NousResearch/hermes-agent/v0.22.5";
 
     llm-agents = {

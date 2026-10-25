@@ -18,6 +18,11 @@
           config.programs.handy.enable
         else
           false;
+      qqdictEnabled =
+        if builtins.hasAttr "programs" config && builtins.hasAttr "qqdict" config.programs then
+          config.programs.qqdict.enable
+        else
+          false;
       heliumEnabled =
         if builtins.hasAttr "programs" config && builtins.hasAttr "helium" config.programs then
           config.programs.helium.enable
@@ -37,6 +42,7 @@
           package = self.packages.${pkgs.stdenv.hostPlatform.system}.myNiri.override {
             inherit openhomeEnabled;
             inherit handyEnabled;
+            inherit qqdictEnabled;
             inherit heliumCommand;
             inherit (cfg) minimalProfile;
           };
@@ -62,6 +68,11 @@
           handyEnabled =
             if builtins.hasAttr "programs" config && builtins.hasAttr "handy" config.programs then
               config.programs.handy.enable
+            else
+              false;
+          qqdictEnabled =
+            if builtins.hasAttr "programs" config && builtins.hasAttr "qqdict" config.programs then
+              config.programs.qqdict.enable
             else
               false;
           heliumCommand =
@@ -134,6 +145,7 @@
           handyEnabled ? false,
           heliumCommand ? null,
           minimalProfile ? false,
+          qqdictEnabled ? false,
         }:
         [
           (lib.getExe focusWorkspace2)
@@ -147,6 +159,7 @@
           (lib.getExe self'.packages.noctalia)
           (lib.getExe pkgs.ghostty)
         ]
+        ++ lib.optional qqdictEnabled "qqdict"
         ++ lib.optional (heliumCommand != null) heliumCommand;
       mkNiri =
         {
@@ -154,6 +167,7 @@
           openhomeEnabled ? false,
           handyEnabled ? false,
           minimalProfile ? false,
+          qqdictEnabled ? false,
         }:
         inputs.wrapper-modules.wrappers.niri.wrap {
           inherit pkgs settings;
@@ -164,6 +178,7 @@
           handyEnabled ? false,
           heliumCommand ? null,
           minimalProfile ? false,
+          qqdictEnabled ? false,
         }:
         {
           prefer-no-csd = true;
@@ -173,7 +188,10 @@
             "2" = { };
           };
 
-          spawn-at-startup = startupApps { inherit handyEnabled heliumCommand minimalProfile; };
+          spawn-at-startup = startupApps {
+            inherit handyEnabled heliumCommand minimalProfile;
+            inherit qqdictEnabled;
+          };
           spawn-sh-at-startup = [
             "sleep 5 && ${lib.getExe self'.packages.noctalia} msg wallpaper-random"
           ];
@@ -257,6 +275,26 @@
                 }
               ];
               open-on-workspace = "2";
+              open-focused = false;
+            }
+          ]
+          ++ lib.optionals qqdictEnabled [
+            {
+              matches = [
+                {
+                  app-id = "^qqdict$";
+                  title = "^qqdict (status|· Recent)$";
+                }
+              ];
+              open-floating = true;
+            }
+            {
+              matches = [
+                {
+                  app-id = "^qqdict$";
+                  title = "^qqdict status$";
+                }
+              ];
               open-focused = false;
             }
           ];
@@ -506,16 +544,19 @@
             handyEnabled ? false,
             heliumCommand ? null,
             minimalProfile ? false,
+            qqdictEnabled ? false,
           }:
           mkNiri {
             inherit openhomeEnabled;
             inherit handyEnabled;
+            inherit qqdictEnabled;
             settings = mkSettings {
               inherit
                 openhomeEnabled
                 handyEnabled
                 heliumCommand
                 minimalProfile
+                qqdictEnabled
                 ;
             };
           }
@@ -525,13 +566,18 @@
             openhomeEnabled ? false,
             handyEnabled ? false,
             heliumCommand ? null,
+            qqdictEnabled ? false,
           }:
           let
-            baseSettings = mkSettings { inherit openhomeEnabled handyEnabled heliumCommand; };
+            baseSettings = mkSettings {
+              inherit openhomeEnabled handyEnabled heliumCommand;
+              inherit qqdictEnabled;
+            };
           in
           mkNiri {
             inherit openhomeEnabled;
             inherit handyEnabled;
+            inherit qqdictEnabled;
             settings = baseSettings // {
               outputs = baseSettings.outputs // {
                 "DP-1".mode = "1920x1080";

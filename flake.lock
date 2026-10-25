@@ -1257,6 +1257,26 @@
         "type": "github"
       }
     },
+    "qqdict": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1792922330,
+        "narHash": "sha256-t9waDkLPmf9El44SdZIjRhxN7tDgIsPeIxgcSlqVPA4=",
+        "owner": "patrickhaahr",
+        "repo": "qqdict",
+        "rev": "ae34f9542ef11e8c0e53cd671d43cf8258de0453",
+        "type": "github"
+      },
+      "original": {
+        "owner": "patrickhaahr",
+        "repo": "qqdict",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "anthropic-skills": "anthropic-skills",
@@ -1299,6 +1319,7 @@
         "openhome": "openhome",
         "pyproject-build-systems": "pyproject-build-systems_2",
         "pyproject-nix": "pyproject-nix_2",
+        "qqdict": "qqdict",
         "sentry-skills": "sentry-skills",
         "sops-nix": "sops-nix",
         "spicetify-nix": "spicetify-nix",
