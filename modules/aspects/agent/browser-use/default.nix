@@ -2,13 +2,13 @@
   flake.modules.homeManager.browser-use =
     { pkgs, lib, ... }:
     let
-      version = "0.13.13";
+      version = "0.13.14";
 
       src = pkgs.fetchFromGitHub {
         owner = "browser-use";
         repo = "browser-use";
         rev = version;
-        hash = "sha256-yIQ3qGdLxP+34qXRBC20p9KWQLA6D1zmhjMn94586xc=";
+        hash = "sha256-HrAxu6t//HIQmoeCkuwBZHUWWZayWD1SLcrSl6Od0Ps=";
       };
 
       projectRoot = pkgs.runCommand "browser-use-src-${version}" { } ''

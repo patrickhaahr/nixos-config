@@ -3,11 +3,11 @@
     home.packages = [
       (pkgs.appimageTools.wrapType2 {
         pname = "osu-tachyon";
-        version = "2026.1001.0";
+        version = "2026.1026.0";
         extraPkgs = _: [ pkgs.icu ];
         src = pkgs.fetchurl {
-          url = "https://github.com/ppy/osu/releases/download/2026.1001.0-tachyon/osu.AppImage";
-          hash = "sha256-GQzxljdOhNjnipnS/KNKcO0DaU6D5Ub6mPMpeG4bDdY=";
+          url = "https://github.com/ppy/osu/releases/download/2026.1026.0-tachyon/osu.AppImage";
+          hash = "sha256-gF6wrkVfdSolzYXX/Y9ZHqjlKD7fwbm7eJ1NrdQuiwA=";
         };
         meta = {
           description = "osu!lazer tachyon (cutting-edge) stream";

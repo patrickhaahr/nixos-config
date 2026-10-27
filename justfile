@@ -124,7 +124,6 @@ update *inputs:
     just update-hermes
     just update-osu
     just update-kaigen
-    just update-t3
     just update-learnharness
 
 # Flake input resolution runs in the client, which needs its own GitHub token.
@@ -138,11 +137,7 @@ update-flake *inputs:
     export NIX_CONFIG="${NIX_CONFIG}"$'\n'"extra-access-tokens = github.com=$token"
     exec nix flake update "$@" --flake {{ flake }}
 
-# Bump hermes-agent to its latest upstream tag: rewrites the tag pin in
-# flake.nix and refreshes the lock entry, then syncs the vendored openwakeword
-# pin (hermes' lazy_deps.py) and the hey_hermes.onnx model rev in
-# agent/hermes/openwakeword.nix. (openhome follows master, so the plain
-# `nix flake update` above already covers it.)
+# Bump hermes-agent to its latest upstream tag and refresh the lock entry.
 [group('dev')]
 [no-exit-message]
 update-hermes:
@@ -155,32 +150,6 @@ update-hermes:
     else
       sed -i "s|hermes-agent/[^\"]*\";|hermes-agent/$latest\";|" flake.nix
       just update-flake hermes-agent
-    fi
-    aspect="{{ justfile_directory() }}/modules/aspects/agent/hermes/openwakeword.nix"
-    rev="$(nix flake metadata {{ flake }} --json | python3 -c 'import json,sys; print(json.load(sys.stdin)["locks"]["nodes"]["hermes-agent"]["locked"]["rev"])')"
-    pin="$(curl -sL "https://raw.githubusercontent.com/NousResearch/hermes-agent/$rev/tools/lazy_deps.py" \
-      | sed -n 's/.*"openwakeword==\([^"]*\)".*/\1/p')"
-    [[ -n "$pin" ]] || { echo "cannot read openwakeword pin from hermes $rev" >&2; exit 1; }
-    current="$(sed -n 's/^[[:space:]]*version = "\(.*\)";$/\1/p' "$aspect")"
-    if [[ "$pin" != "$current" ]]; then
-      url_digest="$(curl -sL "https://pypi.org/pypi/openwakeword/$pin/json" | python3 -c '
-        import json, sys
-        u = [x for x in json.load(sys.stdin)["urls"] if x["filename"].endswith("-py3-none-any.whl")][0]
-        print(u["url"], u["digests"]["sha256"])')"
-      read -r url digest <<<"$url_digest"
-      sri="$(nix hash convert --hash-algo sha256 --to sri "$digest")"
-      sed -i "s|^\([[:space:]]*version = \)".*";|\1\"$pin\";|" "$aspect"
-      sed -i "s|https://files.pythonhosted.org/[^\"]*openwakeword-[^\"]*\.whl|$url|" "$aspect"
-      sed -i "/py3-none-any.whl/{n;s|hash = \"[^\"]*\"|hash = \"$sri\"|;}" "$aspect"
-      echo "openwakeword $current -> $pin"
-    fi
-    oldrev="$(grep -oP 'hermes-agent/\K[0-9a-f]{40}' "$aspect" | head -1)"
-    if [[ -n "$oldrev" && "$rev" != "$oldrev" ]]; then
-      meta="$(nix store prefetch-file --json "https://raw.githubusercontent.com/NousResearch/hermes-agent/$rev/tools/wakewords/hey_hermes.onnx")"
-      hash="$(sed -n 's/.*"hash": *"\([^"]*\)".*/\1/p' <<<"$meta")"
-      sed -i "s|hermes-agent/$oldrev/tools/wakewords/hey_hermes.onnx|hermes-agent/$rev/tools/wakewords/hey_hermes.onnx|" "$aspect"
-      sed -i "/hey_hermes.onnx\";/{n;s|hash = \"[^\"]*\"|hash = \"$hash\"|;}" "$aspect"
-      echo "hey_hermes.onnx re-pinned to hermes $rev"
     fi
 
 # Bump browser-use to its latest upstream tag: rewrites version + source
@@ -206,9 +175,9 @@ update-browser-use:
     sed -i "s|hash = \"sha256-.*\";|hash = \"$hash\";|" "$aspect/default.nix"
     workdir="$(mktemp -d)"
     trap 'rm -rf "$workdir"' EXIT
-    projdir="$src"
-    [[ -f "$projdir/pyproject.toml" ]] || projdir="$(echo "$src"/browser-use-*/pyproject.toml)"
-    cp "$(dirname "$projdir")/pyproject.toml" "$workdir/"
+    projfile="$src/pyproject.toml"
+    [[ -f "$projfile" ]] || projfile="$(echo "$src"/browser-use-*/pyproject.toml)"
+    cp "$projfile" "$workdir/"
     (cd "$workdir" && nix shell nixpkgs#uv -c uv lock --python 3.12)
     cp "$workdir/uv.lock" "$aspect/uv.lock"
     echo "browser-use $current -> $latest"
@@ -242,62 +211,6 @@ update-kaigen:
       -e "s|$old_icon|$icon_sha|" \
       "$aspect"
     echo "kaigen-studio $current -> $latest"
-
-# Bump the shared desktop/server pin to the newest stable or nightly release.
-# Exclude maintainer previews and resolve both hashes before editing the pin.
-[group('dev')]
-[no-exit-message]
-update-t3:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    aspect="{{ justfile_directory() }}/modules/aspects/agent/t3code-package.nix"
-    latest="$(gh api 'repos/pingdotgg/t3code/releases?per_page=100' --paginate --jq \
-      '.[] | select(.draft == false) | select((.name // "" | test("preview"; "i")) | not) | select(.tag_name | test("^v[0-9]+\\.[0-9]+\\.[0-9]+(-nightly\\.[0-9]{8}\\.[0-9]+)?$")) | [.published_at, .tag_name] | @tsv' \
-      | sort -r | awk 'NR == 1 { print $2 }')"
-    [[ -n "$latest" ]] || { echo "cannot read latest T3 Code release" >&2; exit 1; }
-    ver="${latest#v}"
-    current="$(sed -n 's/^[[:space:]]*version = "\(.*\)";$/\1/p' "$aspect")"
-    if [[ "$ver" == "$current" ]]; then
-      echo "T3 Code $current already latest"
-      exit 0
-    fi
-    echo "Fetching T3 Code $ver and resolving its dependencies"
-    meta="$(nix store prefetch-file --unpack --hash-type sha256 --json "https://github.com/pingdotgg/t3code/archive/refs/tags/$latest.tar.gz")"
-    hash="$(python3 -c 'import json,sys; print(json.load(sys.stdin)["hash"])' <<<"$meta")"
-    workdir="$(mktemp -d)"
-    trap 'rm -rf "$workdir"' EXIT
-    export T3CODE_VERSION="$ver" T3CODE_SOURCE_HASH="$hash"
-    # A fixed-output build with a dummy hash reports the actual pnpm store hash.
-    if nix build --no-link --impure --expr '
-      let
-        flake = builtins.getFlake "{{ flake }}";
-        pkgs = flake.nixosConfigurations.zaza.pkgs;
-        version = builtins.getEnv "T3CODE_VERSION";
-      in pkgs.t3code.unwrapped.pnpmDeps.overrideAttrs {
-        inherit version;
-        src = pkgs.fetchFromGitHub {
-          owner = "pingdotgg";
-          repo = "t3code";
-          tag = "v${version}";
-          hash = builtins.getEnv "T3CODE_SOURCE_HASH";
-        };
-        outputHash = pkgs.lib.fakeHash;
-      }' 2>"$workdir/deps.log"; then
-      echo "expected a pnpm dependency hash mismatch" >&2
-      exit 1
-    fi
-    if ! grep -q "hash mismatch in fixed-output derivation '.*t3code-unwrapped-pnpm-deps.drv'" "$workdir/deps.log"; then
-      cat "$workdir/deps.log" >&2
-      exit 1
-    fi
-    deps_hash="$(sed -n 's/.*got:[[:space:]]*\(sha256-[A-Za-z0-9+/=]*\)$/\1/p' "$workdir/deps.log")"
-    [[ -n "$deps_hash" ]] || { cat "$workdir/deps.log" >&2; exit 1; }
-    sed -i \
-      -e "s|version = \".*\";|version = \"$ver\";|" \
-      -e "s|hash = \"sha256-.*\";|hash = \"$hash\";|" \
-      -e "s|outputHash = \"sha256-.*\";|outputHash = \"$deps_hash\";|" \
-      "$aspect"
-    echo "T3 Code $current -> $ver"
 
 # Bump osu-tachyon to the latest tachyon stream tag: rewrites version, tag URL
 # and AppImage hash in desktop/osu-lazer.nix. (Stable osu-lazer tracks nixpkgs.)

@@ -1,14 +1,21 @@
 _: {
   flake.modules.nixos.nix-maintenance = {
-    nix.gc = {
-      automatic = true;
-      dates = "weekly";
-      options = "--delete-older-than 30d";
-    };
+    nix = {
+      settings = {
+        min-free = 5 * 1024 * 1024 * 1024;
+        max-free = 10 * 1024 * 1024 * 1024;
+      };
 
-    nix.optimise = {
-      automatic = true;
-      dates = [ "weekly" ];
+      gc = {
+        automatic = true;
+        dates = "weekly";
+        options = "--delete-older-than 30d";
+      };
+
+      optimise = {
+        automatic = true;
+        dates = [ "weekly" ];
+      };
     };
   };
 }

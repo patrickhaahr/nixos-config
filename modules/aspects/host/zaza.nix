@@ -22,6 +22,7 @@
       self.modules.nixos.identity-ph-headless
       self.modules.nixos.agent-hermes-host
       self.modules.nixos.openhome
+      self.modules.nixos.kaigen-studio
       self.modules.nixos.k3s
       self.modules.nixos.k3s-nvidia
       self.modules.nixos.nix-maintenance

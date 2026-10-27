@@ -9,7 +9,6 @@
     {
       imports = [
         inputs.hermes-agent.homeManagerModules.default
-        self.modules.homeManager.agent-hermes-wake-word
         self.modules.homeManager.agent-hermes-gadget
       ];
 
@@ -218,17 +217,13 @@
           agent.max_turns = 90;
           display.tool_progress = "all";
           session_reset.mode = "none";
-          # Wake word: headless host has no mic — "auto" lets the desktop app
-          # capture client-side and stream PCM to this backend.
-          wake_word = {
-            enabled = true;
-            capture = "auto";
-          };
+          wake_word.enabled = false;
           browser = {
             backend = "browser-use";
             cdp_url = "http://127.0.0.1:9222";
           };
           mcp_servers = {
+            politikdata.url = "https://mcp.politikdata.dk/mcp";
             executor = {
               url = "https://executor.zaza.haahr.me/mcp";
               headers.Authorization = "Bearer \${EXECUTOR_API_KEY}";

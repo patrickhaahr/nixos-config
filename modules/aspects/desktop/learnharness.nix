@@ -1,8 +1,8 @@
 { lib, ... }:
 let
-  version = "0.3.6";
+  version = "0.3.8";
   artifact = "LearnHarness-${version}-x86_64.AppImage";
-  hash = "sha256-LOobJlK1gHJgx9mnrEurLzgK5mJNfaKkseiFjhec5QA=";
+  hash = "sha256-g/mAHXJW/Uu2ZS+/AxpP/hunMlaljq+2tCLv7bQCCzA=";
 in
 {
   flake.modules.nixos.learnharness =
