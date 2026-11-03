@@ -8,7 +8,7 @@
   flake.modules.nixos.kaigen-studio =
     { pkgs, ... }:
     let
-      version = "1.0.0.006";
+      version = "1.0.0.007";
       cliVersion = "1.0.0.005";
       # Toolchain installation shells out to tar; supply its decompressors too
       # so desktop launches do not depend on the user's shell environment.
@@ -35,7 +35,7 @@
           version = cliVersion;
           src = pkgs.fetchurl {
             url = "https://api.kaigen3d.com/cli/linux/${cliVersion}";
-            sha512 = "4ceeb55fdc4d04afa36d4a551c4d2f8085f37707a1c18f78d89fb6466c53770b55ee961584ca042c7cbd114d95e7d4fc494d25cfe3044985f4524ea309586ed1";
+            sha512 = "848e19a38634707cfe489004493891b56b806dd058b32cf898e4a93c26247ad8728b8425d2f5e4408802573c6dca5927ac32522b154073f13b51c3f0349fa4e4";
           };
           dontUnpack = true;
           dontBuild = true;
@@ -67,7 +67,7 @@
           {
             binary = pkgs.fetchurl {
               url = "https://api.kaigen3d.com/hub/linux/${version}";
-              sha512 = "e16455b30c6a3aa753bbeeceda7541b960cd4460dd4712a79110123ca25a480916808016f3d510bf62d30bd0e7a9f5c06d66646da095b26941f38a785d4d1bd6";
+              sha512 = "7a4316e4d3f785471bfbd338a32d60920843ac86dbae43e2672111aebb3963cc3b56ee5b6d423e7f6ba92d5a37677af3761717c1c799be2aa7076f19aa4b83f3";
             };
             icon = pkgs.fetchurl {
               url = "https://api.kaigen3d.com/hub/linux/${version}/icon";

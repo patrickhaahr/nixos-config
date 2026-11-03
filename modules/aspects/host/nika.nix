@@ -26,7 +26,6 @@
         #self.modules.nixos.hacking
         self.modules.nixos.screenshot-ocr
         self.modules.nixos.home-manager
-        self.modules.nixos.losslesscut
         self.modules.nixos.helium
         self.modules.nixos.lanzaboote
         self.modules.nixos.kdenlive
@@ -62,6 +61,7 @@
         self.modules.nixos.qqdict
         self.modules.nixos.claude-desktop
         self.modules.nixos.artcraft
+        self.modules.nixos.rpi-imager
       ];
 
       networking.networkmanager.enable = true;
@@ -118,6 +118,8 @@
         "iptable_nat"
         "overlay"
         "uinput"
+        "usb_storage"
+        "uas"
         "xt_addrtype"
         "xt_comment"
       ];

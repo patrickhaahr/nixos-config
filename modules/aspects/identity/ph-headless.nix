@@ -10,6 +10,7 @@ in
       self.modules.homeManager.direnv
       self.modules.homeManager.devenv
       self.modules.homeManager.btop
+      self.modules.homeManager.bun
       self.modules.homeManager.claude-code
       self.modules.homeManager.fastfetch
       self.modules.homeManager.gh
