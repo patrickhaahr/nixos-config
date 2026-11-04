@@ -9,7 +9,10 @@
     { pkgs, ... }:
     let
       version = "1.0.0.007";
-      cliVersion = "1.0.0.005";
+      cliVersion = "1.0.0.007";
+      cliSha512 = "860ad8ca835fd318134419559fb429be92541fbc519c74b35c9bcf8ca072ce0ee02a755741773e653c5622f539a004501b991c8e362c9950da5fd7d4c3cee6ce";
+      studioSha512 = "848e19a38634707cfe489004493891b56b806dd058b32cf898e4a93c26247ad8728b8425d2f5e4408802573c6dca5927ac32522b154073f13b51c3f0349fa4e4";
+      iconSha512 = "7a4316e4d3f785471bfbd338a32d60920843ac86dbae43e2672111aebb3963cc3b56ee5b6d423e7f6ba92d5a37677af3761717c1c799be2aa7076f19aa4b83f3";
       # Toolchain installation shells out to tar; supply its decompressors too
       # so desktop launches do not depend on the user's shell environment.
       archiveTools = lib.makeBinPath [
@@ -35,7 +38,7 @@
           version = cliVersion;
           src = pkgs.fetchurl {
             url = "https://api.kaigen3d.com/cli/linux/${cliVersion}";
-            sha512 = "848e19a38634707cfe489004493891b56b806dd058b32cf898e4a93c26247ad8728b8425d2f5e4408802573c6dca5927ac32522b154073f13b51c3f0349fa4e4";
+            sha512 = cliSha512;
           };
           dontUnpack = true;
           dontBuild = true;
@@ -67,11 +70,11 @@
           {
             binary = pkgs.fetchurl {
               url = "https://api.kaigen3d.com/hub/linux/${version}";
-              sha512 = "7a4316e4d3f785471bfbd338a32d60920843ac86dbae43e2672111aebb3963cc3b56ee5b6d423e7f6ba92d5a37677af3761717c1c799be2aa7076f19aa4b83f3";
+              sha512 = studioSha512;
             };
             icon = pkgs.fetchurl {
               url = "https://api.kaigen3d.com/hub/linux/${version}/icon";
-              sha512 = "7a4316e4d3f785471bfbd338a32d60920843ac86dbae43e2672111aebb3963cc3b56ee5b6d423e7f6ba92d5a37677af3761717c1c799be2aa7076f19aa4b83f3";
+              sha512 = iconSha512;
             };
             nativeBuildInputs = [ pkgs.makeWrapper ];
             meta = {

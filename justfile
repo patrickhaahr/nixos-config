@@ -182,9 +182,8 @@ update-browser-use:
     cp "$workdir/uv.lock" "$aspect/uv.lock"
     echo "browser-use $current -> $latest"
 
-# Bump kaigen-studio to the release pinned by the vendor's installer script
-# (https://api.kaigen3d.com/studio.sh): rewrites version + binary/icon sha512
-# pins in desktop/kaigen-studio.nix.
+# Refresh Kaigen CLI and Studio versions and checksums from the vendor's
+# install.sh (Linux) and studio.sh, including pins for an unchanged version.
 [group('dev')]
 [no-exit-message]
 update-kaigen:
@@ -195,22 +194,20 @@ update-kaigen:
     latest="$(sed -n 's/^VERSION="\([^"]*\)"/\1/p' <<<"$script")"
     studio_sha="$(sed -n 's/^STUDIO_SHA512="\([^"]*\)"/\1/p' <<<"$script")"
     icon_sha="$(sed -n 's/^ICON_SHA512="\([^"]*\)"/\1/p' <<<"$script")"
-    [[ -n "$latest" && -n "$studio_sha" && -n "$icon_sha" ]] || { echo "cannot parse https://api.kaigen3d.com/studio.sh" >&2; exit 1; }
-    current="$(sed -n 's/^[[:space:]]*version = "\(.*\)";$/\1/p' "$aspect")"
-    if [[ "$latest" == "$current" ]]; then
-      echo "kaigen-studio $current already latest"
-      exit 0
-    fi
-    old_hashes="$(grep -oP 'sha512 = "\K[0-9a-f]{128}' "$aspect")"
-    old_studio="$(sed -n 1p <<<"$old_hashes")"
-    old_icon="$(sed -n 2p <<<"$old_hashes")"
-    [[ -n "$old_studio" && -n "$old_icon" ]] || { echo "cannot read current kaigen-studio pins from $aspect" >&2; exit 1; }
-    sed -i \
-      -e "s|version = \"$current\";|version = \"$latest\";|" \
-      -e "s|$old_studio|$studio_sha|" \
-      -e "s|$old_icon|$icon_sha|" \
+    cli_script="$(curl -fsSL https://api.kaigen3d.com/install.sh)"
+    cli_latest="$(sed -n '/^  Linux)/,/^    ;;/s/^    VERSION="\([^"]*\)"$/\1/p' <<<"$cli_script")"
+    cli_sha="$(sed -n '/^  Linux)/,/^    ;;/s/^    SHA512="\([^"]*\)"$/\1/p' <<<"$cli_script")"
+    [[ "$latest" =~ ^[0-9]+(\.[0-9]+)+$ && "$cli_latest" =~ ^[0-9]+(\.[0-9]+)+$ \
+      && "$studio_sha" =~ ^[0-9a-f]{128}$ && "$icon_sha" =~ ^[0-9a-f]{128}$ \
+      && "$cli_sha" =~ ^[0-9a-f]{128}$ ]] || { echo "cannot parse Kaigen installer versions and checksums" >&2; exit 1; }
+    sed -i -E \
+      -e "s|^([[:space:]]*version = )\"[^\"]*\";|\1\"$latest\";|" \
+      -e "s|^([[:space:]]*cliVersion = )\"[^\"]*\";|\1\"$cli_latest\";|" \
+      -e "s|^([[:space:]]*cliSha512 = )\"[^\"]*\";|\1\"$cli_sha\";|" \
+      -e "s|^([[:space:]]*studioSha512 = )\"[^\"]*\";|\1\"$studio_sha\";|" \
+      -e "s|^([[:space:]]*iconSha512 = )\"[^\"]*\";|\1\"$icon_sha\";|" \
       "$aspect"
-    echo "kaigen-studio $current -> $latest"
+    echo "refreshed kaigen $cli_latest and kaigen-studio $latest release pins"
 
 # Bump osu-tachyon to the latest tachyon stream tag: rewrites version, tag URL
 # and AppImage hash in desktop/osu-lazer.nix. (Stable osu-lazer tracks nixpkgs.)
