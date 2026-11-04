@@ -12,6 +12,7 @@
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHs0OHmxy5J5jg/9RJ/sHhIRGXi3UkkJeko0/TSvNVh6 nika-to-hermes-auto"
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMWIIdTomMDrLElXLqDg68u7h8Ila5Rjg5TZIngPMUeH ph@loki"
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBow0SMe+E5nrSuhmq45vcb/CzYEHQsPANx5vGNRksR8 grapheneos"
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL3MkX3J3hR13KTzSkeHF2Uxhh3U0EALHicW+gYMufFD patrickhaahr@WinBad"
       ];
       extraGroups = [
         "systemd-journal"
