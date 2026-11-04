@@ -37,6 +37,7 @@
         self.modules.homeManager.ripgrep
         self.modules.homeManager.fd
         self.modules.homeManager.file
+        self.modules.homeManager.ffmpeg
         self.modules.homeManager.unzip
         self.modules.homeManager.sqlite
         self.modules.homeManager.tree

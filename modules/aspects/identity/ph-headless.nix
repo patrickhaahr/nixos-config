@@ -13,6 +13,7 @@ in
       self.modules.homeManager.bun
       self.modules.homeManager.claude-code
       self.modules.homeManager.fastfetch
+      self.modules.homeManager.ffmpeg
       self.modules.homeManager.gh
       self.modules.homeManager.git
       self.modules.homeManager.herdr
