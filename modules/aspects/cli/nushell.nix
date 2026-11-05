@@ -3,6 +3,7 @@ _: {
     programs = {
       nushell = {
         enable = true;
+        loadSessionVariables = false;
         shellAliases = {
           nano = "nvim";
           code = "opencode -c";

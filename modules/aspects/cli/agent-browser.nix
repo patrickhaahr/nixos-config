@@ -7,7 +7,7 @@
       home.packages = [
         (pkgs.symlinkJoin {
           name = "agent-browser-with-chromium";
-          paths = [ inputs.llm-agents.packages.${pkgs.system}.agent-browser ];
+          paths = [ inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.agent-browser ];
           nativeBuildInputs = [ pkgs.makeWrapper ];
           postBuild = ''
             wrapProgram "$out/bin/agent-browser" \

@@ -191,8 +191,6 @@
     };
 
     sops-nix = {
-      # Pin to PR #984 until upstream merges: nixpkgs removed buildGo125Module (Go 1.25 EOL).
-      # Revert to github:Mic92/sops-nix once https://github.com/Mic92/sops-nix/pull/984 is merged.
       url = "github:c2fc2f/sops-nix/buildGo126Module";
       inputs.nixpkgs.follows = "nixpkgs";
     };
@@ -232,6 +230,13 @@
     llm-agents = {
       url = "github:numtide/llm-agents.nix";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    hex = {
+      url = "github:anomalyco/hex/v3.3.0";
+      # Keep Hex's libc compatible with the host's Vulkan drivers.
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
     };
   };
 

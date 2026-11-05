@@ -27,6 +27,7 @@
         self.modules.nixos.screenshot-ocr
         self.modules.nixos.home-manager
         self.modules.nixos.helium
+        self.modules.nixos.hex
         self.modules.nixos.lanzaboote
         self.modules.nixos.kdenlive
         self.modules.nixos.nix-ld

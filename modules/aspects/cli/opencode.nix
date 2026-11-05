@@ -13,7 +13,7 @@ in
       ...
     }:
     let
-      opencodePackage = inputs.llm-agents.packages.${pkgs.system}.opencode2;
+      opencodePackage = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode2;
 
       opencode = pkgs.writeShellApplication {
         name = "opencode";

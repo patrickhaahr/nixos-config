@@ -10,7 +10,7 @@ in
     in
     {
       home = {
-        packages = [ inputs.llm-agents.packages.${pkgs.system}.pi ];
+        packages = [ inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.pi ];
 
         file = {
           ".pi/agent/settings.json".source = settingsFormat.generate "pi-settings.json" {
