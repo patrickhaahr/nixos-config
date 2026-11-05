@@ -296,6 +296,13 @@
                 }
               ];
               open-focused = false;
+              default-floating-position = _: {
+                props = {
+                  x = 0;
+                  y = 12;
+                  relative-to = "bottom";
+                };
+              };
             }
           ];
 

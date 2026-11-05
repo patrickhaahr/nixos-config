@@ -126,10 +126,15 @@ in
           enabled = true;
           unit = "celsius";
         };
-        notification.layer = "overlay";
+        notification = {
+          enable_daemon = true;
+          position = "top_right";
+          layer = "overlay";
+        };
         osd = {
           position = "bottom_center";
           hide_delay_ms = 3000;
+          kinds.privacy = false;
         };
         lockscreen.lock_before_suspend = true;
         wallpaper = {
