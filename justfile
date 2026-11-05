@@ -126,6 +126,15 @@ update *inputs:
     just update-kaigen
     just update-learnharness
 
+# Update AI packages (Codex, Claude, OpenCode, T3 Code, Pi, Hermes, and more).
+[group('dev')]
+[no-exit-message]
+update-ai:
+    just update-flake llm-agents cliproxyapi
+    just update-browser-use
+    just update-hermes
+    just update-learnharness
+
 # Flake input resolution runs in the client, which needs its own GitHub token.
 [private]
 [no-exit-message]
