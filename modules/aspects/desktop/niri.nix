@@ -30,6 +30,8 @@
           false;
       heliumCommand =
         if heliumEnabled then lib.getExe' config.programs.helium.launcherPackage "helium" else null;
+      hexCommand =
+        if config.programs.hex.enable or false then lib.getExe config.programs.hex.package else null;
     in
     {
       options.programs.niri.minimalProfile = lib.mkEnableOption "the minimal Niri session profile";
@@ -44,6 +46,7 @@
             inherit handyEnabled;
             inherit qqdictEnabled;
             inherit heliumCommand;
+            inherit hexCommand;
             inherit (cfg) minimalProfile;
           };
         };
@@ -84,6 +87,8 @@
               lib.getExe' config.programs.helium.launcherPackage "helium"
             else
               null;
+          hexCommand =
+            if config.programs.hex.enable or false then lib.getExe config.programs.hex.package else null;
         }
       );
     };
@@ -177,6 +182,7 @@
           openhomeEnabled,
           handyEnabled ? false,
           heliumCommand ? null,
+          hexCommand ? null,
           minimalProfile ? false,
           qqdictEnabled ? false,
         }:
@@ -384,6 +390,27 @@
               // lib.optionalAttrs (heliumCommand != null) {
                 "Mod+B".spawn = heliumCommand;
               }
+              // lib.optionalAttrs (hexCommand != null) (
+                # The last modifier pressed is the keysym; support either order.
+                lib.genAttrs
+                  [
+                    "Ctrl+Alt+Alt_L"
+                    "Ctrl+Alt+Alt_R"
+                    "Ctrl+Alt+Control_L"
+                    "Ctrl+Alt+Control_R"
+                  ]
+                  (
+                    _: _: {
+                      props.repeat = false;
+                      props.hotkey-overlay-title = "Toggle Hex dictation (Ctrl+Alt)";
+                      content.spawn = [
+                        hexCommand
+                        "dictation"
+                        "toggle"
+                      ];
+                    }
+                  )
+              )
               // lib.optionalAttrs handyEnabled {
                 "Ctrl+Space" = _: {
                   props.repeat = false;
@@ -464,10 +491,7 @@
     {
       checks = lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
         niri-handy-startup-wiring = pkgs.runCommand "niri-handy-startup-wiring" { } ''
-          test '${builtins.toJSON self.nixosConfigurations.nika.config.home-manager.users.ph.services.handy.enable}' = 'true'
-
-          test '${self.nixosConfigurations.nika.config.home-manager.users.ph.services.handy.package}/bin/handy' = \
-            '${self.nixosConfigurations.nika.config.programs.handy.package}/bin/handy'
+          test '${builtins.toJSON self.nixosConfigurations.nika.config.home-manager.users.ph.services.handy.enable}' = 'false'
 
           case '${
             builtins.toJSON (startupApps {
@@ -554,6 +578,7 @@
             openhomeEnabled ? false,
             handyEnabled ? false,
             heliumCommand ? null,
+            hexCommand ? null,
             minimalProfile ? false,
             qqdictEnabled ? false,
           }:
@@ -566,6 +591,7 @@
                 openhomeEnabled
                 handyEnabled
                 heliumCommand
+                hexCommand
                 minimalProfile
                 qqdictEnabled
                 ;
@@ -577,11 +603,17 @@
             openhomeEnabled ? false,
             handyEnabled ? false,
             heliumCommand ? null,
+            hexCommand ? null,
             qqdictEnabled ? false,
           }:
           let
             baseSettings = mkSettings {
-              inherit openhomeEnabled handyEnabled heliumCommand;
+              inherit
+                openhomeEnabled
+                handyEnabled
+                heliumCommand
+                hexCommand
+                ;
               inherit qqdictEnabled;
             };
           in

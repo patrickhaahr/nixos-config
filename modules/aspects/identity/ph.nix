@@ -4,7 +4,7 @@ let
 in
 {
   flake.modules = {
-    nixos.identity-ph = { pkgs, ... }: {
+    nixos.identity-ph = { config, pkgs, ... }: {
       users.users.${userName} = {
         isNormalUser = true;
         linger = true;
@@ -20,7 +20,10 @@ in
           (lib.removeSuffix "\n" (builtins.readFile ../../../secrets/hermes/hosts.pub))
         ];
       };
-      home-manager.users.${userName}.imports = [ self.modules.homeManager.identity-ph ];
+      home-manager.users.${userName}.imports = [
+        self.modules.homeManager.identity-ph
+      ]
+      ++ lib.optional (config.programs.hex.enable or false) self.modules.homeManager.hex;
     };
 
     nixos.identity-ph-cliproxyapi = {

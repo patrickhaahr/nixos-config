@@ -59,7 +59,6 @@
         self.modules.nixos."niri-dp1-1080p"
         self.modules.nixos.zed
         self.modules.nixos.chatgpt
-        self.modules.nixos.qqdict
         self.modules.nixos.claude-desktop
         self.modules.nixos.artcraft
         self.modules.nixos.rpi-imager
@@ -135,8 +134,6 @@
         self.modules.homeManager.spicetify
         self.modules.homeManager.openhome
       ];
-      programs.handy.autostart = true;
-      programs.qqdict.enable = true;
       system.stateVersion = "25.11";
     };
 }
