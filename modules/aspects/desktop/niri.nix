@@ -391,25 +391,37 @@
                 "Mod+B".spawn = heliumCommand;
               }
               // lib.optionalAttrs (hexCommand != null) (
+                {
+                  "F9" = _: {
+                    props.repeat = false;
+                    props.hotkey-overlay-title = "Toggle Hex Annotate";
+                    content.spawn = [
+                      hexCommand
+                      "annotate"
+                      "toggle"
+                    ];
+                  };
+                }
                 # The last modifier pressed is the keysym; support either order.
-                lib.genAttrs
-                  [
-                    "Ctrl+Alt+Alt_L"
-                    "Ctrl+Alt+Alt_R"
-                    "Ctrl+Alt+Control_L"
-                    "Ctrl+Alt+Control_R"
-                  ]
-                  (
-                    _: _: {
-                      props.repeat = false;
-                      props.hotkey-overlay-title = "Toggle Hex dictation (Ctrl+Alt)";
-                      content.spawn = [
-                        hexCommand
-                        "dictation"
-                        "toggle"
-                      ];
-                    }
-                  )
+                //
+                  lib.genAttrs
+                    [
+                      "Ctrl+Alt+Alt_L"
+                      "Ctrl+Alt+Alt_R"
+                      "Ctrl+Alt+Control_L"
+                      "Ctrl+Alt+Control_R"
+                    ]
+                    (
+                      _: _: {
+                        props.repeat = false;
+                        props.hotkey-overlay-title = "Toggle Hex dictation (Ctrl+Alt)";
+                        content.spawn = [
+                          hexCommand
+                          "dictation"
+                          "toggle"
+                        ];
+                      }
+                    )
               )
               // lib.optionalAttrs handyEnabled {
                 "Ctrl+Space" = _: {
