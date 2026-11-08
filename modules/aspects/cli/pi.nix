@@ -27,6 +27,7 @@ in
             ];
           };
 
+          ".pi/agent/AGENTS.md".source = agentsSourceDir + "/AGENTS.md";
           ".pi/agent/agents".source = agentsSourceDir + "/agents";
           ".pi/agent/prompts".source = agentsSourceDir + "/commands";
           ".pi/agent/extensions/global-skills.ts".source = agentsSourceDir + "/extensions/global-skills.ts";
