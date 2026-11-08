@@ -1,0 +1,24 @@
+default:
+    @just --list
+
+# Format check, lint, typecheck, test and build: the gate before every commit.
+check:
+    bunx oxfmt --check
+    bunx oxlint --type-aware --deny-warnings
+    bunx tsc --noEmit
+    bun test --pass-with-no-tests
+    bun run --if-present build
+
+# Apply formatter and lint autofixes.
+fix:
+    bunx oxfmt
+    bunx oxlint --type-aware --fix
+
+dev:
+    bun run dev
+
+build:
+    bun run --if-present build
+
+test-one pattern:
+    bun test {{ pattern }}

@@ -1,0 +1,28 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc"],
+  "ignorePatterns": [
+    ".devenv/**",
+    ".direnv/**",
+    "dist/**",
+    "tools/oxlint/anti-slop/**",
+    ".agents/**",
+    ".claude/**",
+    ".codex/**",
+    ".opencode/**",
+    ".pi/**"
+  ],
+  "rules": {
+    "typescript/no-explicit-any": "error",
+    "typescript/no-unsafe-argument": "error",
+    "typescript/no-unsafe-assignment": "error",
+    "typescript/no-unsafe-call": "error",
+    "typescript/no-unsafe-member-access": "error",
+    "typescript/no-unsafe-return": "error",
+    "typescript/no-floating-promises": "error",
+    "typescript/no-misused-promises": "error",
+    "typescript/strict-boolean-expressions": "error",
+    "typescript/switch-exhaustiveness-check": "error",
+    "oxc/no-accumulating-spread": "error"
+  }
+}
