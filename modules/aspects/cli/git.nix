@@ -1,5 +1,8 @@
-_: {
+{ self, ... }:
+{
   flake.modules.homeManager.git = {
+    imports = [ self.modules.homeManager.git-guardrails ];
+
     home.file.".gitignore-global".text = ''
       .env
       .local_secrets
