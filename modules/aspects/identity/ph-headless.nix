@@ -8,6 +8,7 @@ in
 
     home-manager.users.${userName}.imports = [
       self.modules.homeManager.agent-tools
+      self.modules.homeManager.bash
       self.modules.homeManager.direnv
       self.modules.homeManager.devenv
       self.modules.homeManager.btop
