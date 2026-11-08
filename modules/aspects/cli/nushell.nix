@@ -14,7 +14,6 @@ _: {
           "..." = "cd ../..";
           "...." = "cd ../../..";
           e = "nautilus .";
-          sudo = "doas";
         };
         environmentVariables.EDITOR = "nvim";
         extraConfig = ''
