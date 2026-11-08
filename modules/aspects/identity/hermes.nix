@@ -32,16 +32,9 @@
         self.modules.homeManager.pi
         self.modules.homeManager.browser-use
         self.modules.homeManager.yt-dlp
-        self.modules.homeManager.jq
-        self.modules.homeManager.less
+        self.modules.homeManager.agent-tools
+        self.modules.homeManager.agent-browser
         self.modules.homeManager.nvf
-        self.modules.homeManager.ripgrep
-        self.modules.homeManager.fd
-        self.modules.homeManager.file
-        self.modules.homeManager.ffmpeg
-        self.modules.homeManager.unzip
-        self.modules.homeManager.sqlite
-        self.modules.homeManager.tree
         self.modules.homeManager.yazi
         self.modules.homeManager.herdr
       ];
