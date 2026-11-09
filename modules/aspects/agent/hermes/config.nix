@@ -6,6 +6,122 @@
       lib,
       ...
     }:
+    let
+      # Seeded, not enforced: written only where config.yaml lacks the key, so
+      # runtime edits (dashboard, TUI, `hermes config set`) survive switches.
+      # `hermes config unset <key>` restores the value below on the next switch.
+      seedSettings = pkgs.writeText "hermes-seed-settings.json" (
+        builtins.toJSON {
+          model = {
+            provider = "openai-codex";
+            default = "gpt-6.1-sol";
+          };
+          auxiliary.vision = {
+            fallback_chain = [
+              {
+                provider = "opencode-go";
+                model = "glm-5.3-flash";
+              }
+            ];
+          };
+          fallback_providers = [
+            {
+              provider = "opencode-go";
+              model = "glm-5.3-flash";
+            }
+            {
+              provider = "opencode-go";
+              model = "gpt-6-luna";
+            }
+          ];
+          moa = {
+            default_preset = "default";
+            presets = {
+              default = {
+                reference_models = [
+                  {
+                    provider = "opencode-go";
+                    model = "deepseek-v4-flash";
+                  }
+                  {
+                    provider = "opencode-go";
+                    model = "glm-5.3-flash";
+                  }
+                  {
+                    provider = "opencode-go";
+                    model = "kimi-k2.5";
+                  }
+                ];
+                aggregator = {
+                  provider = "opencode-go";
+                  model = "grok-4.6";
+                };
+                max_tokens = 4096;
+                enabled = true;
+              };
+            };
+          };
+          agent.max_turns = 90;
+          display.tool_progress = "all";
+          # Keep the default Hermes profile limited to its local
+          # orchestration skills. Specialist profiles own domain skills.
+          skills.external_dirs = [ ];
+          approvals.mode = "off";
+          delegation = {
+            subagent_auto_approve = true;
+          };
+          session_reset.mode = "none";
+          wake_word.enabled = false;
+          browser = {
+            backend = "browser-use";
+            cdp_url = "http://127.0.0.1:9222";
+          };
+          mcp_servers = {
+            politikdata.url = "https://mcp.politikdata.dk/mcp";
+            executor = {
+              url = "https://executor.zaza.haahr.me/mcp";
+              headers.Authorization = "Bearer \${EXECUTOR_API_KEY}";
+            };
+            # OpenHome MCP (shared home-control API).
+            # ${OPENHOME_API_KEY} expands from the sops-owned .hermes/.env.
+            openhome = {
+              url = "https://openhome.haahr.me/mcp";
+              headers.Authorization = "Bearer \${OPENHOME_API_KEY}";
+            };
+          };
+        }
+      );
+      # Same YAML dialect and dumper settings as the upstream merge script, so
+      # the perl patches below keep seeing the formatting they match against.
+      seedConfig = pkgs.writeScript "hermes-config-seed" ''
+        #!${pkgs.python3.withPackages (ps: [ ps.ruamel-yaml ])}/bin/python3
+        import json, sys
+        from pathlib import Path
+        from ruamel.yaml import YAML
+
+        yaml = YAML(typ="safe", pure=True)
+        yaml.version = (1, 1)
+        yaml.default_flow_style = False
+        yaml.sort_base_mapping_type_on_output = False
+
+        seed = json.loads(Path(sys.argv[1]).read_text())
+        config_path = Path(sys.argv[2])
+        existing = (yaml.load(config_path) if config_path.exists() else None) or {}
+
+        def seed_into(base, defaults):
+            result = dict(base)
+            for k, v in defaults.items():
+                if k not in result:
+                    result[k] = v
+                elif isinstance(result[k], dict) and isinstance(v, dict):
+                    result[k] = seed_into(result[k], v)
+            return result
+
+        merged = seed_into(existing, seed)
+        if merged != existing:
+            yaml.dump(merged, config_path)
+      '';
+    in
     {
       imports = [
         inputs.hermes-agent.homeManagerModules.default
@@ -21,6 +137,7 @@
             lib.hm.dag.entryAfter
               [
                 "reloadSystemd"
+                "hermes-runtime-config"
                 "hermes-signal-coach-route"
                 "hermes-live-voice-plugin"
                 "hermes-profile-openhome-key"
@@ -33,6 +150,15 @@
                     hermes-agent.service hermes-backend.service
                 fi
               '';
+
+          # Opt out of Hermes managed mode so the CLI, TUI and dashboard may
+          # write config.yaml; Nix still enforces `settings` on every switch.
+          # Don't run `hermes update`: the package lives in the Nix store.
+          hermes-runtime-config = lib.hm.dag.entryAfter [ "hermesAgentSetup" ] ''
+            hermes_home="${config.home.homeDirectory}/.hermes"
+            run ${seedConfig} ${seedSettings} "$hermes_home/config.yaml"
+            run install -m 0600 ${pkgs.writeText "hermes-unmanaged" "false"} "$hermes_home/.managed"
+          '';
 
           # profile_routes are parsed literally by Hermes; substitute the SOPS-backed
           # group ID after the managed config merge, without storing it in the flake.
@@ -109,6 +235,12 @@
         };
       };
 
+      # Appended after the upstream HERMES_MANAGED=home-manager; systemd keeps
+      # the last assignment.
+      systemd.user.services = lib.genAttrs [ "hermes-agent" "hermes-backend" ] (_: {
+        Service.Environment = lib.mkAfter [ "HERMES_MANAGED=false" ];
+      });
+
       services.hermes-agent = {
         enable = true;
         gateway.enable = true;
@@ -156,107 +288,6 @@
               profile = "uwu";
             }
           ];
-          # Keep the default Hermes profile limited to its local
-          # orchestration skills. Specialist profiles own domain skills.
-          skills.external_dirs = [ ];
-          approvals.mode = "off";
-          model = {
-            provider = "openai-codex";
-            default = "gpt-6.1-sol";
-          };
-          auxiliary.vision = {
-            fallback_chain = [
-              {
-                provider = "opencode-go";
-                model = "glm-5.3-flash";
-              }
-            ];
-          };
-          fallback_providers = [
-            {
-              provider = "opencode-go";
-              model = "glm-5.3-flash";
-            }
-            {
-              provider = "opencode-go";
-              model = "gpt-6-luna";
-            }
-          ];
-          delegation = {
-            subagent_auto_approve = true;
-          };
-          moa = {
-            default_preset = "default";
-            presets = {
-              default = {
-                reference_models = [
-                  {
-                    provider = "opencode-go";
-                    model = "deepseek-v4-flash";
-                  }
-                  {
-                    provider = "opencode-go";
-                    model = "glm-5.3-flash";
-                  }
-                  {
-                    provider = "opencode-go";
-                    model = "kimi-k2.5";
-                  }
-                ];
-                aggregator = {
-                  provider = "opencode-go";
-                  model = "grok-4.6";
-                };
-                max_tokens = 4096;
-                enabled = true;
-              };
-            };
-          };
-          agent.max_turns = 90;
-          display.tool_progress = "all";
-          session_reset.mode = "none";
-          wake_word.enabled = false;
-          browser = {
-            backend = "browser-use";
-            cdp_url = "http://127.0.0.1:9222";
-          };
-          mcp_servers = {
-            politikdata.url = "https://mcp.politikdata.dk/mcp";
-            executor = {
-              url = "https://executor.zaza.haahr.me/mcp";
-              headers.Authorization = "Bearer \${EXECUTOR_API_KEY}";
-            };
-            # OpenHome MCP (shared home-control API).
-            # ${OPENHOME_API_KEY} expands from the sops-owned .hermes/.env.
-            openhome = {
-              url = "https://openhome.haahr.me/mcp";
-              headers.Authorization = "Bearer \${OPENHOME_API_KEY}";
-            };
-            # Blender MCP (Blender + addon socket run on nika, localhost:9876).
-            # The addon socket binds localhost with no auth, and nika's sshd has
-            # AllowTcpForwarding off, so no -L tunnel can reach it. Instead the
-            # MCP server itself runs on nika, with MCP stdio carried over ssh.
-            # Quoting: sshd runs the login shell (nushell) -c, hence bash -l -c
-            # with a single-quoted inner command. Passphrase-free via ssh-keys.nix.
-            blender = {
-              command = "${pkgs.openssh}/bin/ssh";
-              args = [
-                "-o"
-                "BatchMode=yes"
-                "-o"
-                "ConnectTimeout=10"
-                "-o"
-                "ServerAliveInterval=30"
-                "-o"
-                "ServerAliveCountMax=3"
-                "ph@nika"
-                "bash"
-                "-l"
-                "-c"
-                "'DISABLE_TELEMETRY=true uvx blender-mcp'"
-              ];
-            };
-          };
           platforms.signal = {
             enabled = true;
             # Silently drop unauthorized direct messages; never send pairing
