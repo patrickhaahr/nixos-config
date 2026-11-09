@@ -34,6 +34,7 @@
         self.modules.homeManager.yt-dlp
         self.modules.homeManager.agent-tools
         self.modules.homeManager.agent-browser
+        self.modules.homeManager.browse-headless
         self.modules.homeManager.nvf
         self.modules.homeManager.yazi
         self.modules.homeManager.herdr
