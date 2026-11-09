@@ -6,11 +6,6 @@
   flake.modules.homeManager.agent-hermes = {
     imports = [ self.modules.homeManager.git-guardrails ];
 
-    home.file.".gitignore-global".text = ''
-      .env
-      .local_secrets
-    '';
-
     programs = {
       git.enable = true;
       gh.enable = true;
@@ -32,7 +27,6 @@
           };
         };
         init.defaultBranch = "master";
-        core.excludesfile = "~/.gitignore-global";
         pull.rebase = true;
         rebase.autoStash = true;
         alias = {

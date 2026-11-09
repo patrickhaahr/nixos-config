@@ -3,11 +3,6 @@
   flake.modules.homeManager.git = {
     imports = [ self.modules.homeManager.git-guardrails ];
 
-    home.file.".gitignore-global".text = ''
-      .env
-      .local_secrets
-    '';
-
     xdg.configFile."git/config-work".text = ''
       [user]
         email = pqh@timengo.com
@@ -39,10 +34,7 @@
           };
         };
         init.defaultBranch = "master";
-        core = {
-          editor = "nvim";
-          excludesfile = "~/.gitignore-global";
-        };
+        core.editor = "nvim";
         pull.rebase = true;
         rebase.autoStash = true;
         alias = {

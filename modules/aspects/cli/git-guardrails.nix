@@ -44,6 +44,18 @@ _: {
       };
     in
     {
+      programs.git.ignores = [
+        ".env"
+        ".env.*"
+        "!.env.example"
+        "!.env.sample"
+        "!.env.template"
+        ".dev.vars"
+        ".dev.vars.*"
+        ".local_secrets"
+        "settings.local.json"
+      ];
+
       programs.git.settings.hook = {
         file-size-guard = {
           command = "${fileSizeGuard}/bin/git-file-size-guard --global";
