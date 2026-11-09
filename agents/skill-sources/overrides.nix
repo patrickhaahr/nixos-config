@@ -5,16 +5,8 @@ let
   };
 in
 {
-  agent-browser.description = "Invoke when automating a website from the shell: open pages, click, fill forms, screenshot or scrape.";
-  better-accessibility.description = "Invoke when reviewing or fixing accessibility: keyboard, focus, ARIA, screen readers or WCAG.";
   better-auth-best-practices.description = "Invoke when setting up or configuring Better Auth.";
   better-auth-security-best-practices.description = "Invoke when securing or hardening a Better Auth setup.";
-  better-colors.description = "Invoke when building or checking a color palette, color tokens or contrast.";
-  better-interface.description = "Invoke when reviewing a whole screen, flow or interface for UI quality.";
-  better-layout.description = "Invoke when arranging or fixing a layout: grouping, alignment, responsiveness or RTL.";
-  better-typography.description = "Invoke when setting or reviewing type: scale, spacing, wrapping or truncation.";
-  better-ui.description = "Invoke when polishing UI details: radius, shadows, icons or micro-motion.";
-  better-writing.description = "Invoke when writing or reviewing interface copy: labels, errors, empty states.";
   cloudflare.description = "Invoke when choosing Cloudflare products or architecting an app on Cloudflare.";
   effect.description = "Invoke when working in TypeScript code that uses Effect.";
   install-anti-slop.description = "Invoke when installing, configuring or updating anti-slop Oxlint plugins.";
@@ -22,6 +14,15 @@ in
   rust-best-practices.description = "Invoke when working in .rs code.";
   test-audit.description = "Invoke when writing, changing or reviewing tests.";
   wrangler.description = "Invoke when running or troubleshooting Wrangler in a project with a wrangler.jsonc, wrangler.json or wrangler.toml.";
+
+  better-accessibility.disable-model-invocation = true;
+  better-colors.disable-model-invocation = true;
+  better-interface.disable-model-invocation = true;
+  better-layout.disable-model-invocation = true;
+  better-typography.disable-model-invocation = true;
+  better-ui.disable-model-invocation = true;
+  better-writing.disable-model-invocation = true;
+  grilling.disable-model-invocation = true;
 
   ai-seo = manual "Optimize content to be cited in AI answers such as ChatGPT, Perplexity and AI Overviews.";
   animate = manual "Build a web animation: purpose, properties, curve, duration and interruption.";
