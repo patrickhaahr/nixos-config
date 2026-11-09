@@ -49,6 +49,10 @@
           in
           (inputs.llm-agents.packages.${prev.stdenv.hostPlatform.system}.t3code.override {
             t3code-unwrapped = patched-unwrapped;
+            # Same system-library gap as in the codex aspect. Drop once llm-agents adapts.
+            codex = inputs.llm-agents.packages.${prev.stdenv.hostPlatform.system}.codex.overrideAttrs {
+              dontCargoUseSystemLibs = true;
+            };
           }).overrideAttrs
             (old: {
               postFixup = (old.postFixup or "") + ''

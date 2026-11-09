@@ -12,7 +12,21 @@ _: {
           };
           extraPlugins = {
             fff = {
-              package = pkgs.vimPlugins."fff-nvim";
+              # nixpkgs' fff-nvim-lib 0.11.0 omits libgit2, and cargo-setup-hook's LIBGIT2_NO_VENDOR forbids the vendored copy. Drop this once nixpkgs adds it.
+              package =
+                let
+                  fffLib = pkgs.vimPlugins.fff-nvim.fff-nvim-lib.overrideAttrs (old: {
+                    buildInputs = old.buildInputs ++ [ pkgs.libgit2 ];
+                  });
+                in
+                pkgs.vimPlugins.fff-nvim.overrideAttrs {
+                  postPatch = ''
+                    substituteInPlace lua/fff/download.lua \
+                      --replace-fail \
+                        "return plugin_dir .. '/../target/release'" \
+                        "return '${fffLib}/lib'"
+                  '';
+                };
               setup = ''
                 require("fff").setup({
                   keymaps = {
