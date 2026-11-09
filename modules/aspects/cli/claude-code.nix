@@ -19,9 +19,7 @@ in
           };
           env = {
             CLAUDE_CODE_SUBAGENT_MODEL = "claude-sonnet-5-5";
-            DISABLE_TELEMETRY = "1";
-            CLAUDE_CODE_GB_DISK_CACHE_WHEN_TELEMETRY_OFF = "1";
-            DISABLE_ERROR_REPORTING = "1";
+            CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1";
             CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY = "1";
           };
           permissions.defaultMode = "bypassPermissions";
