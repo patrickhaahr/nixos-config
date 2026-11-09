@@ -1,0 +1,22 @@
+default:
+    @just --list
+
+# Format check, clippy and tests: the gate before every commit.
+check:
+    cargo fmt --check
+    cargo clippy --all-targets --all-features -- -D warnings
+    cargo test --all-features
+
+# Apply formatter and clippy autofixes.
+fix:
+    cargo fmt
+    cargo clippy --fix --allow-dirty --allow-staged --all-targets --all-features
+
+dev *args:
+    cargo run -- {{ args }}
+
+build:
+    cargo build --release
+
+test-one name:
+    cargo test --all-features -- {{ name }} --nocapture

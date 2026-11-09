@@ -162,7 +162,6 @@
         ++ [
           (lib.getExe focusWorkspace1)
           (lib.getExe self'.packages.noctalia)
-          (lib.getExe pkgs.ghostty)
         ]
         ++ lib.optional qqdictEnabled "qqdict"
         ++ lib.optional (heliumCommand != null) heliumCommand;
@@ -199,6 +198,7 @@
             inherit qqdictEnabled;
           };
           spawn-sh-at-startup = [
+            "${lib.getExe pkgs.ghostty} +new-window"
             "sleep 5 && ${lib.getExe self'.packages.noctalia} msg wallpaper-random"
           ];
 

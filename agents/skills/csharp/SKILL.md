@@ -1,6 +1,6 @@
 ---
-name: code-standards-csharp
-description: C# 14 coding standards. Invoke this skill always when working in C# language.
+name: csharp
+description: Invoke when working in C# or .cs code.
 ---
 
 - Use `extension` blocks for multiple related extension members; keep `this` methods for single helpers
@@ -18,3 +18,4 @@ description: C# 14 coding standards. Invoke this skill always when working in C#
 - Prefer `ArgumentNullException.ThrowIfNull` over manual validation
 - Keep LINQ method syntax; query syntax only for simple joins
 - Enable nullable reference types and treat warnings as errors
+- Before writing or changing tests in a project that references the `TUnit` package, read `~/.agents/skills/tunit/SKILL.md`.

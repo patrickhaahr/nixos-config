@@ -195,7 +195,7 @@ _: {
       };
     };
 
-    xdg.configFile."systemd/user/default.target.wants/app-com.mitchellh.ghostty.service".source =
+    xdg.configFile."systemd/user/graphical-session.target.wants/app-com.mitchellh.ghostty.service".source =
       config.xdg.configFile."systemd/user/app-com.mitchellh.ghostty.service".source;
   };
 }

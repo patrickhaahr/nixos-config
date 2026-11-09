@@ -1,12 +1,10 @@
 # Git/gh for the agent: attributable hermes identity plus the generic
 # workflow settings shared with cli/git.nix (no work include, no nvim
 # editor, no lfs — hermes has none of those).
-_: {
+{ self, ... }:
+{
   flake.modules.homeManager.agent-hermes = {
-    home.file.".gitignore-global".text = ''
-      .env
-      .local_secrets
-    '';
+    imports = [ self.modules.homeManager.git-guardrails ];
 
     programs = {
       git.enable = true;
@@ -29,7 +27,6 @@ _: {
           };
         };
         init.defaultBranch = "master";
-        core.excludesfile = "~/.gitignore-global";
         pull.rebase = true;
         rebase.autoStash = true;
         alias = {

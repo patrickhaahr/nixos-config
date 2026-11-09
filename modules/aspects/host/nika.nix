@@ -17,6 +17,7 @@
       imports = [
         self.modules.nixos.nika-hardware
         self.modules.nixos.audio-output
+        self.modules.nixos.android-emulator
         self.modules.nixos.blender
         self.modules.nixos.cascadia-code
         self.modules.nixos.containers

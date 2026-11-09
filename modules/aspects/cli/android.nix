@@ -21,7 +21,10 @@
     in
     {
       nixpkgs.config.android_sdk.accept_license = true;
-      environment.systemPackages = [ sdk ];
+      environment.systemPackages = [
+        sdk
+        pkgs.maestro
+      ];
       environment.variables = {
         ANDROID_HOME = sdkRoot;
         ANDROID_SDK_ROOT = sdkRoot;

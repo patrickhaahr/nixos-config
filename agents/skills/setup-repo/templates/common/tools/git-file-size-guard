@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+max_tokens=5000
+max_bytes=$((max_tokens * 4))
+
+if [[ ${1-} == --global ]] && grep -qs git-file-size-guard "$(git rev-parse --show-toplevel)/.pre-commit-config.yaml"; then
+  exit 0
+fi
+
+generated='(^|/)(node_modules|vendor|dist|build|out|target|\.sqlx|\.tanstack|__generated__|generated)/|(\.lock|\.lockb|-lock\.json|-lock\.yaml|\.sum|\.min\.(js|css)|\.map|\.snap|\.svg)$|\.gen\.|_generated\.|\.pb\.'
+
+offenders=()
+while IFS=$'\t' read -r added _deleted path; do
+  [[ $added == "-" ]] && continue
+  [[ $path =~ $generated ]] && continue
+  attrs=$(git check-attr file-size-guard linguist-generated linguist-vendored -- "$path")
+  grep -qE 'file-size-guard: unset|linguist-(generated|vendored): set' <<<"$attrs" && continue
+
+  size=$(git cat-file -s ":$path")
+  ((size <= max_bytes)) && continue
+  git show ":$path" | head -n 5 | grep -qiE '@generated|do not edit|code generated' && continue
+
+  offenders+=("$path (~$((size / 4)) tokens)")
+done < <(git diff --cached --numstat --diff-filter=ACMR --no-renames)
+
+((${#offenders[@]} == 0)) && exit 0
+
+{
+  echo "Commit blocked: files over $max_tokens tokens (bytes/4):"
+  printf '  %s\n' "${offenders[@]}"
+  cat <<'MSG'
+
+Split each file by responsibility, then stage the parts and commit again:
+  1. List the file's top-level units (types, functions, components, sections).
+  2. Group units that change together; each group becomes one new file named
+     for its responsibility (e.g. parse.ts, render.ts, api/routes/<resource>.rs).
+  3. Keep the original path as the entry point that re-exports or composes the
+     parts, so callers and imports stay unchanged.
+  4. Move tests next to the code they exercise.
+  5. Run the repo's check command before committing.
+Keep names, comments and formatting intact; the cap measures structure.
+Generated files are skipped: mark one `linguist-generated` in .gitattributes.
+MSG
+} >&2
+exit 1

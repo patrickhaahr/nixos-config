@@ -13,6 +13,7 @@ in
   grill-with-docs = engineering "grill-with-docs";
   improve-codebase-architecture = engineering "improve-codebase-architecture";
   research = engineering "research";
+  retro = engineering "retro";
   tdd = engineering "tdd";
   to-spec = engineering "to-spec";
   to-tickets = engineering "to-tickets";
@@ -23,5 +24,5 @@ in
   grilling = productivity "grilling";
   handoff = productivity "handoff";
   teach = productivity "teach";
-  writing-great-skills = productivity "writing-great-skills";
+  writing-for-agents = productivity "writing-for-agents";
 }

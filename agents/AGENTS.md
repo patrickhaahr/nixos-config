@@ -11,31 +11,21 @@ you cut will be cut again.
 
 Fight entropy. Leave the codebase better than you found it.
 
-## Rules
+## Design
+- Before implementing, look for a *prefactor* that makes the change easy, then make the easy change. When a more durable path exists than the tactical fix, explain the trade-off and get alignment first.
+- Shortest correct diff wins. Prefer deletion over addition, stdlib and platform features over custom code, and installed dependencies over new ones. No speculative abstractions or unrequested configurability.
+- Prefer deep modules: a small interface over substantial behaviour. No pass-through layers, and no seam (port, interface) until it has two implementations.
+- Type-driven design in the style of Rust, OCaml and Effect: tagged unions for states and expected failures returned as values.
+- No implicit state machines: model each lifecycle as one tagged union with one transition function, and give every non-terminal state a way out (failure, cancel, timeout, or recovery after restart).
 
-### 1. Think Before Coding
-Don't assume. Don't hide confusion. If multiple interpretations exist, present them instead of picking silently. If a simpler approach exists, say so and push back when warranted.
+## Documentation
+- Comment only the *why*: a safety invariant or the reason behind a non-obvious decision.
+- Project knowledge (architecture, flows, conventions) goes in the repo's AGENTS.md. A topic too long for it becomes a repo skill in `.agents/skills/`, with a pointer from AGENTS.md and `.claude/skills` symlinked to `../.agents/skills` so Claude Code reads it.
 
-Before implementation, look for opportunities to *prefactor* the code to make the implementation easier. "Make the change easy, then make the easy change."
+## Tests
+- Write tests only for algorithmic logic, boundary IO, and integration flows.
+- Bug: write the failing test first, then fix it. Refactor: tests pass before and after.
+- Keep pure logic separate from IO so it can be tested without mocks.
 
-If a better path exists, especially one that outlasts the tactical fix, say so. Explain the trade-off, get alignment, then proceed.
-
-### 2. Goal Driven
-Transform every task into verifiable success criteria.
-- Bug? Write a failing test first, then fix it.
-- Feature? Define "done" before writing code.
-- Refactor? Tests pass before and after.
-
-### 3. Simplicity First
-Minimum code that solves the problem. Nothing speculative. No abstractions for single-use code. No configurability that wasn't requested.
-Prefer deletion over addition, stdlib/native platform features over custom code, and already-installed dependencies over new ones.
-Shortest correct diff wins.
-
-### 4. Type Driven Design
-Prefer explicit, type driven designs inspired by Rust, OCaml, and Effect. Use tagged unions (or equivalent sum types) to model states. Return expected failures as values where the language or project supports it. Keep domain logic in cohesive modules. Add safety comments when casts or unsafe operations rely on checked invariants.
-
-### 5. Tests
-Prefer 40% coverage with meaningful tests over 100% shallow coverage.
-- Keep pure business logic separate from IO.
-- No tautological tests.
-- Run tests before completing tasks.
+## Reporting
+- Report the proof level reached (*built*, *activated*, *observed*) and name the levels not reached.

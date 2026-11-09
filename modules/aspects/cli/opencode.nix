@@ -1,4 +1,4 @@
-{ inputs, ... }:
+{ self, inputs, ... }:
 let
   agentsSourceDir = ../../../agents;
   configDir = ".agents";
@@ -23,7 +23,9 @@ in
         '';
       };
 
-      externalSkills = import (agentsSourceDir + "/skill-sources") { inherit inputs lib pkgs; };
+      externalSkills = removeAttrs (import (agentsSourceDir + "/skill-sources") {
+        inherit inputs lib pkgs;
+      }) config.agents.skills.exclude;
 
       localSkillNames = builtins.attrNames (
         lib.filterAttrs (name: type: type == "directory" && !(builtins.hasAttr name externalSkills)) (
@@ -41,9 +43,43 @@ in
           inherit path;
         }) externalSkills
       );
+      managedSettings = pkgs.writeText "opencode-managed-settings.json" (
+        builtins.toJSON {
+          "$schema" = "https://opencode.ai/v2/config.json";
+          update = "disable";
+          instructions = [ "AGENTS*.md" ];
+          skills = [ ".skills" ];
+          permissions = [
+            {
+              action = "*";
+              resource = "*";
+              effect = "allow";
+            }
+          ];
+          mcp.servers = {
+            executor = {
+              type = "remote";
+              url = "https://executor.zaza.haahr.me/mcp";
+            };
+          }
+          // lib.mapAttrs (_: server: {
+            type = "local";
+            command = [ server.command ] ++ server.args;
+            environment = server.env;
+          }) config.agents.mcpServers;
+        }
+      );
     in
     {
-      home = {
+      imports = [ self.modules.homeManager.agent-mcp ];
+
+      options.agents.skills.exclude = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [ ];
+        description = "External skills left out of this user's shared skill directory.";
+      };
+
+      config.home = {
         packages = [
           pkgs.nodejs
           pkgs.uv
@@ -52,28 +88,13 @@ in
         file = {
           "${configDir}/AGENTS.md".source = agentsSourceDir + "/AGENTS.md";
           "${configDir}/README.md".source = agentsSourceDir + "/README.md";
-          "${configDir}/agents".source = agentsSourceDir + "/agents";
-          "${configDir}/commands".source = agentsSourceDir + "/commands";
           "${configDir}/plugins".source = agentsSourceDir + "/plugins";
           "${configDir}/skills".source = mergedSkillsDir;
-          "${configDir}/opencode.json".text = builtins.toJSON {
-            "$schema" = "https://opencode.ai/v2/config.json";
-            update = "disable";
-            instructions = [ "AGENTS*.md" ];
-            skills = [ ".skills" ];
-            permissions = [
-              {
-                action = "websearch";
-                resource = "*";
-                effect = "allow";
-              }
-            ];
-            mcp.servers.executor = {
-              type = "remote";
-              url = "https://executor.zaza.haahr.me/mcp";
-            };
-          };
         };
+
+        activation.opencodeManagedSettings = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+          run ${lib.getExe config.lib.agents.mergeJson} ${config.home.homeDirectory}/${configDir}/opencode.json ${managedSettings}
+        '';
       };
     };
 }

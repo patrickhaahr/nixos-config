@@ -1,9 +1,7 @@
-_: {
+{ self, ... }:
+{
   flake.modules.homeManager.git = {
-    home.file.".gitignore-global".text = ''
-      .env
-      .local_secrets
-    '';
+    imports = [ self.modules.homeManager.git-guardrails ];
 
     xdg.configFile."git/config-work".text = ''
       [user]
@@ -36,10 +34,7 @@ _: {
           };
         };
         init.defaultBranch = "master";
-        core = {
-          editor = "nvim";
-          excludesfile = "~/.gitignore-global";
-        };
+        core.editor = "nvim";
         pull.rebase = true;
         rebase.autoStash = true;
         alias = {

@@ -5,5 +5,4 @@ let
 in
 {
   react-best-practices = skill "react-best-practices";
-  react-native-skills = skill "react-native-skills";
 }
