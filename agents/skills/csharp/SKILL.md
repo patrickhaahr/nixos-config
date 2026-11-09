@@ -18,3 +18,4 @@ description: Invoke when working in C# or .cs code.
 - Prefer `ArgumentNullException.ThrowIfNull` over manual validation
 - Keep LINQ method syntax; query syntax only for simple joins
 - Enable nullable reference types and treat warnings as errors
+- Before writing or changing tests in a project that references the `TUnit` package, read `~/.agents/skills/tunit/SKILL.md`.
