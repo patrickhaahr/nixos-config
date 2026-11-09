@@ -13,6 +13,8 @@ in
     let
       managedSettings = pkgs.writeText "codex-managed-settings.json" (
         builtins.toJSON {
+          approval_policy = "never";
+          sandbox_mode = "danger-full-access";
           mcp_servers = lib.mapAttrs (_: server: {
             inherit (server) command args env;
           }) config.agents.mcpServers;

@@ -49,7 +49,7 @@ in
           skills = [ ".skills" ];
           permissions = [
             {
-              action = "websearch";
+              action = "*";
               resource = "*";
               effect = "allow";
             }

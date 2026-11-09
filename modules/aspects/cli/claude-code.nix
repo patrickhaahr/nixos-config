@@ -18,6 +18,8 @@ in
             pr = "";
           };
           env.CLAUDE_CODE_SUBAGENT_MODEL = "claude-sonnet-5-5";
+          permissions.defaultMode = "bypassPermissions";
+          skipDangerousModePermissionPrompt = true;
         }
       );
       managedState = pkgs.writeText "claude-managed-state.json" (
