@@ -8,10 +8,10 @@
   flake.modules.nixos.kaigen-studio =
     { pkgs, ... }:
     let
-      version = "1.0.0.007";
-      cliVersion = "1.0.0.007";
-      cliSha512 = "860ad8ca835fd318134419559fb429be92541fbc519c74b35c9bcf8ca072ce0ee02a755741773e653c5622f539a004501b991c8e362c9950da5fd7d4c3cee6ce";
-      studioSha512 = "848e19a38634707cfe489004493891b56b806dd058b32cf898e4a93c26247ad8728b8425d2f5e4408802573c6dca5927ac32522b154073f13b51c3f0349fa4e4";
+      version = "1.0.0.010";
+      cliVersion = "1.0.0.010";
+      cliSha512 = "90b9d81a41e904e74d8ff72b3fa85d5dadfed45f04e00e5b4d4c80cac375ebba4bb41bae76b6a66bfe4bd11182dce503c7c496c22c4ef6c3d0edf76f4a7c1727";
+      studioSha512 = "cc9ae336bfe7aa7c989f3a8f894bdea25eaa32471a20255c1bd81f80fe1d7409548f21f76717525a9b397c43a6e754ec9f3af01e0f2fa2e7ba6b5a21afb782fd";
       iconSha512 = "7a4316e4d3f785471bfbd338a32d60920843ac86dbae43e2672111aebb3963cc3b56ee5b6d423e7f6ba92d5a37677af3761717c1c799be2aa7076f19aa4b83f3";
       # Toolchain installation shells out to tar; supply its decompressors too
       # so desktop launches do not depend on the user's shell environment.
