@@ -1,6 +1,6 @@
 ---
-name: Writing a PR body/title
-description: Use when writing or editing a pull request title or body.
+name: writing-pr
+description: Invoke when writing or editing a pull request title or body.
 ---
 
 dont write essays, dont include that you ran tests. rather, write a concise body. focus on mermaid codeblock diagrams, code samples/snippets (this can be internals, or even sample usage). use bullet points for the text you do write. 'validation/i ran tests' is not needed

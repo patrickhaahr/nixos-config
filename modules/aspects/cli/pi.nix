@@ -38,8 +38,6 @@ in
           };
 
           ".pi/agent/AGENTS.md".source = agentsSourceDir + "/AGENTS.md";
-          ".pi/agent/agents".source = agentsSourceDir + "/agents";
-          ".pi/agent/prompts".source = agentsSourceDir + "/commands";
 
           ".pi/web-search.json".source = settingsFormat.generate "pi-web-search.json" {
             provider = "firecrawl";

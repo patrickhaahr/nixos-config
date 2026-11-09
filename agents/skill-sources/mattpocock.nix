@@ -25,5 +25,4 @@ in
   handoff = productivity "handoff";
   teach = productivity "teach";
   writing-for-agents = productivity "writing-for-agents";
-  writing-great-skills = productivity "writing-great-skills";
 }

@@ -23,7 +23,9 @@ in
         '';
       };
 
-      externalSkills = import (agentsSourceDir + "/skill-sources") { inherit inputs lib pkgs; };
+      externalSkills = removeAttrs (import (agentsSourceDir + "/skill-sources") {
+        inherit inputs lib pkgs;
+      }) config.agents.skills.exclude;
 
       localSkillNames = builtins.attrNames (
         lib.filterAttrs (name: type: type == "directory" && !(builtins.hasAttr name externalSkills)) (
@@ -71,7 +73,13 @@ in
     {
       imports = [ self.modules.homeManager.agent-mcp ];
 
-      home = {
+      options.agents.skills.exclude = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [ ];
+        description = "External skills left out of this user's shared skill directory.";
+      };
+
+      config.home = {
         packages = [
           pkgs.nodejs
           pkgs.uv
@@ -80,8 +88,6 @@ in
         file = {
           "${configDir}/AGENTS.md".source = agentsSourceDir + "/AGENTS.md";
           "${configDir}/README.md".source = agentsSourceDir + "/README.md";
-          "${configDir}/agents".source = agentsSourceDir + "/agents";
-          "${configDir}/commands".source = agentsSourceDir + "/commands";
           "${configDir}/plugins".source = agentsSourceDir + "/plugins";
           "${configDir}/skills".source = mergedSkillsDir;
         };

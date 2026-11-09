@@ -1,6 +1,7 @@
 ---
 name: tunit
-description: Best practices for writing clean, maintainable, and robust tests with TUnit.
+description: Invoke when writing or changing TUnit tests.
+disable-model-invocation: true
 ---
 
 # Best Practices
