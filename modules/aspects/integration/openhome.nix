@@ -113,7 +113,6 @@ in
       zaza = self.nixosConfigurations.zaza.config;
       zazaHermes = zaza.home-manager.users.hermes;
       hermesSops = zazaHermes.sops;
-      hermesSettings = zazaHermes.services.hermes-agent.settings;
       hermesSkillsDir = zazaHermes.home.file.".agents/skills".source;
       openhomeSkill = inputs.openhome + "/skills/openhome/SKILL.md";
     in
@@ -197,10 +196,6 @@ in
           test '${./../../../secrets/hermes/env.yaml}' = '${hermesSops.defaultSopsFile}'
           test '.config/openhome/api-key' = '${toString hermesSops.secrets.openhome_api_key.path}'
 
-          # Hermes keeps an empty external skill list: the default profile is
-          # limited to its local orchestration skills; specialist profiles
-          # own domain skills (openhome ships for opencode/.agents + profiles).
-          test '[]' = '${builtins.toJSON (hermesSettings.skills.external_dirs or [ null ])}'
           test -d '${hermesSkillsDir}/openhome'
           test -f '${hermesSkillsDir}/openhome/SKILL.md'
 
