@@ -5,17 +5,17 @@ let
   };
 in
 {
-  better-auth-best-practices.description = "Invoke when setting up or configuring Better Auth.";
-  better-auth-security-best-practices.description = "Invoke when securing or hardening a Better Auth setup.";
-  cloudflare.description = "Invoke when choosing Cloudflare products or architecting an app on Cloudflare.";
   effect.description = "Invoke when working in TypeScript code that uses Effect.";
-  install-anti-slop.description = "Invoke when installing, configuring or updating anti-slop Oxlint plugins.";
   react-best-practices.description = "Invoke when writing, reviewing or optimizing React or Next.js code.";
   rust-best-practices.description = "Invoke when working in .rs code.";
   test-audit.description = "Invoke when writing, changing or reviewing tests.";
-  wrangler.description = "Invoke when running or troubleshooting Wrangler in a project with a wrangler.jsonc, wrangler.json or wrangler.toml.";
 
   better-accessibility.disable-model-invocation = true;
+  better-auth-best-practices.disable-model-invocation = true;
+  better-auth-security-best-practices.disable-model-invocation = true;
+  cloudflare.disable-model-invocation = true;
+  wrangler.disable-model-invocation = true;
+  install-anti-slop.disable-model-invocation = true;
   better-colors.disable-model-invocation = true;
   better-interface.disable-model-invocation = true;
   better-layout.disable-model-invocation = true;

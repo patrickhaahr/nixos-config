@@ -19,7 +19,7 @@ Every repo ends with the same contract:
 2. `cp -r <skill>/templates/common/. <skill>/templates/ts/. .`
 3. `bun add -d oxfmt oxlint oxlint-tsgolint @types/bun`, and make sure `package.json` has a `dev` script.
 4. Add the scaffold's generated paths (route trees, framework caches) to `ignorePatterns` in `.oxfmtrc.json` and `.oxlintrc.json`.
-5. Invoke the `install-anti-slop` skill to vendor the anti-slop Oxlint plugin.
+5. Vendor the anti-slop Oxlint plugin by following `~/.agents/skills/install-anti-slop/SKILL.md`; it is manual-only, so read the file instead of invoking it.
 6. React UI: add `react` and `jsx-a11y` to the Oxlint plugins. Tailwind: set up `@shadcn/lint` for Oxlint by following https://github.com/shadcn-ui/lint/blob/main/SETUP.md.
 7. Append `.devenv/` and `.direnv/` to `.gitignore`, then `direnv allow`.
 8. `just fix`, then `just check` must pass.
