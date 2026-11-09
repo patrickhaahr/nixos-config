@@ -87,8 +87,6 @@ in
         ];
         file = {
           "${configDir}/AGENTS.md".source = agentsSourceDir + "/AGENTS.md";
-          "${configDir}/README.md".source = agentsSourceDir + "/README.md";
-          "${configDir}/plugins".source = agentsSourceDir + "/plugins";
           "${configDir}/skills".source = mergedSkillsDir;
         };
 

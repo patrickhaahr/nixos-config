@@ -29,6 +29,7 @@ in
   awwwards = manual "Build an award-caliber portfolio, brand or launch site from a one-line brief.";
   design-taste-frontend = manual "Design or restyle a marketing or company website to a professional standard.";
   diagram-design = manual "Create architecture, flow, sequence and data diagrams as HTML or SVG.";
+  improve = manual "Audit a codebase and write self-contained improvement plans for other agents to execute.";
   frontend-slides = manual "Build an animated HTML slide deck, or convert a PPTX to web slides.";
   security-audit = manual "Security review or audit of a codebase, API or service.";
   seo-audit = manual "Audit a site's technical and on-page SEO and diagnose ranking drops.";

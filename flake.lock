@@ -1,21 +1,5 @@
 {
   "nodes": {
-    "anthropic-skills": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1794004348,
-        "narHash": "sha256-dRCZrNarCCJFuvATgfW6qmwwVS5HGFXNVGOhbVZd7LA=",
-        "owner": "anthropics",
-        "repo": "skills",
-        "rev": "2c5958ecac7cee2b583967a2c4981d0f4a75c579",
-        "type": "github"
-      },
-      "original": {
-        "owner": "anthropics",
-        "repo": "skills",
-        "type": "github"
-      }
-    },
     "anti-slop": {
       "flake": false,
       "locked": {
@@ -169,22 +153,6 @@
         "owner": "Mic92",
         "ref": "llm-agents",
         "repo": "bun2nix",
-        "type": "github"
-      }
-    },
-    "claude-skill-typst": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1794237887,
-        "narHash": "sha256-BmIu/BJJXaWZ8vUepccs1K7wITMd2mnM3YjFyVCeGdI=",
-        "owner": "lucifer1004",
-        "repo": "claude-skill-typst",
-        "rev": "dcfe6144f6e5f6576fb55cf1a6b9970851a1aa78",
-        "type": "github"
-      },
-      "original": {
-        "owner": "lucifer1004",
-        "repo": "claude-skill-typst",
         "type": "github"
       }
     },
@@ -1287,12 +1255,10 @@
     },
     "root": {
       "inputs": {
-        "anthropic-skills": "anthropic-skills",
         "anti-slop": "anti-slop",
         "apollo-skills": "apollo-skills",
         "artcraft": "artcraft",
         "better-auth-skills": "better-auth-skills",
-        "claude-skill-typst": "claude-skill-typst",
         "cliproxyapi": "cliproxyapi",
         "cloudflare-security-audit-skill": "cloudflare-security-audit-skill",
         "cloudflare-skills": "cloudflare-skills",
@@ -1328,14 +1294,14 @@
         "pyproject-build-systems": "pyproject-build-systems_2",
         "pyproject-nix": "pyproject-nix_2",
         "qqdict": "qqdict",
+        "shadcn-improve": "shadcn-improve",
         "sops-nix": "sops-nix",
         "spicetify-nix": "spicetify-nix",
         "typesafe-skills": "typesafe-skills",
         "uv2nix": "uv2nix_2",
         "vercel-agent-browser": "vercel-agent-browser",
         "vercel-agent-skills": "vercel-agent-skills",
-        "wrapper-modules": "wrapper-modules",
-        "wshobson-agents": "wshobson-agents"
+        "wrapper-modules": "wrapper-modules"
       }
     },
     "rust-overlay": {
@@ -1377,6 +1343,22 @@
       "original": {
         "owner": "oxalica",
         "repo": "rust-overlay",
+        "type": "github"
+      }
+    },
+    "shadcn-improve": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1789212568,
+        "narHash": "sha256-czQV2LzhVddiT6kz0Wf3z+hHqGBgl4Zh/qw6hN3qEQw=",
+        "owner": "shadcn",
+        "repo": "improve",
+        "rev": "cac56e1ebd3c279aa9153616cfeac7b174ab90f9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "shadcn",
+        "repo": "improve",
         "type": "github"
       }
     },
@@ -1721,22 +1703,6 @@
       "original": {
         "owner": "BirdeeHub",
         "repo": "nix-wrapper-modules",
-        "type": "github"
-      }
-    },
-    "wshobson-agents": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1794143653,
-        "narHash": "sha256-jGy5K8FP9MnA5qsGgltCmfFy1jJX1mtc1j5+67m1N7Y=",
-        "owner": "wshobson",
-        "repo": "agents",
-        "rev": "9c61ab243def98f72da12abd41cfcf5bcd91af9d",
-        "type": "github"
-      },
-      "original": {
-        "owner": "wshobson",
-        "repo": "agents",
         "type": "github"
       }
     }

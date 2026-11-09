@@ -40,11 +40,6 @@
       flake = false;
     };
 
-    anthropic-skills = {
-      url = "github:anthropics/skills";
-      flake = false;
-    };
-
     apollo-skills = {
       url = "github:apollographql/skills";
       flake = false;
@@ -62,11 +57,6 @@
 
     cloudflare-security-audit-skill = {
       url = "github:cloudflare/security-audit-skill";
-      flake = false;
-    };
-
-    claude-skill-typst = {
-      url = "github:lucifer1004/claude-skill-typst";
       flake = false;
     };
 
@@ -90,11 +80,6 @@
       flake = false;
     };
 
-    wshobson-agents = {
-      url = "github:wshobson/agents";
-      flake = false;
-    };
-
     jakubkrehel-skills = {
       url = "github:jakubkrehel/skills";
       flake = false;
@@ -107,6 +92,11 @@
 
     leonxlnx-taste-skill = {
       url = "github:Leonxlnx/taste-skill";
+      flake = false;
+    };
+
+    shadcn-improve = {
+      url = "github:shadcn/improve";
       flake = false;
     };
 
