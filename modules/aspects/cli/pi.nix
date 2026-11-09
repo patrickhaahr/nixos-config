@@ -31,10 +31,8 @@ in
             npmCommand = [ "${pkgs.nodejs_22}/bin/npm" ];
 
             packages = [
-              "npm:@dietrichgebert/ponytail@4.9.0"
               "npm:@ff-labs/pi-fff@0.10.3"
               "npm:pi-web-access@0.23.0"
-              "npm:pi-mcp-adapter@2.26.0"
               "npm:pi-subagents@0.50.0"
             ];
           };
