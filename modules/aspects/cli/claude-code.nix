@@ -20,6 +20,7 @@ in
           env.CLAUDE_CODE_SUBAGENT_MODEL = "claude-sonnet-5-5";
           permissions.defaultMode = "bypassPermissions";
           skipDangerousModePermissionPrompt = true;
+          enabledPlugins."cc-plugin-plugin-authoring@builtin" = false;
         }
       );
       managedState = pkgs.writeText "claude-managed-state.json" (

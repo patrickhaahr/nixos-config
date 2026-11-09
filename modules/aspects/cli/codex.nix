@@ -15,6 +15,17 @@ in
         builtins.toJSON {
           approval_policy = "never";
           sandbox_mode = "danger-full-access";
+          plugins =
+            lib.genAttrs
+              [
+                "documents@openai-primary-runtime"
+                "spreadsheets@openai-primary-runtime"
+                "presentations@openai-primary-runtime"
+                "template-creator@openai-primary-runtime"
+              ]
+              (_: {
+                enabled = false;
+              });
           mcp_servers = lib.mapAttrs (_: server: {
             inherit (server) command args env;
           }) config.agents.mcpServers;
