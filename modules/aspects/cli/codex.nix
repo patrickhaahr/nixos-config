@@ -15,6 +15,8 @@ in
         builtins.toJSON {
           approval_policy = "never";
           sandbox_mode = "danger-full-access";
+          analytics.enabled = false;
+          feedback.enabled = false;
           plugins =
             lib.genAttrs
               [
