@@ -1,4 +1,4 @@
-{ inputs, ... }:
+{ self, inputs, ... }:
 let
   agentsSourceDir = ../../../agents;
 in
@@ -20,27 +20,32 @@ in
           env.CLAUDE_CODE_SUBAGENT_MODEL = "claude-sonnet-5-5";
         }
       );
-      settings = "${config.home.homeDirectory}/.claude/settings.json";
+      managedState = pkgs.writeText "claude-managed-state.json" (
+        builtins.toJSON {
+          mcpServers = lib.mapAttrs (_: server: {
+            type = "stdio";
+            inherit (server) command args env;
+          }) config.agents.mcpServers;
+        }
+      );
+      mergeJson = lib.getExe config.lib.agents.mergeJson;
+      homeDir = config.home.homeDirectory;
     in
     {
+      imports = [ self.modules.homeManager.agent-mcp ];
+
       home = {
         packages = [ inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-code ];
 
         file = {
           ".claude/CLAUDE.md".source = agentsSourceDir + "/AGENTS.md";
 
-          ".claude/skills".source =
-            config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.agents/skills";
+          ".claude/skills".source = config.lib.file.mkOutOfStoreSymlink "${homeDir}/.agents/skills";
         };
 
         activation.claudeManagedSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-          run mkdir -p "$(dirname ${settings})"
-          current='{}'
-          if [[ -s ${settings} ]]; then current=$(cat ${settings}); fi
-          merged=$(${lib.getExe pkgs.jq} -s '.[0] * .[1]' <(printf '%s' "$current") ${managedSettings})
-          if [[ $merged != "$(${lib.getExe pkgs.jq} . <<<"$current")" ]]; then
-            run install -m 600 /dev/stdin ${settings} <<<"$merged"
-          fi
+          run ${mergeJson} ${homeDir}/.claude/settings.json ${managedSettings}
+          run ${mergeJson} ${homeDir}/.claude.json ${managedState}
         '';
       };
     };

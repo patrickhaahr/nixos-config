@@ -1,14 +1,26 @@
-{ inputs, ... }:
+{ self, inputs, ... }:
 let
   agentsSourceDir = ../../../agents;
 in
 {
   flake.modules.homeManager.pi =
-    { pkgs, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     let
       settingsFormat = pkgs.formats.json { };
+      managedMcp = settingsFormat.generate "pi-managed-mcp.json" {
+        mcpServers = lib.mapAttrs (_: server: {
+          inherit (server) command args env;
+        }) config.agents.mcpServers;
+      };
     in
     {
+      imports = [ self.modules.homeManager.agent-mcp ];
+
       home = {
         packages = [ inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.pi ];
 
@@ -40,6 +52,10 @@ in
             ssrf.allowRanges = [ "100.120.202.71/32" ];
           };
         };
+
+        activation.piManagedMcp = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          run ${lib.getExe config.lib.agents.mergeJson} ${config.home.homeDirectory}/.pi/agent/mcp.json ${managedMcp}
+        '';
       };
     };
 }

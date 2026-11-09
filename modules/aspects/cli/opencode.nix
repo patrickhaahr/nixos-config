@@ -1,4 +1,4 @@
-{ inputs, ... }:
+{ self, inputs, ... }:
 let
   agentsSourceDir = ../../../agents;
   configDir = ".agents";
@@ -41,8 +41,36 @@ in
           inherit path;
         }) externalSkills
       );
+      managedSettings = pkgs.writeText "opencode-managed-settings.json" (
+        builtins.toJSON {
+          "$schema" = "https://opencode.ai/v2/config.json";
+          update = "disable";
+          instructions = [ "AGENTS*.md" ];
+          skills = [ ".skills" ];
+          permissions = [
+            {
+              action = "websearch";
+              resource = "*";
+              effect = "allow";
+            }
+          ];
+          mcp.servers = {
+            executor = {
+              type = "remote";
+              url = "https://executor.zaza.haahr.me/mcp";
+            };
+          }
+          // lib.mapAttrs (_: server: {
+            type = "local";
+            command = [ server.command ] ++ server.args;
+            environment = server.env;
+          }) config.agents.mcpServers;
+        }
+      );
     in
     {
+      imports = [ self.modules.homeManager.agent-mcp ];
+
       home = {
         packages = [
           pkgs.nodejs
@@ -56,24 +84,11 @@ in
           "${configDir}/commands".source = agentsSourceDir + "/commands";
           "${configDir}/plugins".source = agentsSourceDir + "/plugins";
           "${configDir}/skills".source = mergedSkillsDir;
-          "${configDir}/opencode.json".text = builtins.toJSON {
-            "$schema" = "https://opencode.ai/v2/config.json";
-            update = "disable";
-            instructions = [ "AGENTS*.md" ];
-            skills = [ ".skills" ];
-            permissions = [
-              {
-                action = "websearch";
-                resource = "*";
-                effect = "allow";
-              }
-            ];
-            mcp.servers.executor = {
-              type = "remote";
-              url = "https://executor.zaza.haahr.me/mcp";
-            };
-          };
         };
+
+        activation.opencodeManagedSettings = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+          run ${lib.getExe config.lib.agents.mergeJson} ${config.home.homeDirectory}/${configDir}/opencode.json ${managedSettings}
+        '';
       };
     };
 }
