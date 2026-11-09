@@ -22,6 +22,3 @@
 ## Verification
 - After every implementation, run `just verify <host>` from the repository root. It formats, runs Statix and `nix flake check`, and dry-runs the host build. Use `just check` when no host is relevant.
 - `just switch` needs the user's password on nika. Hand the user the command and report the change as built, not activated.
-
-## Hermes gadget
-- Before touching the Android gadget, the paired phone, or Live voice on zaza, read `modules/aspects/agent/hermes/GADGET.md`.

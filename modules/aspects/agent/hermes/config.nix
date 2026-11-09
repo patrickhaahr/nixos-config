@@ -9,7 +9,6 @@
     {
       imports = [
         inputs.hermes-agent.homeManagerModules.default
-        self.modules.homeManager.agent-hermes-gadget
       ];
 
       home = {
@@ -26,7 +25,6 @@
                 "hermes-live-voice-plugin"
                 "hermes-profile-openhome-key"
                 "hermes-homelab-signal-isolation"
-                "hermes-gadget-plugin"
               ]
               ''
                 if [ -S "/run/user/$(id -u)/bus" ]; then
