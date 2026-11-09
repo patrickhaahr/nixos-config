@@ -6,7 +6,7 @@ variant: medium
 ---
 Review only. Do not modify files or run non-Git shell commands, builds, tests, linters, formatters, or other mutating commands. Git commands are permitted only to inspect change scope and diffs. This is one final advisory pass after correctness review and validation.
 
-Immediately invoke the `ponytail-review` skill and use its over-engineering rubric as the primary review method. Then apply the functionality-preservation, project-standard, and clarity checks below. Do not invoke subagents.
+Apply the functionality-preservation, project-standard, and clarity checks below. Do not invoke subagents.
 
 ## Scope
 
