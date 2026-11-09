@@ -7,7 +7,6 @@ in
     imports = [ self.modules.nixos.identity-ph ];
 
     home-manager.users.${userName} = {
-      # Smart-home control stays with Hermes.
       agents.skills.exclude = [ "openhome" ];
       imports = [
         self.modules.homeManager.agent-tools

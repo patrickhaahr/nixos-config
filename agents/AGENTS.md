@@ -18,6 +18,10 @@ Fight entropy. Leave the codebase better than you found it.
 - Type-driven design in the style of Rust, OCaml and Effect: tagged unions for states and expected failures returned as values.
 - No implicit state machines: model each lifecycle as one tagged union with one transition function, and give every non-terminal state a way out (failure, cancel, timeout, or recovery after restart).
 
+## Documentation
+- Comment only the *why*: a safety invariant or the reason behind a non-obvious decision.
+- Project knowledge (architecture, flows, conventions) goes in the repo's AGENTS.md. A topic too long for it becomes a repo skill in `.agents/skills/`, with a pointer from AGENTS.md and `.claude/skills` symlinked to `../.agents/skills` so Claude Code reads it.
+
 ## Tests
 - Write tests only for algorithmic logic, boundary IO, and integration flows.
 - Bug: write the failing test first, then fix it. Refactor: tests pass before and after.
