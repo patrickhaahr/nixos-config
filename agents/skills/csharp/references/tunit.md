@@ -1,8 +1,6 @@
----
-name: tunit
-description: TUnit-specific rules for assertions, lifecycle, shared resources and parallelism.
-disable-model-invocation: true
----
+# TUnit
+
+TUnit-specific rules for assertions, lifecycle, shared resources and parallelism.
 
 ## Assertions
 - `await` every `Assert.That(...)`: an unawaited assertion never runs and the test passes.
