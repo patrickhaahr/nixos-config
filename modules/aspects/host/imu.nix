@@ -19,9 +19,13 @@
       defaultUser = "ph";
     };
 
-    home-manager.users.ph.imports = [
-      self.modules.homeManager.agent-browser
-    ];
+    home-manager.users.ph = {
+      imports = [
+        self.modules.homeManager.agent-browser
+        self.modules.homeManager.windows-mirror
+      ];
+      agents.windows.home = "/mnt/c/Users/pkh";
+    };
 
     system.stateVersion = "25.11";
   };

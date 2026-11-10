@@ -11,27 +11,32 @@ in
       ...
     }:
     let
+      portableSettings = {
+        approval_policy = "never";
+        sandbox_mode = "danger-full-access";
+        analytics.enabled = false;
+        feedback.enabled = false;
+        plugins =
+          lib.genAttrs
+            [
+              "documents@openai-primary-runtime"
+              "spreadsheets@openai-primary-runtime"
+              "presentations@openai-primary-runtime"
+              "template-creator@openai-primary-runtime"
+            ]
+            (_: {
+              enabled = false;
+            });
+      };
       managedSettings = pkgs.writeText "codex-managed-settings.json" (
-        builtins.toJSON {
-          approval_policy = "never";
-          sandbox_mode = "danger-full-access";
-          analytics.enabled = false;
-          feedback.enabled = false;
-          plugins =
-            lib.genAttrs
-              [
-                "documents@openai-primary-runtime"
-                "spreadsheets@openai-primary-runtime"
-                "presentations@openai-primary-runtime"
-                "template-creator@openai-primary-runtime"
-              ]
-              (_: {
-                enabled = false;
-              });
-          mcp_servers = lib.mapAttrs (_: server: {
-            inherit (server) command args env;
-          }) config.agents.mcpServers;
-        }
+        builtins.toJSON (
+          portableSettings
+          // {
+            mcp_servers = lib.mapAttrs (_: server: {
+              inherit (server) command args env;
+            }) config.agents.mcpServers;
+          }
+        )
       );
       mergeToml =
         pkgs.writers.writePython3 "codex-merge-settings"
@@ -69,6 +74,12 @@ in
     in
     {
       imports = [ self.modules.homeManager.agent-mcp ];
+
+      # MCP servers stay out: they point at Linux store binaries that other platforms cannot run.
+      lib.agents.codex = {
+        portableSettings = pkgs.writeText "codex-portable-settings.json" (builtins.toJSON portableSettings);
+        inherit mergeToml;
+      };
 
       home = {
         # nixpkgs' cargo-setup-hook now forces system copies of aws-lc, zstd and others that llm-agents' codex does not provide. Drop once upstream adapts.
