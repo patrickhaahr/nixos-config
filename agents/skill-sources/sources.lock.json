@@ -1,0 +1,143 @@
+{
+  "Leonxlnx/taste-skill": {
+    "hash": "sha256-QezKA1+hiurvz6AgBCqlIEiOYXpIldB4q+wsmNdkDwM=",
+    "paths": [
+      "skills/taste-skill"
+    ],
+    "rev": "f6b76575f949707b4e3c37cd86cb44b0b98643e8"
+  },
+  "apollographql/skills": {
+    "hash": "sha256-BG9jAjCdPFHhhtJaul1HDN0vjsldDGGjWDoIG42DV6Y=",
+    "paths": [
+      "skills/rust-best-practices"
+    ],
+    "rev": "9dda1397730370aeb8df4ff8f2015c34c86b5003"
+  },
+  "better-auth/skills": {
+    "hash": "sha256-h6LKfIR/bmPdgfWPlaTIOmH1befMh+VtXVmlqT2S0xI=",
+    "paths": [
+      "better-auth/best-practices",
+      "security"
+    ],
+    "rev": "20c9e88a5c007461a703f1c213572b073196113e"
+  },
+  "cathrynlavery/diagram-design": {
+    "hash": "sha256-3Rn0vxuUiU4fBmEl0mO7gYo7Bvn18TmwTLFwwYhFL6o=",
+    "paths": [
+      "skills/diagram-design"
+    ],
+    "rev": "6a7f19fcc132b39b126bea90167679b46b14bcc4"
+  },
+  "cloudflare/security-audit-skill": {
+    "hash": "sha256-oVVACjotkHvllQGxEP8yWaEt4c3GxT0d909TUM5P3NM=",
+    "paths": [
+      "skills/security-audit"
+    ],
+    "rev": "c1c8a8c1471069fb0e188eeaff69b8e8db6564a8"
+  },
+  "cloudflare/skills": {
+    "hash": "sha256-ZlE7rUvR5ErLYl8YOPPxhTnH3Y08SvBHaWoD/V6yU1M=",
+    "paths": [
+      "skills/cloudflare",
+      "skills/wrangler"
+    ],
+    "rev": "6eb6c781aa9b6438e0c7307bd102788a75fe1a6d"
+  },
+  "coreyhaines31/marketingskills": {
+    "hash": "sha256-NV5CqnCvuGJDrbS2MvAuaO968aKwYmbXBg8bczxOV84=",
+    "paths": [
+      "skills/ai-seo",
+      "skills/seo-audit"
+    ],
+    "rev": "e690ca89862734c4b8deea18f9e32fceee59ebf5"
+  },
+  "dmmulroy/anti-slop": {
+    "hash": "sha256-V+Efekxdd+uGKyDNUOfNqxlzfGpS7ZoPDDFDzoaZND8=",
+    "paths": [
+      "skills/install-anti-slop"
+    ],
+    "rev": "13909c9e07590f5a85d93c62712259fe14a883f7"
+  },
+  "emilkowalski/skills": {
+    "hash": "sha256-E798+00rX7j/WOG/Wnoz0uzq9UnvWKDvOGSYjqmfeJI=",
+    "paths": [
+      "skills/animate"
+    ],
+    "rev": "715c1807e08c497cfd1dc4feb450a2a3300ef2a9"
+  },
+  "jakubkrehel/skills": {
+    "hash": "sha256-Cg7NyBMMLOnwIYNc/Wg9jKqjZOiVZ6tK3Vq2AQ6V73k=",
+    "paths": [
+      "skills/better-accessibility",
+      "skills/better-colors",
+      "skills/better-interface",
+      "skills/better-layout",
+      "skills/better-typography",
+      "skills/better-ui",
+      "skills/better-writing",
+      "skills/interface-review"
+    ],
+    "rev": "659cc4e5b6df90cfe1f306f5ae1c83fa549e075c"
+  },
+  "juliobsz/skills": {
+    "hash": "sha256-loikbgo6r6P7Wzib5jomLkUpe4JzMZBztXNd77PnVEw=",
+    "paths": [
+      "awwwards"
+    ],
+    "rev": "add880bd6ec9f5592a1482846fc0dd282c9161bc"
+  },
+  "kitlangton/skills": {
+    "hash": "sha256-OAG3JMZjB5NVnuEn9McboxhqQ7sWbuT+9m0YjFIm/WU=",
+    "paths": [
+      "skills/effect"
+    ],
+    "rev": "71195e36024ebd2e66c5beac946e81eafd5abc43"
+  },
+  "mattpocock/skills": {
+    "hash": "sha256-tE/CpoxANDHC6Xa0J6H/P6tTGxK2nT67EhfU+0mUb34=",
+    "paths": [
+      "skills/engineering/code-review",
+      "skills/engineering/codebase-design",
+      "skills/engineering/diagnosing-bugs",
+      "skills/engineering/domain-modeling",
+      "skills/engineering/grill-with-docs",
+      "skills/productivity/grilling",
+      "skills/productivity/handoff",
+      "skills/engineering/improve-codebase-architecture",
+      "skills/engineering/research",
+      "skills/engineering/retro",
+      "skills/engineering/tdd",
+      "skills/productivity/teach",
+      "skills/engineering/to-spec",
+      "skills/engineering/to-tickets",
+      "skills/productivity/writing-for-agents"
+    ],
+    "rev": "4ae2317ddb22b046e26455e4f9c9b3aaaf62212d"
+  },
+  "openclaw/openclaw": {
+    "hash": "sha256-w8o2eDKYbO/ByHQdYk0wSxMX1oypTkBQFwHoy5BGwxY=",
+    "paths": [
+      ".agents/skills/test-audit"
+    ],
+    "rev": "1f91733042cc70c61c1df2b541d90af44930750e"
+  },
+  "shadcn/improve": {
+    "hash": "sha256-PfAUpLXXRyRlxsvdeGjUFUoDD8wTarE4gtmDPslrr60=",
+    "paths": [
+      "skills/improve"
+    ],
+    "rev": "cac56e1ebd3c279aa9153616cfeac7b174ab90f9"
+  },
+  "vercel-labs/agent-skills": {
+    "hash": "sha256-RT9Lh/JX81po6yBpGHtupJ75k9AVPP5cykS8Brex6H8=",
+    "paths": [
+      "skills/react-best-practices"
+    ],
+    "rev": "1a2c79d4e6c4a2283dc2c614b6538cbe1ed5ca62"
+  },
+  "zarazhangrui/frontend-slides": {
+    "hash": "sha256-qp2oCn5+YbMZrWCnN7zt/ee1nm/vBGsdb+AIUjIldyY=",
+    "paths": [],
+    "rev": "9906a34d640d2111f724544cbc50f7f130569ae1"
+  }
+}

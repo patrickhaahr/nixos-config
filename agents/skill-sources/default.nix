@@ -4,28 +4,35 @@
   pkgs,
 }:
 let
-  providers = [
-    #(import ./agent-browser.nix { inherit inputs; })
-    (import ./apollo.nix { inherit inputs; })
-    (import ./better-auth.nix { inherit inputs; })
-    (import ./cloudflare.nix { inherit inputs; })
-    (import ./diagram-design.nix { inherit inputs; })
-    (import ./dmmulroy.nix { inherit inputs; })
-    (import ./emilkowalski.nix { inherit inputs; })
-    (import ./frontend-slides.nix { inherit inputs; })
-    (import ./jakubkrehel.nix { inherit inputs; })
-    (import ./juliobsz.nix { inherit inputs; })
-    (import ./kitlangton.nix { inherit inputs; })
-    (import ./leonxlnx.nix { inherit inputs; })
-    (import ./mattpocock.nix { inherit inputs; })
-    (import ./marketing.nix { inherit inputs; })
-    (import ./openclaw.nix { inherit inputs; })
-    (import ./openhome.nix { inherit inputs; })
-    (import ./shadcn.nix { inherit inputs; })
-    #(import ./typesafe-ai.nix { inherit inputs; })
-    (import ./vercel.nix { inherit inputs; })
-  ];
-  skills = lib.foldl' lib.mergeAttrs { } providers;
+  # Skills are sparse-fetched from pinned commits instead of flake inputs:
+  # a flake input downloads the whole repo on every `nix flake update`.
+  lock = lib.importJSON ./sources.lock.json;
+
+  fetchSkills =
+    slug: skills:
+    let
+      parts = lib.splitString "/" slug;
+      paths = builtins.attrValues skills;
+      sparse = lib.optionals (!lib.elem "" paths) paths;
+      pin = lock.${slug} or { };
+      src = pkgs.fetchFromGitHub {
+        owner = lib.elemAt parts 0;
+        repo = lib.elemAt parts 1;
+        inherit (pin) rev hash;
+        # The hash comes from nix-prefetch-git, so never fall back to fetchzip.
+        forceFetchGit = true;
+        sparseCheckout = sparse;
+      };
+    in
+    # The hash covers exactly the locked paths; fail early instead of on a hash mismatch.
+    assert lib.assertMsg (
+      pin.paths or null == sparse
+    ) "skill-sources: lock for ${slug} is stale; run `just update-skills ${slug}`";
+    lib.mapAttrs (_: path: if path == "" then src else src + "/${path}") skills;
+
+  skills = lib.foldl' lib.mergeAttrs { } (lib.mapAttrsToList fetchSkills (import ./sources.nix)) // {
+    openhome = inputs.openhome + "/skills/openhome";
+  };
   overrides = import ./overrides.nix;
   unknown = lib.subtractLists (builtins.attrNames skills) (builtins.attrNames overrides);
 

@@ -120,6 +120,7 @@ update *inputs:
       exec just update-flake "$@"
     fi
     just update-flake
+    just update-skills
     just update-browser-use
     just update-hermes
     just update-osu
@@ -145,6 +146,40 @@ update-flake *inputs:
     token="$(gh auth token --hostname github.com)"
     export NIX_CONFIG="${NIX_CONFIG}"$'\n'"extra-access-tokens = github.com=$token"
     exec nix flake update "$@" --flake {{ flake }}
+
+# Pin the skill repos in agents/skill-sources/sources.nix to their default
+# branch heads and rewrite sources.lock.json. Pass owner/repo slugs to bump only
+# those; other entries keep their pins. Repos no longer listed are dropped.
+[group('dev')]
+[no-exit-message]
+[positional-arguments]
+update-skills *repos:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    dir="{{ justfile_directory() }}/agents/skill-sources"
+    lock="$dir/sources.lock.json"
+    spec="$(nix eval --json --file "$dir/sources.nix")"
+    prefetch="$(nix build --no-link --print-out-paths nixpkgs#nix-prefetch-git)/bin/nix-prefetch-git"
+    new='{}'
+    for slug in $(jq -r 'keys[]' <<<"$spec"); do
+      # Same order and whole-repo rule as sparseCheckout in default.nix.
+      paths="$(jq -c --arg s "$slug" '.[$s] | [.[]] | if any(. == "") then [] else . end' <<<"$spec")"
+      if [[ $# -gt 0 && " $* " != *" $slug "* ]]; then
+        pin="$(jq -c --arg s "$slug" '.[$s] // empty' "$lock")"
+        [[ -n "$pin" ]] || { echo "$slug is not locked; run just update-skills $slug" >&2; exit 1; }
+        new="$(jq --arg s "$slug" --argjson pin "$pin" '.[$s] = $pin' <<<"$new")"
+        continue
+      fi
+      url="https://github.com/$slug"
+      old="$(jq -r --arg s "$slug" '.[$s].rev // "none"' "$lock")"
+      rev="$(git ls-remote "$url" HEAD | cut -f1)"
+      [[ -n "$rev" ]] || { echo "cannot read HEAD of $slug" >&2; exit 1; }
+      hash="$("$prefetch" --quiet --url "$url" --rev "$rev" --sparse-checkout "$(jq -r 'join("\n")' <<<"$paths")" | jq -r .hash)"
+      new="$(jq --arg s "$slug" --arg rev "$rev" --arg hash "$hash" --argjson paths "$paths" \
+        '.[$s] = {rev: $rev, hash: $hash, paths: $paths}' <<<"$new")"
+      [[ "$rev" == "$old" ]] || echo "$slug ${old:0:7} -> ${rev:0:7}"
+    done
+    jq -S . <<<"$new" >"$lock"
 
 # Bump hermes-agent to its latest upstream tag and refresh the lock entry.
 [group('dev')]
