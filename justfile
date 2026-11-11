@@ -3,7 +3,8 @@ export NIX_CONFIG := env('NIX_CONFIG', '') + "\nextra-experimental-features = ni
 
 flake := env('FLAKE', justfile_directory())
 rebuild := "nixos-rebuild"
-system-args := "--elevate run0 --no-reexec"
+# WSL has no polkit agent to prompt for run0, so nixos-rebuild asks for the password itself.
+system-args := "--elevate run0 --no-reexec" + if env('WSL_DISTRO_NAME', '') != '' { " --ask-elevate-password" } else { "" }
 elevate := env('ELEVATE', 'doas')
 deploy-elevate := env('DEPLOY_ELEVATE', 'run0')
 
