@@ -26,7 +26,12 @@ in
         lib.generators.toGitINI (
           lib.getAttrs [ "user" "url" "init" "pull" "rebase" "alias" ] git.settings
           // {
-            core.editor = git.settings.core.editor;
+            core = {
+              inherit (git.settings.core) editor;
+              # The Git for Windows installer sets this false system-wide, which checks
+              # symlinks out as text files; Developer Mode lets them be real links.
+              symlinks = true;
+            };
             hook = builtins.mapAttrs (name: hook: {
               inherit (hook) event;
               command = toString ([ "bash ~/.config/git/hooks/${name}" ] ++ hook.args);
