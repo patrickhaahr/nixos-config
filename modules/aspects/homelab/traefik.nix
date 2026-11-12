@@ -2,16 +2,12 @@ _: {
   flake.modules.nixos.homelab-traefik =
     {
       config,
-      lib,
       pkgs,
       ...
     }:
     {
-      # Serve intercepts remote tailnet HTTPS before Traefik can handle it.
-      # Reserve 443 for ingress; leave Serve routes on other ports untouched.
-      systemd.services.tailscaled.postStart = lib.mkIf config.services.tailscale.enable ''
-        ${config.services.tailscale.package}/bin/tailscale serve --https=443 off
-      '';
+      # T3 runs without Tailscale Serve. Do not couple tailscaled startup to
+      # Serve cleanup: an unready backend or absent handler makes it fail.
 
       sops.secrets.cloudflare_dns_api_token = { };
 
