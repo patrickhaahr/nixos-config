@@ -30,6 +30,18 @@
         ANDROID_SDK_ROOT = sdkRoot;
       };
 
+      # Echo unlock/flash over USB without root (rules from Gamer92000/echo-dot-assist).
+      # A packaged rules file, not extraRules: uaccess only applies before 73-seat-late.rules,
+      # and extraRules lands in 99-local.rules.
+      services.udev.packages = [
+        (pkgs.writeTextDir "lib/udev/rules.d/51-echo-unlock.rules" ''
+          SUBSYSTEM=="usb", ATTR{idVendor}=="0e8d", MODE="0660", TAG+="uaccess"
+          SUBSYSTEM=="usb", ATTR{idVendor}=="1949", MODE="0660", TAG+="uaccess"
+          SUBSYSTEM=="usb", ATTR{idVendor}=="0bb4", ATTR{idProduct}=="0c01", MODE="0660", TAG+="uaccess"
+          ATTRS{idVendor}=="0e8d", ENV{ID_MM_DEVICE_IGNORE}="1"
+        '')
+      ];
+
       # Also let already-running tools discover the SDK at its conventional path.
       home-manager.sharedModules = [
         { home.file."Android/Sdk".source = sdkRoot; }
