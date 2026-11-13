@@ -12,8 +12,7 @@
       };
 
       projectRoot = pkgs.runCommand "browser-use-src-${version}" { } ''
-        cp -r ${src} $out
-        chmod u+w $out
+        cp -r --no-preserve=mode ${src} $out
         cp ${./uv.lock} $out/uv.lock
       '';
 

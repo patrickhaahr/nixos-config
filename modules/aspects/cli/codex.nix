@@ -82,11 +82,11 @@ in
       };
 
       home = {
-        # nixpkgs' cargo-setup-hook now forces system copies of aws-lc, zstd and others that llm-agents' codex does not provide. Drop once upstream adapts.
+        # nixpkgs' aws-lc dropped its compat openssl.pc and now prefixes its symbols, so openssl-sys needs real OpenSSL beside it. Drop once llm-agents adapts.
         packages = [
-          (inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.codex.overrideAttrs {
-            dontCargoUseSystemLibs = true;
-          })
+          (inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.codex.overrideAttrs (old: {
+            buildInputs = old.buildInputs ++ [ pkgs.openssl ];
+          }))
         ];
         # Codex only reads ~/.codex/AGENTS.md, never ~/.agents/AGENTS.md
         file.".codex/AGENTS.md".source = agentsSourceDir + "/AGENTS.md";
