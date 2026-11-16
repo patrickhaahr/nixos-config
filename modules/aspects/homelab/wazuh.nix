@@ -1,239 +1,227 @@
-_: {
+{ self, ... }:
+{
+  # Wazuh single-node (manager, indexer, dashboard) as podman containers,
+  # following upstream wazuh-docker/single-node. nginx serves the dashboard;
+  # agents enroll on 1515 and report on 1514.
   flake.modules.nixos.homelab-wazuh =
-    { config, pkgs, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     let
-      wazuhKubernetes = pkgs.fetchFromGitHub {
+      version = "4.14.10";
+      upstream = pkgs.fetchFromGitHub {
         owner = "wazuh";
-        repo = "wazuh-kubernetes";
-        rev = "v4.14.5";
-        hash = "sha256-HHHUYjVzNuutMOZqO6jl9eGG0abattqssNCSIu4CA30=";
+        repo = "wazuh-docker";
+        rev = "v${version}";
+        hash = "sha256-dC65ldz6N5AQgrcyKq/ujhlb+t3LjvyJdZoWeqhuF1Y=";
+      };
+      single = "${upstream}/single-node/config";
+      image = name: digest: "docker.io/wazuh/${name}:${version}@sha256:${digest}";
+
+      stateDir = "/var/lib/wazuh";
+      certs = "${stateDir}/certs";
+      dashboardPort = 5601;
+      secret = name: config.sops.placeholder."wazuh_${name}";
+
+      managerConf = pkgs.writeText "ossec.conf" (
+        builtins.replaceStrings [ "<use_password>no</use_password>" ] [ "<use_password>yes</use_password>" ]
+          (builtins.readFile "${single}/wazuh_cluster/wazuh_manager.conf")
+      );
+
+      # Upstream's file with server TLS off: nginx terminates TLS.
+      dashboardConf = pkgs.writeText "opensearch_dashboards.yml" ''
+        server.host: 0.0.0.0
+        server.port: ${toString dashboardPort}
+        opensearch.hosts: https://wazuh.indexer:9200
+        opensearch.ssl.verificationMode: certificate
+        opensearch.ssl.certificateAuthorities: ["/usr/share/wazuh-dashboard/certs/root-ca.pem"]
+        opensearch.requestHeadersWhitelist: ["securitytenant","Authorization"]
+        opensearch_security.multitenancy.enabled: false
+        opensearch_security.readonly_mode.roles: ["kibana_read_only"]
+        server.ssl.enabled: false
+        uiSettings.overrides.defaultRoute: /app/wz-home
+      '';
+
+      common = {
+        environmentFiles = [ config.sops.templates."wazuh.env".path ];
+        dependsOn = [ "wazuh-indexer" ];
+      };
+
+      containers = {
+        wazuh-indexer = {
+          image = image "wazuh-indexer" "1d2aeadb9de88c6d17ce12030606425deca5a210cdf5c87008843da38eb629ea";
+          environment.OPENSEARCH_JAVA_OPTS = "-Xms1g -Xmx1g";
+          volumes =
+            let
+              dir = "/usr/share/wazuh-indexer/config";
+            in
+            [
+              "wazuh-indexer-data:/var/lib/wazuh-indexer"
+              "${certs}/root-ca.pem:${dir}/certs/root-ca.pem:ro"
+              "${certs}/wazuh.indexer-key.pem:${dir}/certs/wazuh.indexer.key:ro"
+              "${certs}/wazuh.indexer.pem:${dir}/certs/wazuh.indexer.pem:ro"
+              "${certs}/admin.pem:${dir}/certs/admin.pem:ro"
+              "${certs}/admin-key.pem:${dir}/certs/admin-key.pem:ro"
+              "${single}/wazuh_indexer/wazuh.indexer.yml:${dir}/opensearch.yml:ro"
+              "${stateDir}/internal_users.yml:${dir}/opensearch-security/internal_users.yml:ro"
+            ];
+          extraOptions = [
+            "--hostname=wazuh.indexer"
+            "--network-alias=wazuh.indexer"
+          ];
+        };
+
+        wazuh-manager = common // {
+          image = image "wazuh-manager" "eabfa7ee4e63acb51c2130fa0583e30f843d030b091cf45a4fbd93d78fa21517";
+          ports = [
+            "1514:1514"
+            "1515:1515"
+          ];
+          environment = {
+            INDEXER_URL = "https://wazuh.indexer:9200";
+            FILEBEAT_SSL_VERIFICATION_MODE = "full";
+            SSL_CERTIFICATE_AUTHORITIES = "/etc/ssl/root-ca.pem";
+            SSL_CERTIFICATE = "/etc/ssl/filebeat.pem";
+            SSL_KEY = "/etc/ssl/filebeat.key";
+          };
+          volumes =
+            map (dir: "wazuh-${baseNameOf dir}:${dir}") [
+              "/var/ossec/api/configuration"
+              "/var/ossec/etc"
+              "/var/ossec/logs"
+              "/var/ossec/queue"
+              "/var/ossec/var/multigroups"
+              "/var/ossec/integrations"
+              "/var/ossec/active-response/bin"
+              "/var/ossec/agentless"
+              "/var/ossec/wodles"
+            ]
+            ++ [
+              "wazuh-filebeat-etc:/etc/filebeat"
+              "wazuh-filebeat-var:/var/lib/filebeat"
+              "${certs}/root-ca-manager.pem:/etc/ssl/root-ca.pem:ro"
+              "${certs}/wazuh.manager.pem:/etc/ssl/filebeat.pem:ro"
+              "${certs}/wazuh.manager-key.pem:/etc/ssl/filebeat.key:ro"
+              # The entrypoint copies /wazuh-config-mount over /var/ossec.
+              "${managerConf}:/wazuh-config-mount/etc/ossec.conf:ro"
+              "${config.sops.secrets.wazuh_authd_password.path}:/wazuh-config-mount/etc/authd.pass:ro"
+            ];
+          extraOptions = [
+            "--hostname=wazuh.manager"
+            "--network-alias=wazuh.manager"
+          ];
+        };
+
+        wazuh-dashboard = common // {
+          image = image "wazuh-dashboard" "4d48be7210a291c00a2bd148cbd8bd61a25876e947b81790fd03f7d2aabda95a";
+          dependsOn = [
+            "wazuh-indexer"
+            "wazuh-manager"
+          ];
+          ports = [ "127.0.0.1:${toString dashboardPort}:${toString dashboardPort}" ];
+          environment.WAZUH_API_URL = "https://wazuh.manager";
+          volumes = [
+            "${certs}/root-ca.pem:/usr/share/wazuh-dashboard/certs/root-ca.pem:ro"
+            "${dashboardConf}:/usr/share/wazuh-dashboard/config/opensearch_dashboards.yml:ro"
+            "wazuh-dashboard-config:/usr/share/wazuh-dashboard/data/wazuh/config"
+            "wazuh-dashboard-custom:/usr/share/wazuh-dashboard/plugins/wazuh/public/assets/custom"
+          ];
+          extraOptions = [
+            "--hostname=wazuh.dashboard"
+            "--network-alias=wazuh.dashboard"
+          ];
+        };
       };
     in
     {
+      imports = [ self.modules.nixos.homelab-podman ];
+
       sops.secrets = {
         wazuh_api_username = { };
         wazuh_api_password = { };
         wazuh_authd_password = { };
-        wazuh_cluster_key = { };
         wazuh_dashboard_username = { };
         wazuh_dashboard_password = { };
         wazuh_indexer_username = { };
         wazuh_indexer_password = { };
       };
+      sops.templates."wazuh.env".content = ''
+        INDEXER_USERNAME=${secret "indexer_username"}
+        INDEXER_PASSWORD=${secret "indexer_password"}
+        DASHBOARD_USERNAME=${secret "dashboard_username"}
+        DASHBOARD_PASSWORD=${secret "dashboard_password"}
+        API_USERNAME=${secret "api_username"}
+        API_PASSWORD=${secret "api_password"}
+      '';
+
+      virtualisation.oci-containers.containers = containers;
+      homelab.podmanNetworks.wazuh = builtins.attrNames containers;
+
+      # Certificates are generated once. The indexer reads internal_users.yml
+      # only when it first creates its security index; changing a password
+      # later needs securityadmin.sh inside the indexer.
+      systemd.services = {
+        wazuh-setup = {
+          description = "Wazuh certificates and indexer users";
+          serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = true;
+            StateDirectory = "wazuh";
+          };
+          path = [
+            config.virtualisation.podman.package
+            pkgs.apacheHttpd
+            pkgs.coreutils
+          ];
+          script =
+            let
+              path = name: config.sops.secrets."wazuh_${name}".path;
+            in
+            ''
+              set -eu
+              if [ ! -e ${certs}/root-ca.pem ]; then
+                mkdir -p ${certs}
+                podman run --rm \
+                  -e CERT_TOOL_VERSION=${lib.versions.majorMinor version} \
+                  -v ${certs}:/certificates \
+                  -v ${single}/certs.yml:/config/certs.yml:ro \
+                  docker.io/wazuh/wazuh-certs-generator:0.0.5@sha256:1be9f9abfb6a37ac7bd3d6d707e1b43589c2b81b23c01a46992e93832795abf9
+              fi
+
+              bcrypt() { tr -d '\n' < "$1" | htpasswd -BinC 12 user | cut -d: -f2-; }
+              umask 077
+              cat > ${stateDir}/internal_users.yml <<EOF
+              _meta:
+                type: "internalusers"
+                config_version: 2
+              $(cat ${path "indexer_username"}):
+                hash: "$(bcrypt ${path "indexer_password"})"
+                reserved: true
+                backend_roles: ["admin"]
+              $(cat ${path "dashboard_username"}):
+                hash: "$(bcrypt ${path "dashboard_password"})"
+                reserved: true
+              EOF
+              chown 1000:1000 ${stateDir}/internal_users.yml
+            '';
+        };
+      }
+      // lib.genAttrs (map (name: "podman-${name}") (builtins.attrNames containers)) (_: {
+        requires = [ "wazuh-setup.service" ];
+        after = [ "wazuh-setup.service" ];
+      });
 
       networking.firewall.allowedTCPPorts = [
         1514
         1515
-        55000
       ];
 
-      systemd.services.k3s-wazuh = {
-        description = "Deploy Wazuh into k3s";
-        after = [ "k3s.service" ];
-        wants = [ "k3s.service" ];
-        wantedBy = [ "multi-user.target" ];
-        unitConfig.ConditionPathExists = config.sops.secrets.wazuh_api_password.path;
-        serviceConfig = {
-          Type = "oneshot";
-          RemainAfterExit = true;
-          StateDirectory = "wazuh-kubernetes";
-        };
-        path = [
-          pkgs.coreutils
-          pkgs.findutils
-          pkgs.apacheHttpd
-          pkgs.gawk
-          pkgs.gnused
-          pkgs.k3s
-          pkgs.kustomize
-          pkgs.openssl
-          pkgs.rsync
-        ];
-        script = ''
-          set -eu
-
-          workdir=/var/lib/wazuh-kubernetes
-
-          rsync --archive --delete --chmod=u+rwX \
-            --exclude '/wazuh/certs/indexer_cluster/*.pem' \
-            --exclude '/wazuh/certs/dashboard_http/*.pem' \
-            ${wazuhKubernetes}/ "$workdir"/
-          cd "$workdir"
-
-          if [ ! -f wazuh/certs/indexer_cluster/root-ca.pem ]; then
-            ${pkgs.bash}/bin/bash ./wazuh/certs/indexer_cluster/generate_certs.sh
-          fi
-
-          if [ ! -f wazuh/certs/dashboard_http/cert.pem ]; then
-            ${pkgs.bash}/bin/bash ./wazuh/certs/dashboard_http/generate_certs.sh
-          fi
-
-          secret_literal() {
-            tr -d '\n' < "$1"
-          }
-
-          validate_wazuh_cluster_key() {
-            key="$(secret_literal "$1")"
-            if [ "''${#key}" -ne 32 ] || printf '%s' "$key" | grep -q '[^0-9A-Za-z]'; then
-              printf '%s\n' \
-                'wazuh_cluster_key must be exactly 32 alphanumeric characters.' \
-                'Generate one with: openssl rand -base64 24 | tr -dc A-Za-z0-9 | head -c 32' >&2
-              exit 1
-            fi
-          }
-
-          validate_wazuh_cluster_key ${config.sops.secrets.wazuh_cluster_key.path}
-
-          secret_bcrypt_hash() {
-            secret_literal "$1" | htpasswd -BinC 12 wazuh-user | cut -d: -f2-
-          }
-
-          patch_internal_user_hash() {
-            username="$1"
-            hash="$2"
-            file=wazuh/indexer_stack/wazuh-indexer/indexer_conf/internal_users.yml
-            tmp="$file.tmp"
-
-            awk -v username="$username" -v hash="$hash" '
-              $0 == username ":" { in_user = 1; print; next }
-              in_user && $1 == "hash:" { print "  hash: \"" hash "\""; in_user = 0; next }
-              in_user && $0 !~ /^  / { in_user = 0 }
-              { print }
-            ' "$file" > "$tmp"
-            mv "$tmp" "$file"
-          }
-
-          patch_internal_user_hash \
-            "$(secret_literal ${config.sops.secrets.wazuh_indexer_username.path})" \
-            "$(secret_bcrypt_hash ${config.sops.secrets.wazuh_indexer_password.path})"
-          patch_internal_user_hash \
-            "$(secret_literal ${config.sops.secrets.wazuh_dashboard_username.path})" \
-            "$(secret_bcrypt_hash ${config.sops.secrets.wazuh_dashboard_password.path})"
-
-          k3s kubectl create namespace wazuh --dry-run=client --output yaml \
-            | k3s kubectl apply --filename -
-
-          k3s kubectl --namespace wazuh create secret generic wazuh-api-cred \
-            --from-literal=username="$(secret_literal ${config.sops.secrets.wazuh_api_username.path})" \
-            --from-literal=password="$(secret_literal ${config.sops.secrets.wazuh_api_password.path})" \
-            --dry-run=client \
-            --output yaml \
-            | k3s kubectl apply --filename -
-
-          k3s kubectl --namespace wazuh create secret generic wazuh-authd-pass \
-            --from-literal=authd.pass="$(secret_literal ${config.sops.secrets.wazuh_authd_password.path})" \
-            --dry-run=client \
-            --output yaml \
-            | k3s kubectl apply --filename -
-
-          k3s kubectl --namespace wazuh create secret generic wazuh-cluster-key \
-            --from-literal=key="$(secret_literal ${config.sops.secrets.wazuh_cluster_key.path})" \
-            --dry-run=client \
-            --output yaml \
-            | k3s kubectl apply --filename -
-
-          k3s kubectl --namespace wazuh create secret generic dashboard-cred \
-            --from-literal=username="$(secret_literal ${config.sops.secrets.wazuh_dashboard_username.path})" \
-            --from-literal=password="$(secret_literal ${config.sops.secrets.wazuh_dashboard_password.path})" \
-            --dry-run=client \
-            --output yaml \
-            | k3s kubectl apply --filename -
-
-          k3s kubectl --namespace wazuh create secret generic indexer-cred \
-            --from-literal=username="$(secret_literal ${config.sops.secrets.wazuh_indexer_username.path})" \
-            --from-literal=password="$(secret_literal ${config.sops.secrets.wazuh_indexer_password.path})" \
-            --dry-run=client \
-            --output yaml \
-            | k3s kubectl apply --filename -
-
-          sed -i '/secrets\/.*-secret.yaml/d' wazuh/kustomization.yml
-          sed -i 's#microk8s.io/hostpath#rancher.io/local-path#' envs/local-env/storage-class.yaml
-          if ! grep -q '^volumeBindingMode:' envs/local-env/storage-class.yaml; then
-            cat >> envs/local-env/storage-class.yaml <<'EOF'
-
-          volumeBindingMode: WaitForFirstConsumer
-          EOF
-          fi
-
-          cat > envs/local-env/zaza-ingress-route.yaml <<'EOF'
-          apiVersion: traefik.io/v1alpha1
-          kind: IngressRoute
-          metadata:
-            name: wazuh-dashboard
-            namespace: wazuh
-          spec:
-            entryPoints:
-              - websecure
-            routes:
-              - match: Host(`wazuh.zaza.haahr.me`)
-                kind: Rule
-                services:
-                  - name: dashboard
-                    port: 443
-                    scheme: https
-                    serversTransport: wazuh-dashboard
-            tls:
-              certResolver: cloudflare
-          ---
-          apiVersion: traefik.io/v1alpha1
-          kind: ServersTransport
-          metadata:
-            name: wazuh-dashboard
-            namespace: wazuh
-          spec:
-            insecureSkipVerify: true
-          EOF
-
-          cat > envs/local-env/zaza-service-types.yaml <<'EOF'
-          apiVersion: v1
-          kind: Service
-          metadata:
-            name: dashboard
-            namespace: wazuh
-          spec:
-            type: ClusterIP
-          ---
-          apiVersion: v1
-          kind: Service
-          metadata:
-            name: indexer
-            namespace: wazuh
-          spec:
-            type: ClusterIP
-          EOF
-
-          cat > envs/local-env/zaza-dashboard-api-url.yaml <<'EOF'
-          apiVersion: apps/v1
-          kind: Deployment
-          metadata:
-            name: wazuh-dashboard
-            namespace: wazuh
-          spec:
-            template:
-              spec:
-                containers:
-                  - name: wazuh-dashboard
-                    env:
-                      - name: WAZUH_API_URL
-                        value: https://wazuh
-          EOF
-
-          cat > envs/local-env/kustomization.yml <<'EOF'
-          apiVersion: kustomize.config.k8s.io/v1beta1
-          kind: Kustomization
-          resources:
-            - ../../wazuh
-            - zaza-ingress-route.yaml
-          patches:
-            - path: storage-class.yaml
-            - path: indexer-resources.yaml
-            - path: wazuh-resources.yaml
-            - path: zaza-service-types.yaml
-            - path: zaza-dashboard-api-url.yaml
-          EOF
-
-          k3s kubectl apply --kustomize envs/local-env
-        '';
+      services.nginx.virtualHosts."wazuh.zaza.haahr.me".locations."/" = {
+        proxyPass = "http://127.0.0.1:${toString dashboardPort}";
+        proxyWebsockets = true;
       };
     };
 }
