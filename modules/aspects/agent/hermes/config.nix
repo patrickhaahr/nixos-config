@@ -244,6 +244,46 @@
       services.hermes-agent = {
         enable = true;
         gateway.enable = true;
+
+        # GPT-Live voice for hermes-talk (its `live` extra): aiortc and the
+        # packages the sealed venv lacks. Their dependencies are build-only
+        # here: av, cryptography and cffi come from the venv at run time, and
+        # propagating them again fails the module's collision check.
+        extraPythonPackages =
+          let
+            py = config.services.hermes-agent.package.python.pkgs;
+            bare =
+              p:
+              p.overridePythonAttrs (
+                old:
+                let
+                  deps = (old.dependencies or [ ]) ++ (old.propagatedBuildInputs or [ ]);
+                  isPy = builtins.filter (d: d ? pythonModule) deps;
+                  notPy = builtins.filter (d: !(d ? pythonModule)) deps;
+                in
+                {
+                  dependencies = [ ];
+                  propagatedBuildInputs = [ ];
+                  # Python deps build-only; C libraries (libsrtp, openssl) stay
+                  # host inputs so their headers and rpath reach the extension.
+                  nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ isPy;
+                  buildInputs = (old.buildInputs or [ ]) ++ notPy;
+                  doCheck = false;
+                  dontCheckRuntimeDeps = true;
+                  pythonImportsCheck = [ ];
+                }
+              );
+          in
+          map (name: bare py.${name}) [
+            "aiortc"
+            "aioice"
+            "pyee"
+            "pylibsrtp"
+            "google-crc32c"
+            "ifaddr"
+            "dnspython"
+            "pyopenssl"
+          ];
         backend = {
           mode = "dashboard";
           host = "0.0.0.0";
