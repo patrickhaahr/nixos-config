@@ -21,6 +21,7 @@
       self.modules.nixos.k3s
       self.modules.nixos.k3s-nvidia
       self.modules.nixos.nix-maintenance
+      self.modules.nixos.binary-cache-server
       self.modules.nixos.openssh
       self.modules.nixos.sops
       self.modules.nixos.tailscale
