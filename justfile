@@ -127,6 +127,26 @@ update *inputs:
     just update-osu
     just update-kaigen
     just update-learnharness
+    just update-images
+
+# Re-resolve every container image pinned as "repo:tag@sha256:..." under
+# modules/ to the digest its tag points at now.
+[group('dev')]
+[no-exit-message]
+update-images:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    crane="$(nix build --no-link --print-out-paths nixpkgs#crane)/bin/crane"
+    pattern='"[a-z0-9./_-]+:[A-Za-z0-9._-]+@sha256:[0-9a-f]{64}"'
+    grep -rhoE "$pattern" modules | tr -d '"' | sort -u | while read -r pin; do
+      ref="${pin%@*}"
+      old="${pin#*@}"
+      new="$("$crane" digest "$ref")"
+      [[ "$new" == sha256:* ]] || { echo "cannot resolve $ref" >&2; exit 1; }
+      [[ "$new" == "$old" ]] && continue
+      grep -rlF "$pin" modules | xargs sed -i "s|$ref@$old|$ref@$new|g"
+      echo "$ref ${old:7:12} -> ${new:7:12}"
+    done
 
 # Update AI packages (Codex, Claude, OpenCode, T3 Code, Pi, Hermes, and more).
 [group('dev')]

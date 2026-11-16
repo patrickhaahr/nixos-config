@@ -15,6 +15,7 @@
 - Put WM-specific logic in `modules/aspects/desktop/<wm>.nix` (`niri` today). Shared desktop tools stay out of the WM module.
 - zaza serves a signed harmonia binary cache over tailscale (`binary-cache-server`); every other host imports `binary-cache` to substitute from it.
 - zaza web services declare `services.nginx.virtualHosts."<name>.zaza.haahr.me"`; `homelab-proxy` adds the wildcard cert and HTTPS. Prefer native NixOS service modules; fall back to `virtualisation.oci-containers` (podman) only for software nixpkgs lacks.
+- Podman containers join networks through `homelab.podmanNetworks` (import `homelab-podman`) and pin images as `repo:tag@sha256:…`; `just update-images` re-resolves every such tag.
 - Hermes hosts compose through the `agent-hermes-host` seam in `modules/aspects/agent/hermes/host.nix`.
 - External skills are listed in `agents/skill-sources/sources.nix` and sparse-fetched, never added as flake inputs (an input downloads the whole repo). After changing an entry, run `just update-skills <owner/repo>`; only that recipe writes `sources.lock.json`.
 - `modules/aspects/agent/browser-use/` vendors a `uv.lock`; regenerate it with `uv lock --python 3.12` when bumping.

@@ -1,17 +1,14 @@
-_: {
+{ self, ... }:
+{
   # Self-hosted firecrawl as podman containers on one network. Images are
-  # pinned by digest; bump them deliberately.
+  # pinned as `repo:tag@digest`; `just update-images` re-resolves the tags.
   flake.modules.nixos.homelab-firecrawl =
-    { config, lib, ... }:
+    { config, ... }:
     let
-      network = "firecrawl";
       apiPort = 3002;
-      firecrawlImage = "ghcr.io/firecrawl/firecrawl@sha256:a8dadf0db956fd907ddd89b7ba4d77fa9bb38fd8b10d3e1da3d7b1fe181f4793";
+      firecrawlImage = "ghcr.io/firecrawl/firecrawl:latest@sha256:c2d6817a0d7521b7b5d4d5aeb6a71a89937df4f22a3adfa294d7749bf11bd20b";
 
-      common = {
-        networks = [ network ];
-        environmentFiles = [ config.sops.templates."firecrawl.env".path ];
-      };
+      common.environmentFiles = [ config.sops.templates."firecrawl.env".path ];
 
       firecrawlProcess =
         group: script: heap:
@@ -49,7 +46,7 @@ _: {
         firecrawl-nuq-worker = firecrawlProcess "nuq-worker" "dist/src/services/worker/nuq-worker.js" 3072;
 
         firecrawl-playwright = common // {
-          image = "ghcr.io/firecrawl/playwright-service@sha256:227ce3d8059173925a5a0697c63a1e947662cca934a609151651f578774edd5d";
+          image = "ghcr.io/firecrawl/playwright-service:latest@sha256:227ce3d8059173925a5a0697c63a1e947662cca934a609151651f578774edd5d";
           environment = {
             PORT = "3000";
             ALLOW_LOCAL_WEBHOOKS = "false";
@@ -58,7 +55,7 @@ _: {
         };
 
         firecrawl-postgres = common // {
-          image = "ghcr.io/firecrawl/nuq-postgres@sha256:d719b36160eac2fcbe16dc7e7360ddb9c82c40ea5da183d07bf4a755c6a0b2ae";
+          image = "ghcr.io/firecrawl/nuq-postgres:latest@sha256:d719b36160eac2fcbe16dc7e7360ddb9c82c40ea5da183d07bf4a755c6a0b2ae";
           environment = {
             POSTGRES_USER = "postgres";
             POSTGRES_DB = "postgres";
@@ -68,13 +65,14 @@ _: {
         };
 
         firecrawl-redis = {
-          image = "docker.io/library/redis@sha256:71885d8cc6e42f2bc0aa2eb853bfc4be200b5108a46ac50e117ae1df0531fb80";
-          networks = [ network ];
+          image = "docker.io/library/redis:alpine@sha256:7958cfbb9d152f87dadfbc89f1b0b15938f0b81ff8982feb327476f4911935c3";
           extraOptions = [ "--network-alias=redis" ];
         };
       };
     in
     {
+      imports = [ self.modules.nixos.homelab-podman ];
+
       sops.secrets = {
         firecrawl_bull_auth_key = { };
         firecrawl_postgres_password = { };
@@ -87,26 +85,7 @@ _: {
 
       virtualisation.oci-containers.containers = containers;
 
-      systemd = {
-        services = {
-          podman-network-firecrawl = {
-            description = "Podman network for firecrawl";
-            serviceConfig = {
-              Type = "oneshot";
-              RemainAfterExit = true;
-            };
-            path = [ config.virtualisation.podman.package ];
-            script = "podman network exists ${network} || podman network create ${network}";
-          };
-        }
-        // lib.mapAttrs' (
-          name: _:
-          lib.nameValuePair "podman-${name}" {
-            requires = [ "podman-network-firecrawl.service" ];
-            after = [ "podman-network-firecrawl.service" ];
-          }
-        ) containers;
-      };
+      homelab.podmanNetworks.firecrawl = builtins.attrNames containers;
 
       services.nginx.virtualHosts."firecrawl.zaza.haahr.me".locations."/".proxyPass =
         "http://127.0.0.1:${toString apiPort}";
