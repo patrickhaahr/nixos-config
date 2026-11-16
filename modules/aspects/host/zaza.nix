@@ -8,9 +8,9 @@
       self.modules.nixos.android-emulator
       self.modules.nixos.home-manager
       self.modules.nixos.homelab-firecrawl
-      # self.modules.nixos.homelab-grafana
+      self.modules.nixos.homelab-grafana
       self.modules.nixos.homelab-librespeed
-      # self.modules.nixos.homelab-prometheus
+      self.modules.nixos.homelab-prometheus
       self.modules.nixos.homelab-searxng
       self.modules.nixos.homelab-proxy
       # self.modules.nixos.homelab-wazuh
