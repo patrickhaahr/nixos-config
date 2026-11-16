@@ -22,11 +22,11 @@
     "rev": "20c9e88a5c007461a703f1c213572b073196113e"
   },
   "cathrynlavery/diagram-design": {
-    "hash": "sha256-3Rn0vxuUiU4fBmEl0mO7gYo7Bvn18TmwTLFwwYhFL6o=",
+    "hash": "sha256-mcGxmMZV7McjUVF+FSDHuvW+F9R4tpB9oaEblhbyqGY=",
     "paths": [
       "skills/diagram-design"
     ],
-    "rev": "6a7f19fcc132b39b126bea90167679b46b14bcc4"
+    "rev": "f6db0decea96de66b901331a0f79a8d4b147ebae"
   },
   "cloudflare/security-audit-skill": {
     "hash": "sha256-oVVACjotkHvllQGxEP8yWaEt4c3GxT0d909TUM5P3NM=",
@@ -41,15 +41,15 @@
       "skills/cloudflare",
       "skills/wrangler"
     ],
-    "rev": "6eb6c781aa9b6438e0c7307bd102788a75fe1a6d"
+    "rev": "cbf893b954222276bf1af57e5f23379231e0efb9"
   },
   "coreyhaines31/marketingskills": {
-    "hash": "sha256-NV5CqnCvuGJDrbS2MvAuaO968aKwYmbXBg8bczxOV84=",
+    "hash": "sha256-xOi3IpX0GrskhX7Gtdh2gtZQliY4wbi0QOv00ZoUeTI=",
     "paths": [
       "skills/ai-seo",
       "skills/seo-audit"
     ],
-    "rev": "e690ca89862734c4b8deea18f9e32fceee59ebf5"
+    "rev": "1f837447b20bb6f0e72d87b80ece1c221c362c7d"
   },
   "dmmulroy/anti-slop": {
     "hash": "sha256-V+Efekxdd+uGKyDNUOfNqxlzfGpS7ZoPDDFDzoaZND8=",
@@ -59,14 +59,14 @@
     "rev": "13909c9e07590f5a85d93c62712259fe14a883f7"
   },
   "emilkowalski/skills": {
-    "hash": "sha256-E798+00rX7j/WOG/Wnoz0uzq9UnvWKDvOGSYjqmfeJI=",
+    "hash": "sha256-HkIv8xmzaZ6e/iHhxcuJciK31iLMkn4mwBAtukPPOq0=",
     "paths": [
       "skills/animate"
     ],
-    "rev": "715c1807e08c497cfd1dc4feb450a2a3300ef2a9"
+    "rev": "64eb3deb9a5fbfa041faf783e0bc3fd635872e9c"
   },
   "jakubkrehel/skills": {
-    "hash": "sha256-Cg7NyBMMLOnwIYNc/Wg9jKqjZOiVZ6tK3Vq2AQ6V73k=",
+    "hash": "sha256-0JqKH6ik9v7QhlLNmNOec9HC5/f+Xm40AsDRjnHEetw=",
     "paths": [
       "skills/better-accessibility",
       "skills/better-colors",
@@ -77,7 +77,7 @@
       "skills/better-writing",
       "skills/interface-review"
     ],
-    "rev": "659cc4e5b6df90cfe1f306f5ae1c83fa549e075c"
+    "rev": "a72290d140249813898ba8648becf6415abcb059"
   },
   "juliobsz/skills": {
     "hash": "sha256-loikbgo6r6P7Wzib5jomLkUpe4JzMZBztXNd77PnVEw=",
@@ -112,14 +112,14 @@
       "skills/engineering/to-tickets",
       "skills/productivity/writing-for-agents"
     ],
-    "rev": "4ae2317ddb22b046e26455e4f9c9b3aaaf62212d"
+    "rev": "5863806dd4e15c63174bee4e7515a4256792ecfa"
   },
   "openclaw/openclaw": {
-    "hash": "sha256-w8o2eDKYbO/ByHQdYk0wSxMX1oypTkBQFwHoy5BGwxY=",
+    "hash": "sha256-tjFQfXswElJnR8uELc+TyqBBlVwbEzYX60hDV1pd0rU=",
     "paths": [
       ".agents/skills/test-audit"
     ],
-    "rev": "1f91733042cc70c61c1df2b541d90af44930750e"
+    "rev": "9e85a1a71795dd067c424923c4e187ab332852dd"
   },
   "shadcn/improve": {
     "hash": "sha256-PfAUpLXXRyRlxsvdeGjUFUoDD8wTarE4gtmDPslrr60=",
