@@ -5,6 +5,16 @@ _: {
       firecrawl_postgres_password = { };
     };
 
+    # firecrawl still runs in k3s: resolve its Service through CoreDNS per
+    # request, so a recreated Service with a new ClusterIP keeps working.
+    services.nginx.virtualHosts."firecrawl.zaza.haahr.me".locations."/" = {
+      proxyPass = "http://$firecrawl_api";
+      extraConfig = ''
+        resolver 10.43.0.10 valid=30s;
+        set $firecrawl_api api.firecrawl.svc.cluster.local:3002;
+      '';
+    };
+
     systemd.services.k3s-firecrawl-secrets = {
       description = "Sync Firecrawl secrets into k3s";
       after = [ "k3s.service" ];
@@ -56,7 +66,7 @@ _: {
           ENV = "production";
           LOGGING_LEVEL = "INFO";
           IS_KUBERNETES = "true";
-          SEARXNG_ENDPOINT = "http://searxng.searxng.svc.cluster.local/";
+          SEARXNG_ENDPOINT = "https://searxng.zaza.haahr.me/";
         };
       }
       {
@@ -506,41 +516,6 @@ _: {
               name = "redis";
               port = 6379;
               targetPort = "redis";
-            }
-          ];
-        };
-      }
-      {
-        apiVersion = "networking.k8s.io/v1";
-        kind = "Ingress";
-        metadata = {
-          name = "firecrawl";
-          namespace = "firecrawl";
-          annotations = {
-            "traefik.ingress.kubernetes.io/router.entrypoints" = "websecure";
-            "traefik.ingress.kubernetes.io/router.tls" = "true";
-            "traefik.ingress.kubernetes.io/router.tls.certresolver" = "cloudflare";
-          };
-        };
-        spec = {
-          rules = [
-            {
-              host = "firecrawl.zaza.haahr.me";
-              http.paths = [
-                {
-                  path = "/";
-                  pathType = "Prefix";
-                  backend.service = {
-                    name = "api";
-                    port.name = "http";
-                  };
-                }
-              ];
-            }
-          ];
-          tls = [
-            {
-              hosts = [ "firecrawl.zaza.haahr.me" ];
             }
           ];
         };

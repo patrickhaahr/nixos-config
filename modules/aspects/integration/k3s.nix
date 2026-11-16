@@ -79,17 +79,15 @@ _: {
         "flannel.1"
       ];
 
-      networking.firewall.allowedTCPPorts = [
-        80
-        443
-        6443
-      ];
+      networking.firewall.allowedTCPPorts = [ 6443 ];
 
       services.k3s = {
         enable = true;
         role = "server";
         extraFlags = [
           "--node-ip=10.0.10.3"
+          # nginx on the host terminates TLS (homelab-proxy).
+          "--disable=traefik"
           "--write-kubeconfig-group=k3s-admin"
           "--write-kubeconfig-mode=0640"
         ];

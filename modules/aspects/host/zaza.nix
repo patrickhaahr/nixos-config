@@ -12,7 +12,7 @@
       self.modules.nixos.homelab-librespeed
       # self.modules.nixos.homelab-prometheus
       self.modules.nixos.homelab-searxng
-      self.modules.nixos.homelab-traefik
+      self.modules.nixos.homelab-proxy
       # self.modules.nixos.homelab-wazuh
       self.modules.nixos.identity-ph-headless
       self.modules.nixos.agent-hermes-host
