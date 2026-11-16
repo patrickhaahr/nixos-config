@@ -20,6 +20,9 @@ _: {
             "TALK_IDENTITY_INCLUDE=PERSONA,WORKING"
             "TALK_TURN_DETECTION=semantic_vad"
             "TALK_SEMANTIC_EAGERNESS=medium"
+            # A room speaker in a home that speaks English and Danish.
+            "TALK_NOISE_REDUCTION=far_field"
+            "TALK_LANGUAGES=English, Danish"
           ];
           WorkingDirectory = config.home.homeDirectory;
           Restart = "always";
