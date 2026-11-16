@@ -4,7 +4,7 @@ description: Invoke when writing or editing a pull request title or body.
 ---
 
 dont write essays, dont include that you ran tests. rather, write a concise body. focus on mermaid codeblock diagrams, code samples/snippets (this can be internals, or even sample usage). use bullet points for the text you do write. 'validation/i ran tests' is not needed
-for visual changes (either directly or indirectly) show a table of before and after with uploaded images/videos.
+for visual changes (either directly or indirectly) show a table of before and after with uploaded images/videos. gh uploads them: `gh pr create|edit|comment --attach <file>` (details in `--help`). write an image into the table as `![alt](./after.png)` and gh swaps in the uploaded url; a video lands as a bare url at the end of the body, move it onto its own line where the player belongs.
 for benchmarks, always show tables of before/after (baseline from target branch, candidate from the PR)
 dont at intermidate PR details - e.g. if we reduced PR size from +6k lines to +1k lines, dont even mention it lol. if we refactored from one commit to another it doesnt matter. only the final aggregate squash merge commit is what matters for commentary
 
