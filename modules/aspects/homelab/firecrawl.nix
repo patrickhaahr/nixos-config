@@ -1,525 +1,114 @@
 _: {
-  flake.modules.nixos.homelab-firecrawl = { config, pkgs, ... }: {
-    sops.secrets = {
-      firecrawl_bull_auth_key = { };
-      firecrawl_postgres_password = { };
-    };
+  # Self-hosted firecrawl as podman containers on one network. Images are
+  # pinned by digest; bump them deliberately.
+  flake.modules.nixos.homelab-firecrawl =
+    { config, lib, ... }:
+    let
+      network = "firecrawl";
+      apiPort = 3002;
+      firecrawlImage = "ghcr.io/firecrawl/firecrawl@sha256:a8dadf0db956fd907ddd89b7ba4d77fa9bb38fd8b10d3e1da3d7b1fe181f4793";
 
-    # firecrawl still runs in k3s: resolve its Service through CoreDNS per
-    # request, so a recreated Service with a new ClusterIP keeps working.
-    services.nginx.virtualHosts."firecrawl.zaza.haahr.me".locations."/" = {
-      proxyPass = "http://$firecrawl_api";
-      extraConfig = ''
-        resolver 10.43.0.10 valid=30s;
-        set $firecrawl_api api.firecrawl.svc.cluster.local:3002;
-      '';
-    };
-
-    systemd.services.k3s-firecrawl-secrets = {
-      description = "Sync Firecrawl secrets into k3s";
-      after = [ "k3s.service" ];
-      wants = [ "k3s.service" ];
-      wantedBy = [ "multi-user.target" ];
-      unitConfig.ConditionPathExists = config.sops.secrets.firecrawl_bull_auth_key.path;
-      serviceConfig = {
-        Type = "oneshot";
-        RemainAfterExit = true;
+      common = {
+        networks = [ network ];
+        environmentFiles = [ config.sops.templates."firecrawl.env".path ];
       };
-      path = [ pkgs.k3s ];
-      script = ''
-        k3s kubectl create namespace firecrawl --dry-run=client --output yaml \
-          | k3s kubectl apply --filename -
 
-        bull_auth_key="$(tr -d '\n' < ${config.sops.secrets.firecrawl_bull_auth_key.path})"
-        postgres_password="$(tr -d '\n' < ${config.sops.secrets.firecrawl_postgres_password.path})"
+      firecrawlProcess =
+        group: script: heap:
+        common
+        // {
+          image = firecrawlImage;
+          entrypoint = "node";
+          cmd = [
+            "--max-old-space-size=${toString heap}"
+            script
+          ];
+          environment = {
+            HOST = "0.0.0.0";
+            FLY_PROCESS_GROUP = group;
+            REDIS_URL = "redis://redis:6379";
+            REDIS_RATE_LIMIT_URL = "redis://redis:6379";
+            PLAYWRIGHT_MICROSERVICE_URL = "http://playwright-service:3000/scrape";
+            SEARXNG_ENDPOINT = "https://searxng.zaza.haahr.me/";
+            USE_DB_AUTHENTICATION = "false";
+            ENV = "production";
+            LOGGING_LEVEL = "INFO";
+          };
+          dependsOn = [
+            "firecrawl-redis"
+            "firecrawl-postgres"
+            "firecrawl-playwright"
+          ];
+        };
 
-        k3s kubectl --namespace firecrawl create secret generic firecrawl-secret \
-          --from-literal=BULL_AUTH_KEY="$bull_auth_key" \
-          --from-literal=POSTGRES_PASSWORD="$postgres_password" \
-          --from-literal=NUQ_DATABASE_URL="postgresql://postgres:$postgres_password@nuq-postgres:5432/postgres" \
-          --dry-run=client \
-          --output yaml \
-          | k3s kubectl apply --filename -
+      containers = {
+        firecrawl-api = firecrawlProcess "app" "dist/src/index.js" 6144 // {
+          ports = [ "127.0.0.1:${toString apiPort}:${toString apiPort}" ];
+        };
+        firecrawl-worker = firecrawlProcess "worker" "dist/src/services/queue-worker.js" 3072;
+        firecrawl-nuq-worker = firecrawlProcess "nuq-worker" "dist/src/services/worker/nuq-worker.js" 3072;
+
+        firecrawl-playwright = common // {
+          image = "ghcr.io/firecrawl/playwright-service@sha256:227ce3d8059173925a5a0697c63a1e947662cca934a609151651f578774edd5d";
+          environment = {
+            PORT = "3000";
+            ALLOW_LOCAL_WEBHOOKS = "false";
+          };
+          extraOptions = [ "--network-alias=playwright-service" ];
+        };
+
+        firecrawl-postgres = common // {
+          image = "ghcr.io/firecrawl/nuq-postgres@sha256:d719b36160eac2fcbe16dc7e7360ddb9c82c40ea5da183d07bf4a755c6a0b2ae";
+          environment = {
+            POSTGRES_USER = "postgres";
+            POSTGRES_DB = "postgres";
+          };
+          volumes = [ "firecrawl-postgres:/var/lib/postgresql/data" ];
+          extraOptions = [ "--network-alias=nuq-postgres" ];
+        };
+
+        firecrawl-redis = {
+          image = "docker.io/library/redis@sha256:71885d8cc6e42f2bc0aa2eb853bfc4be200b5108a46ac50e117ae1df0531fb80";
+          networks = [ network ];
+          extraOptions = [ "--network-alias=redis" ];
+        };
+      };
+    in
+    {
+      sops.secrets = {
+        firecrawl_bull_auth_key = { };
+        firecrawl_postgres_password = { };
+      };
+      sops.templates."firecrawl.env".content = ''
+        BULL_AUTH_KEY=${config.sops.placeholder.firecrawl_bull_auth_key}
+        POSTGRES_PASSWORD=${config.sops.placeholder.firecrawl_postgres_password}
+        NUQ_DATABASE_URL=postgresql://postgres:${config.sops.placeholder.firecrawl_postgres_password}@nuq-postgres:5432/postgres
       '';
-    };
 
-    services.k3s.manifests.firecrawl.content = [
-      {
-        apiVersion = "v1";
-        kind = "Namespace";
-        metadata.name = "firecrawl";
-      }
-      {
-        apiVersion = "v1";
-        kind = "ConfigMap";
-        metadata = {
-          name = "firecrawl-config";
-          namespace = "firecrawl";
-        };
-        data = {
-          HOST = "0.0.0.0";
-          REDIS_URL = "redis://redis:6379";
-          REDIS_RATE_LIMIT_URL = "redis://redis:6379";
-          PLAYWRIGHT_MICROSERVICE_URL = "http://playwright-service:3000";
-          USE_DB_AUTHENTICATION = "false";
-          SENTRY_ENVIRONMENT = "production";
-          ENV = "production";
-          LOGGING_LEVEL = "INFO";
-          IS_KUBERNETES = "true";
-          SEARXNG_ENDPOINT = "https://searxng.zaza.haahr.me/";
-        };
-      }
-      {
-        apiVersion = "v1";
-        kind = "ConfigMap";
-        metadata = {
-          name = "playwright-service-config";
-          namespace = "firecrawl";
-        };
-        data = {
-          PORT = "3000";
-          ALLOW_LOCAL_WEBHOOKS = "false";
-        };
-      }
-      {
-        apiVersion = "v1";
-        kind = "PersistentVolumeClaim";
-        metadata = {
-          name = "nuq-postgres-data";
-          namespace = "firecrawl";
-        };
-        spec = {
-          accessModes = [ "ReadWriteOnce" ];
-          resources.requests.storage = "10Gi";
-        };
-      }
-      {
-        apiVersion = "apps/v1";
-        kind = "Deployment";
-        metadata = {
-          name = "api";
-          namespace = "firecrawl";
-          labels.app = "firecrawl-api";
-        };
-        spec = {
-          replicas = 1;
-          selector.matchLabels.app = "firecrawl-api";
-          template = {
-            metadata.labels.app = "firecrawl-api";
-            spec = {
-              terminationGracePeriodSeconds = 180;
-              containers = [
-                {
-                  name = "api";
-                  image = "ghcr.io/firecrawl/firecrawl:latest";
-                  imagePullPolicy = "Always";
-                  command = [ "node" ];
-                  args = [
-                    "--max-old-space-size=6144"
-                    "dist/src/index.js"
-                  ];
-                  ports = [
-                    {
-                      name = "http";
-                      containerPort = 3002;
-                    }
-                  ];
-                  env = [
-                    {
-                      name = "FLY_PROCESS_GROUP";
-                      value = "app";
-                    }
-                    {
-                      name = "PORT";
-                      value = "3002";
-                    }
-                  ];
-                  envFrom = [
-                    { configMapRef.name = "firecrawl-config"; }
-                    { secretRef.name = "firecrawl-secret"; }
-                  ];
-                  livenessProbe = {
-                    httpGet = {
-                      path = "/v0/health/liveness";
-                      port = "http";
-                    };
-                    initialDelaySeconds = 30;
-                    periodSeconds = 30;
-                    timeoutSeconds = 5;
-                    failureThreshold = 3;
-                  };
-                  readinessProbe = {
-                    httpGet = {
-                      path = "/v0/health/readiness";
-                      port = "http";
-                    };
-                    initialDelaySeconds = 30;
-                    periodSeconds = 30;
-                    timeoutSeconds = 5;
-                    failureThreshold = 3;
-                  };
-                }
-              ];
+      virtualisation.oci-containers.containers = containers;
+
+      systemd = {
+        services = {
+          podman-network-firecrawl = {
+            description = "Podman network for firecrawl";
+            serviceConfig = {
+              Type = "oneshot";
+              RemainAfterExit = true;
             };
+            path = [ config.virtualisation.podman.package ];
+            script = "podman network exists ${network} || podman network create ${network}";
           };
-        };
-      }
-      {
-        apiVersion = "v1";
-        kind = "Service";
-        metadata = {
-          name = "api";
-          namespace = "firecrawl";
-        };
-        spec = {
-          selector.app = "firecrawl-api";
-          ports = [
-            {
-              name = "http";
-              port = 3002;
-              targetPort = "http";
-            }
-          ];
-        };
-      }
-      {
-        apiVersion = "apps/v1";
-        kind = "Deployment";
-        metadata = {
-          name = "worker";
-          namespace = "firecrawl";
-          labels.app = "firecrawl-worker";
-        };
-        spec = {
-          replicas = 1;
-          selector.matchLabels.app = "firecrawl-worker";
-          template = {
-            metadata.labels.app = "firecrawl-worker";
-            spec = {
-              terminationGracePeriodSeconds = 60;
-              containers = [
-                {
-                  name = "worker";
-                  image = "ghcr.io/firecrawl/firecrawl:latest";
-                  imagePullPolicy = "Always";
-                  command = [ "node" ];
-                  args = [
-                    "--max-old-space-size=3072"
-                    "dist/src/services/queue-worker.js"
-                  ];
-                  ports = [
-                    {
-                      name = "http";
-                      containerPort = 3005;
-                    }
-                  ];
-                  env = [
-                    {
-                      name = "FLY_PROCESS_GROUP";
-                      value = "worker";
-                    }
-                    {
-                      name = "PORT";
-                      value = "3005";
-                    }
-                  ];
-                  envFrom = [
-                    { configMapRef.name = "firecrawl-config"; }
-                    { secretRef.name = "firecrawl-secret"; }
-                  ];
-                  livenessProbe = {
-                    httpGet = {
-                      path = "/liveness";
-                      port = "http";
-                    };
-                    initialDelaySeconds = 5;
-                    periodSeconds = 5;
-                    timeoutSeconds = 5;
-                    failureThreshold = 3;
-                  };
-                }
-              ];
-            };
-          };
-        };
-      }
-      {
-        apiVersion = "apps/v1";
-        kind = "Deployment";
-        metadata = {
-          name = "nuq-worker";
-          namespace = "firecrawl";
-          labels.app = "firecrawl-nuq-worker";
-        };
-        spec = {
-          replicas = 1;
-          selector.matchLabels.app = "firecrawl-nuq-worker";
-          template = {
-            metadata.labels.app = "firecrawl-nuq-worker";
-            spec = {
-              terminationGracePeriodSeconds = 60;
-              containers = [
-                {
-                  name = "nuq-worker";
-                  image = "ghcr.io/firecrawl/firecrawl:latest";
-                  imagePullPolicy = "Always";
-                  command = [ "node" ];
-                  args = [
-                    "--max-old-space-size=3072"
-                    "dist/src/services/worker/nuq-worker.js"
-                  ];
-                  ports = [
-                    {
-                      name = "http";
-                      containerPort = 3006;
-                    }
-                  ];
-                  env = [
-                    {
-                      name = "FLY_PROCESS_GROUP";
-                      value = "nuq-worker";
-                    }
-                    {
-                      name = "NUQ_WORKER_PORT";
-                      value = "3006";
-                    }
-                  ];
-                  envFrom = [
-                    { configMapRef.name = "firecrawl-config"; }
-                    { secretRef.name = "firecrawl-secret"; }
-                  ];
-                  livenessProbe = {
-                    httpGet = {
-                      path = "/health";
-                      port = "http";
-                    };
-                    initialDelaySeconds = 5;
-                    periodSeconds = 5;
-                    timeoutSeconds = 5;
-                    failureThreshold = 3;
-                  };
-                  readinessProbe = {
-                    httpGet = {
-                      path = "/health";
-                      port = "http";
-                    };
-                    initialDelaySeconds = 5;
-                    periodSeconds = 5;
-                    timeoutSeconds = 5;
-                    failureThreshold = 3;
-                  };
-                }
-              ];
-            };
-          };
-        };
-      }
-      {
-        apiVersion = "apps/v1";
-        kind = "Deployment";
-        metadata = {
-          name = "playwright-service";
-          namespace = "firecrawl";
-          labels.app = "playwright-service";
-        };
-        spec = {
-          replicas = 1;
-          selector.matchLabels.app = "playwright-service";
-          template = {
-            metadata.labels.app = "playwright-service";
-            spec.containers = [
-              {
-                name = "playwright-service";
-                image = "ghcr.io/firecrawl/playwright-service:latest";
-                imagePullPolicy = "Always";
-                ports = [
-                  {
-                    name = "http";
-                    containerPort = 3000;
-                  }
-                ];
-                envFrom = [ { configMapRef.name = "playwright-service-config"; } ];
-                livenessProbe = {
-                  httpGet = {
-                    path = "/health";
-                    port = "http";
-                  };
-                  initialDelaySeconds = 30;
-                  periodSeconds = 30;
-                  timeoutSeconds = 5;
-                  failureThreshold = 3;
-                };
-              }
-            ];
-          };
-        };
-      }
-      {
-        apiVersion = "v1";
-        kind = "Service";
-        metadata = {
-          name = "playwright-service";
-          namespace = "firecrawl";
-        };
-        spec = {
-          selector.app = "playwright-service";
-          ports = [
-            {
-              name = "http";
-              port = 3000;
-              targetPort = "http";
-            }
-          ];
-        };
-      }
-      {
-        apiVersion = "apps/v1";
-        kind = "Deployment";
-        metadata = {
-          name = "nuq-postgres";
-          namespace = "firecrawl";
-          labels.app = "nuq-postgres";
-        };
-        spec = {
-          replicas = 1;
-          selector.matchLabels.app = "nuq-postgres";
-          template = {
-            metadata.labels.app = "nuq-postgres";
-            spec = {
-              containers = [
-                {
-                  name = "nuq-postgres";
-                  image = "ghcr.io/firecrawl/nuq-postgres:latest";
-                  imagePullPolicy = "Always";
-                  ports = [
-                    {
-                      name = "postgres";
-                      containerPort = 5432;
-                    }
-                  ];
-                  env = [
-                    {
-                      name = "POSTGRES_USER";
-                      value = "postgres";
-                    }
-                    {
-                      name = "POSTGRES_DB";
-                      value = "postgres";
-                    }
-                    {
-                      name = "POSTGRES_PASSWORD";
-                      valueFrom.secretKeyRef = {
-                        name = "firecrawl-secret";
-                        key = "POSTGRES_PASSWORD";
-                      };
-                    }
-                  ];
-                  volumeMounts = [
-                    {
-                      name = "postgres-storage";
-                      mountPath = "/var/lib/postgresql/data";
-                    }
-                  ];
-                }
-              ];
-              volumes = [
-                {
-                  name = "postgres-storage";
-                  persistentVolumeClaim.claimName = "nuq-postgres-data";
-                }
-              ];
-            };
-          };
-        };
-      }
-      {
-        apiVersion = "v1";
-        kind = "Service";
-        metadata = {
-          name = "nuq-postgres";
-          namespace = "firecrawl";
-        };
-        spec = {
-          selector.app = "nuq-postgres";
-          ports = [
-            {
-              name = "postgres";
-              port = 5432;
-              targetPort = "postgres";
-            }
-          ];
-          type = "ClusterIP";
-        };
-      }
-      {
-        apiVersion = "apps/v1";
-        kind = "Deployment";
-        metadata = {
-          name = "redis";
-          namespace = "firecrawl";
-          labels.app = "redis";
-        };
-        spec = {
-          replicas = 1;
-          selector.matchLabels.app = "redis";
-          template = {
-            metadata.labels.app = "redis";
-            spec.containers = [
-              {
-                name = "redis";
-                image = "redis:alpine";
-                command = [
-                  "/bin/sh"
-                  "-c"
-                ];
-                args = [
-                  ''
-                    if [ -n "$REDIS_PASSWORD" ]; then
-                      exec redis-server --bind 0.0.0.0 --requirepass "$REDIS_PASSWORD"
-                    else
-                      exec redis-server --bind 0.0.0.0
-                    fi
-                  ''
-                ];
-                ports = [
-                  {
-                    name = "redis";
-                    containerPort = 6379;
-                  }
-                ];
-                env = [
-                  {
-                    name = "REDIS_PASSWORD";
-                    valueFrom.secretKeyRef = {
-                      name = "firecrawl-secret";
-                      key = "REDIS_PASSWORD";
-                      optional = true;
-                    };
-                  }
-                ];
-              }
-            ];
-          };
-        };
-      }
-      {
-        apiVersion = "v1";
-        kind = "Service";
-        metadata = {
-          name = "redis";
-          namespace = "firecrawl";
-        };
-        spec = {
-          selector.app = "redis";
-          ports = [
-            {
-              name = "redis";
-              port = 6379;
-              targetPort = "redis";
-            }
-          ];
-        };
-      }
-    ];
-  };
+        }
+        // lib.mapAttrs' (
+          name: _:
+          lib.nameValuePair "podman-${name}" {
+            requires = [ "podman-network-firecrawl.service" ];
+            after = [ "podman-network-firecrawl.service" ];
+          }
+        ) containers;
+      };
+
+      services.nginx.virtualHosts."firecrawl.zaza.haahr.me".locations."/".proxyPass =
+        "http://127.0.0.1:${toString apiPort}";
+    };
 }
