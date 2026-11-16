@@ -124,8 +124,6 @@
       ];
 
       home = {
-        sessionVariables.KUBECONFIG = "/etc/rancher/k3s/k3s.yaml";
-
         activation = {
           # Restart even when the unit text is unchanged, after config and units
           # have been installed, so a switch cannot leave an old process alive.
