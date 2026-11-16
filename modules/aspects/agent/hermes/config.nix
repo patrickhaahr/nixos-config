@@ -78,10 +78,6 @@
           };
           mcp_servers = {
             politikdata.url = "https://mcp.politikdata.dk/mcp";
-            executor = {
-              url = "https://executor.zaza.haahr.me/mcp";
-              headers.Authorization = "Bearer \${EXECUTOR_API_KEY}";
-            };
             # OpenHome MCP (shared home-control API).
             # ${OPENHOME_API_KEY} expands from the sops-owned .hermes/.env.
             openhome = {

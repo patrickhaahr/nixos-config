@@ -7,14 +7,9 @@
       self.modules.nixos.nix-ld
       self.modules.nixos.android-emulator
       self.modules.nixos.home-manager
-      self.modules.nixos.homelab-excalidraw
-      self.modules.nixos.homelab-executor
       self.modules.nixos.homelab-firecrawl
       # self.modules.nixos.homelab-grafana
-      # self.modules.nixos.homelab-honcho
       self.modules.nixos.homelab-librespeed
-      # self.modules.nixos.homelab-llamacpp
-      # self.modules.nixos.homelab-openconcho
       # self.modules.nixos.homelab-prometheus
       self.modules.nixos.homelab-searxng
       self.modules.nixos.homelab-traefik

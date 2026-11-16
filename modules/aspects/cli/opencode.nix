@@ -56,13 +56,7 @@ in
               effect = "allow";
             }
           ];
-          mcp.servers = {
-            executor = {
-              type = "remote";
-              url = "https://executor.zaza.haahr.me/mcp";
-            };
-          }
-          // lib.mapAttrs (_: server: {
+          mcp.servers = lib.mapAttrs (_: server: {
             type = "local";
             command = [ server.command ] ++ server.args;
             environment = server.env;
