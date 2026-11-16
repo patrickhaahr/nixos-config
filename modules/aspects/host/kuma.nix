@@ -17,7 +17,6 @@
         self.modules.nixos.nix-maintenance
         self.modules.nixos.identity-ph-laptop
         self.modules.nixos.helium
-        self.modules.nixos.handy
         self.modules.nixos.openssh
         self.modules.nixos.tailscale
         self.modules.nixos.cascadia-code

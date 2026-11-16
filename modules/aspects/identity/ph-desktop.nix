@@ -3,43 +3,32 @@ let
   userName = "ph";
 in
 {
-  flake.modules.nixos.identity-ph-desktop =
-    { lib, config, ... }:
-    let
-      handyConfigured = builtins.hasAttr "programs" config && builtins.hasAttr "handy" config.programs;
-    in
-    {
-      imports = [ self.modules.nixos.identity-ph-headless ];
+  flake.modules.nixos.identity-ph-desktop = {
+    imports = [ self.modules.nixos.identity-ph-headless ];
 
-      users.users.${userName}.extraGroups = [
-        "networkmanager"
-        "dialout"
-        "i2c"
-        "input"
-        "docker"
+    users.users.${userName}.extraGroups = [
+      "networkmanager"
+      "dialout"
+      "i2c"
+      "input"
+      "docker"
+    ];
+    home-manager.users.${userName} = {
+      imports = [
+        self.modules.homeManager.identity-ph-desktop
+        self.modules.homeManager.agent-browser
+        self.modules.homeManager.browse
+        #self.modules.homeManager.hacking
+        self.modules.homeManager.ghostty
+        self.modules.homeManager.cursor
+        self.modules.homeManager.noctalia
+        self.modules.homeManager.osu-lazer
+        self.modules.homeManager.steam-hm
+        self.modules.homeManager.typesafe
+        self.modules.homeManager.agent-hermes-desktop
       ];
-      home-manager.users.${userName} = {
-        imports = [
-          self.modules.homeManager.identity-ph-desktop
-          self.modules.homeManager.agent-browser
-          self.modules.homeManager.browse
-          #self.modules.homeManager.hacking
-          self.modules.homeManager.handy
-          self.modules.homeManager.ghostty
-          self.modules.homeManager.cursor
-          self.modules.homeManager.noctalia
-          self.modules.homeManager.osu-lazer
-          self.modules.homeManager.steam-hm
-          self.modules.homeManager.typesafe
-          self.modules.homeManager.agent-hermes-desktop
-        ];
-
-        services.handy = lib.mkIf (handyConfigured && config.programs.handy.autostart) {
-          enable = true;
-          package = config.programs.handy.package;
-        };
-      };
     };
+  };
 
   flake.modules.homeManager.identity-ph-desktop = _: {
     dconf.settings."org/gnome/desktop/interface" = {

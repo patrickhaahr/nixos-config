@@ -10,11 +10,6 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
     import-tree.url = "github:vic/import-tree";
 
-    lumen = {
-      url = "github:jnsahaj/lumen";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     herdr = {
       url = "github:herdrdev/herdr";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -34,11 +29,6 @@
 
     helium.url = "github:schembriaiden/helium-browser-nix-flake";
     helium.inputs.nixpkgs.follows = "nixpkgs";
-
-    handy = {
-      url = "github:cjpais/Handy";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
 
     artcraft = {
       url = "github:Hy4ri/artcraft-flake";

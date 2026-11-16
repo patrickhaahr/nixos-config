@@ -34,10 +34,8 @@
         self.modules.nixos.nix-ld
         self.modules.nixos.nix-features
         self.modules.nixos.nix-maintenance
-        #self.modules.nixos.homelab-llamacpp-nika
         self.modules.nixos.identity-ph-desktop
         self.modules.nixos.identity-ph-cliproxyapi
-        self.modules.nixos.handy
         self.modules.nixos.kaigen-studio
         self.modules.nixos.learnharness
         self.modules.nixos.nautilus
@@ -93,7 +91,6 @@
           enable = true;
           automations.enable = true;
         };
-        #llamacpp.nika.model = "qwen3-14b";
         greetd = {
           enable = true;
           settings.default_session = {

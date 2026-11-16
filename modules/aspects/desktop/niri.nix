@@ -13,11 +13,6 @@
           config.services.openhome.enable
         else
           false;
-      handyEnabled =
-        if builtins.hasAttr "programs" config && builtins.hasAttr "handy" config.programs then
-          config.programs.handy.enable
-        else
-          false;
       qqdictEnabled =
         if builtins.hasAttr "programs" config && builtins.hasAttr "qqdict" config.programs then
           config.programs.qqdict.enable
@@ -43,7 +38,6 @@
           enable = true;
           package = self.packages.${pkgs.stdenv.hostPlatform.system}.myNiri.override {
             inherit openhomeEnabled;
-            inherit handyEnabled;
             inherit qqdictEnabled;
             inherit heliumCommand;
             inherit hexCommand;
@@ -66,11 +60,6 @@
           openhomeEnabled =
             if builtins.hasAttr "services" config && builtins.hasAttr "openhome" config.services then
               config.services.openhome.enable
-            else
-              false;
-          handyEnabled =
-            if builtins.hasAttr "programs" config && builtins.hasAttr "handy" config.programs then
-              config.programs.handy.enable
             else
               false;
           qqdictEnabled =
@@ -147,7 +136,6 @@
       '';
       startupApps =
         {
-          handyEnabled ? false,
           heliumCommand ? null,
           minimalProfile ? false,
           qqdictEnabled ? false,
@@ -169,7 +157,6 @@
         {
           settings,
           openhomeEnabled ? false,
-          handyEnabled ? false,
           minimalProfile ? false,
           qqdictEnabled ? false,
         }:
@@ -179,7 +166,6 @@
       mkSettings =
         {
           openhomeEnabled,
-          handyEnabled ? false,
           heliumCommand ? null,
           hexCommand ? null,
           minimalProfile ? false,
@@ -194,7 +180,7 @@
           };
 
           spawn-at-startup = startupApps {
-            inherit handyEnabled heliumCommand minimalProfile;
+            inherit heliumCommand minimalProfile;
             inherit qqdictEnabled;
           };
           spawn-sh-at-startup = [
@@ -423,12 +409,6 @@
                       }
                     )
               )
-              // lib.optionalAttrs handyEnabled {
-                "Ctrl+Space" = _: {
-                  props.repeat = false;
-                  content.spawn-sh = "${lib.getExe' pkgs.procps "pkill"} -USR2 -n handy";
-                };
-              }
               // lib.optionalAttrs openhomeEnabled {
                 "Super+M".spawn = [
                   "openhome"
@@ -502,32 +482,6 @@
     in
     {
       checks = lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
-        niri-handy-startup-wiring = pkgs.runCommand "niri-handy-startup-wiring" { } ''
-          test '${builtins.toJSON self.nixosConfigurations.nika.config.home-manager.users.ph.services.handy.enable}' = 'false'
-
-          case '${
-            builtins.toJSON (startupApps {
-              handyEnabled = true;
-            })
-          }' in
-            *'"handy"'*)
-              exit 1
-              ;;
-            *) ;;
-          esac
-
-          touch "$out"
-        '';
-
-        niri-nika-enables-handy = pkgs.runCommand "niri-nika-enables-handy" { } ''
-          test '${builtins.toJSON self.nixosConfigurations.nika.config.programs.handy.enable}' = 'true'
-
-          test '${self.nixosConfigurations.nika.config.services.greetd.settings.default_session.command}' = \
-            '${self.nixosConfigurations.nika.config.programs.niri.package}/bin/niri-session'
-
-          touch "$out"
-        '';
-
         niri-openhome-bindings =
           let
             inherit ((mkSettings { openhomeEnabled = true; })) binds;
@@ -588,7 +542,6 @@
         myNiri = lib.makeOverridable (
           {
             openhomeEnabled ? false,
-            handyEnabled ? false,
             heliumCommand ? null,
             hexCommand ? null,
             minimalProfile ? false,
@@ -596,12 +549,10 @@
           }:
           mkNiri {
             inherit openhomeEnabled;
-            inherit handyEnabled;
             inherit qqdictEnabled;
             settings = mkSettings {
               inherit
                 openhomeEnabled
-                handyEnabled
                 heliumCommand
                 hexCommand
                 minimalProfile
@@ -613,7 +564,6 @@
         myNiriDp11080p = lib.makeOverridable (
           {
             openhomeEnabled ? false,
-            handyEnabled ? false,
             heliumCommand ? null,
             hexCommand ? null,
             qqdictEnabled ? false,
@@ -622,7 +572,6 @@
             baseSettings = mkSettings {
               inherit
                 openhomeEnabled
-                handyEnabled
                 heliumCommand
                 hexCommand
                 ;
@@ -631,7 +580,6 @@
           in
           mkNiri {
             inherit openhomeEnabled;
-            inherit handyEnabled;
             inherit qqdictEnabled;
             settings = baseSettings // {
               outputs = baseSettings.outputs // {
