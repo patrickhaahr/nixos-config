@@ -217,14 +217,20 @@
             fi
           '';
 
-          # Only the shared default profile owns the Signal adapter. Named profiles
-          # are targets of group routes, not independent Signal bots. A stale
-          # profile .env must not make the homelab profile receive DMs.
-          hermes-homelab-signal-isolation = lib.hm.dag.entryAfter [ "hermesAgentSetup" ] ''
-            profile_config="${config.home.homeDirectory}/.hermes/profiles/homelab/config.yaml"
-            if [ -f "$profile_config" ]; then
-              ${pkgs.perl}/bin/perl -0pi -e 's#(?m)^  signal:\\n    enabled: true$#  signal:\\n    enabled: false#' "$profile_config"
-            fi
+          # Only the shared default profile owns the Signal adapter; named
+          # profiles are targets of group routes. The gateway reads every
+          # profile's .env at boot, and a profile account signal-cli lacks
+          # fails its contact refresh and home-channel notice ("Specified
+          # account does not exist").
+          hermes-profile-signal-isolation = lib.hm.dag.entryAfter [ "hermesAgentSetup" ] ''
+            for profile_env in "${config.home.homeDirectory}/.hermes"/profiles/*/.env; do
+              [ -f "$profile_env" ] || continue
+              ${pkgs.gnugrep}/bin/grep -qE '^SIGNAL_(HTTP_URL|ACCOUNT)=' "$profile_env" || continue
+              tmp_env="$(mktemp "$profile_env.XXXXXX")"
+              ${pkgs.gnugrep}/bin/grep -vE '^SIGNAL_(HTTP_URL|ACCOUNT)=' "$profile_env" > "$tmp_env" || true
+              chmod 600 "$tmp_env"
+              mv "$tmp_env" "$profile_env"
+            done
           '';
         };
       };
