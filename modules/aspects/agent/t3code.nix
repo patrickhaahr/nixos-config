@@ -8,80 +8,10 @@
 
     home-manager.users.hermes.imports = [ self.modules.homeManager.t3code-service ];
 
-    # https://t3code.zaza.haahr.me: traefik (in k3s) proxies to the host
-    # process via the cni0 bridge IP, which the firewall already trusts. No
-    # selector, so the EndpointSlice is the only backend.
-    services.k3s.manifests.t3code.content = [
-      {
-        apiVersion = "v1";
-        kind = "Namespace";
-        metadata.name = "t3code";
-      }
-      {
-        apiVersion = "v1";
-        kind = "Service";
-        metadata = {
-          name = "t3code";
-          namespace = "t3code";
-        };
-        spec.ports = [
-          {
-            name = "http";
-            port = 3773;
-            targetPort = 3773;
-          }
-        ];
-      }
-      {
-        apiVersion = "discovery.k8s.io/v1";
-        kind = "EndpointSlice";
-        metadata = {
-          name = "t3code-host";
-          namespace = "t3code";
-          labels."kubernetes.io/service-name" = "t3code";
-        };
-        addressType = "IPv4";
-        endpoints = [ { addresses = [ "10.42.0.1" ]; } ];
-        ports = [
-          {
-            name = "http";
-            port = 3773;
-            protocol = "TCP";
-          }
-        ];
-      }
-      {
-        apiVersion = "networking.k8s.io/v1";
-        kind = "Ingress";
-        metadata = {
-          name = "t3code";
-          namespace = "t3code";
-          annotations = {
-            "traefik.ingress.kubernetes.io/router.entrypoints" = "websecure";
-            "traefik.ingress.kubernetes.io/router.tls" = "true";
-            "traefik.ingress.kubernetes.io/router.tls.certresolver" = "cloudflare";
-          };
-        };
-        spec = {
-          rules = [
-            {
-              host = "t3code.zaza.haahr.me";
-              http.paths = [
-                {
-                  path = "/";
-                  pathType = "Prefix";
-                  backend.service = {
-                    name = "t3code";
-                    port.name = "http";
-                  };
-                }
-              ];
-            }
-          ];
-          tls = [ { hosts = [ "t3code.zaza.haahr.me" ]; } ];
-        };
-      }
-    ];
+    services.nginx.virtualHosts."t3code.zaza.haahr.me".locations."/" = {
+      proxyPass = "http://127.0.0.1:3773";
+      proxyWebsockets = true;
+    };
   };
 
   flake.modules.homeManager.t3code-service =
@@ -104,10 +34,8 @@
             "T3CODE_TELEMETRY_ENABLED=false"
           ];
           # Tailscale Serve stays off: `--tailscale-serve` binds port 443 on the
-          # tailnet IP and breaks traefik's TLS for *.zaza.haahr.me. Listening on
-          # all interfaces is needed so traefik can reach it via cni0; the firewall
-          # keeps 3773 closed on the LAN and tailnet.
-          ExecStart = "${pkgs.t3code}/bin/t3 serve --no-browser --mode web --host 0.0.0.0 --port 3773";
+          # tailnet IP, where nginx terminates TLS for *.zaza.haahr.me.
+          ExecStart = "${pkgs.t3code}/bin/t3 serve --no-browser --mode web --host 127.0.0.1 --port 3773";
           Restart = "on-failure";
           RestartSec = 5;
         };

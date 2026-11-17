@@ -78,10 +78,6 @@
           };
           mcp_servers = {
             politikdata.url = "https://mcp.politikdata.dk/mcp";
-            executor = {
-              url = "https://executor.zaza.haahr.me/mcp";
-              headers.Authorization = "Bearer \${EXECUTOR_API_KEY}";
-            };
             # OpenHome MCP (shared home-control API).
             # ${OPENHOME_API_KEY} expands from the sops-owned .hermes/.env.
             openhome = {
@@ -128,8 +124,6 @@
       ];
 
       home = {
-        sessionVariables.KUBECONFIG = "/etc/rancher/k3s/k3s.yaml";
-
         activation = {
           # Restart even when the unit text is unchanged, after config and units
           # have been installed, so a switch cannot leave an old process alive.
@@ -286,7 +280,7 @@
           ];
         backend = {
           mode = "dashboard";
-          host = "0.0.0.0";
+          host = "127.0.0.1";
           port = 9119;
         };
 
@@ -334,6 +328,9 @@
             # codes or decline bubbles to unknown Signal users.
             unauthorized_dm_behavior = "ignore";
           };
+          # Bound to loopback behind nginx; the backend accepts only the bound
+          # host or this public one.
+          dashboard.public_url = "https://hermes.zaza.haahr.me";
           dashboard.basic_auth = {
             username = "ph";
             password_hash = "scrypt$16384$8$1$M9G8Iaw1h0rCto5u539CDA==$Dig/ENDaIvTR2LUMb69z6FYkyV3WzS9iZKgtHQgx/B4=";

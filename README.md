@@ -42,7 +42,7 @@ Desktop host burns at 5.7 GHz — sixteen threads drumming the rhythm of liberat
 
 ### 🌧️ `zaza` — The Rain Goddess
 
-The headless k3s homelab host. Where the sun does not reach, the rain brings life. Zaza is the cloud beneath the cloud — running Kubernetes, hosting services, and serving the home from a quiet corner. See the dedicated **Homelab** section below for the full list of rain-borne services.
+The headless homelab host. Where the sun does not reach, the rain brings life. Zaza is the cloud beneath the cloud — running native NixOS services, and serving the home from a quiet corner. See the dedicated **Homelab** section below for the full list of rain-borne services.
 
 ### 👁️ `imu` — The King of the World
 
@@ -58,13 +58,11 @@ Laptop host: Niri, Helium, Ghostty, the bare dendrite needed to survive on batte
 
 ## Homelab Services
 
-- **k3s** — the Kubernetes raincloud.
-- **Traefik** — the divine gateway; all traffic flows through the Rain God's river.
+- **nginx** — the divine gateway; all traffic flows through the Rain God's river.
 - **Hermes** — the messenger. Nous Research's agent gateway and dashboard, wired through the homelab to think and speak.
 - **SearXNG** — a private, meta-search engine tuned to the user's will.
-- **Excalidraw** — the whiteboard of the gods, for sketching ideas in the clouds.
 - **Firecrawl** — turn the web into data for the agents.
-- **Grafana** — watching the storm from above.
+- **Grafana + Loki** — watching the storm from above.
 - **LibreSpeed** — measure the rain's velocity.
 - **Prometheus** — the all-seeing metrics collector.
 - **Wazuh** — security watching the watchers.
@@ -118,7 +116,7 @@ Currently disarmed on `nika`, but one uncomment away.
 | **Desktop tools** | Handy, Nautilus |
 | **Communication** | Signal |
 | **Gaming/media** | Steam, Sunshine, Spotify |
-| **Orchestration** | k3s + Traefik |
+| **Homelab** | native NixOS services, podman, nginx |
 
 ---
 

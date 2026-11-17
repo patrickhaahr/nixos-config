@@ -9,7 +9,7 @@ Use the existing Hermes profile roster as the service map. Keep the default prof
 
 ## Routing map
 
-- `homelab`: zaza, nika, pi, router, NixOS, k3s, Docker, networking, and self-hosted services
+- `homelab`: zaza, nika, pi, router, NixOS, podman, Docker, networking, and self-hosted services
 - `coach`: fitness, strength training, health habits, and coaching conversations
 - `household`: household operations and smart-home work
 

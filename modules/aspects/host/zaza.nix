@@ -7,25 +7,20 @@
       self.modules.nixos.nix-ld
       self.modules.nixos.android-emulator
       self.modules.nixos.home-manager
-      self.modules.nixos.homelab-excalidraw
-      self.modules.nixos.homelab-executor
       self.modules.nixos.homelab-firecrawl
-      # self.modules.nixos.homelab-grafana
-      # self.modules.nixos.homelab-honcho
+      self.modules.nixos.homelab-grafana
       self.modules.nixos.homelab-librespeed
-      # self.modules.nixos.homelab-llamacpp
-      # self.modules.nixos.homelab-openconcho
-      # self.modules.nixos.homelab-prometheus
+      self.modules.nixos.homelab-prometheus
       self.modules.nixos.homelab-searxng
-      self.modules.nixos.homelab-traefik
-      # self.modules.nixos.homelab-wazuh
+      self.modules.nixos.homelab-proxy
+      self.modules.nixos.homelab-wazuh
       self.modules.nixos.identity-ph-headless
       self.modules.nixos.agent-hermes-host
       self.modules.nixos.openhome
       self.modules.nixos.kaigen-studio
-      self.modules.nixos.k3s
-      self.modules.nixos.k3s-nvidia
+      self.modules.nixos.nvidia
       self.modules.nixos.nix-maintenance
+      self.modules.nixos.binary-cache-server
       self.modules.nixos.openssh
       self.modules.nixos.sops
       self.modules.nixos.tailscale
@@ -40,8 +35,6 @@
     networking = {
       hostName = "zaza";
       networkmanager.enable = true;
-      # Hermes dashboard, reachable only over tailscale.
-      firewall.interfaces."tailscale0".allowedTCPPorts = [ 9119 ];
     };
     users.users.ph.openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIA9QHax4U5wGvtHs+J12lX6VwSfRAboJCAXVuUiNnM0+ nika-to-zaza"

@@ -34,6 +34,7 @@
         self.modules.nixos.nix-ld
         self.modules.nixos.nix-features
         self.modules.nixos.nix-maintenance
+        self.modules.nixos.binary-cache
         self.modules.nixos.identity-ph-desktop
         self.modules.nixos.identity-ph-cliproxyapi
         self.modules.nixos.kaigen-studio

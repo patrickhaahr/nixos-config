@@ -16,6 +16,7 @@
         self.modules.nixos.home-manager
         self.modules.nixos.nix-features
         self.modules.nixos.nix-maintenance
+        self.modules.nixos.binary-cache
         self.modules.nixos.identity-ph-laptop
         self.modules.nixos.helium
         self.modules.nixos.openssh
