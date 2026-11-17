@@ -19,6 +19,14 @@ _: {
       };
 
       config = {
+        # Digest bumps leave the previous image behind; drop every image no
+        # container uses. Volumes are untouched.
+        virtualisation.podman.autoPrune = {
+          enable = true;
+          dates = "weekly";
+          flags = [ "--all" ];
+        };
+
         virtualisation.oci-containers.containers = lib.mkMerge (
           lib.mapAttrsToList (
             network: names:
@@ -34,10 +42,9 @@ _: {
             {
               "podman-network-${network}" = {
                 description = "Podman network ${network}";
-                serviceConfig = {
-                  Type = "oneshot";
-                  RemainAfterExit = true;
-                };
+                # No RemainAfterExit: autoPrune can delete a network while its
+                # containers are down, so every container start re-checks it.
+                serviceConfig.Type = "oneshot";
                 path = [ config.virtualisation.podman.package ];
                 script = "podman network exists ${network} || podman network create ${network}";
               };
