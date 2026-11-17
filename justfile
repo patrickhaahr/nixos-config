@@ -127,6 +127,7 @@ update *inputs:
     just update-osu
     just update-kaigen
     just update-learnharness
+    just update-wazuh
     just update-images
 
 # Re-resolve every container image pinned as "repo:tag@sha256:..." under
@@ -147,6 +148,32 @@ update-images:
       grep -rlF "$pin" modules | xargs sed -i "s|$ref@$old|$ref@$new|g"
       echo "$ref ${old:7:12} -> ${new:7:12}"
     done
+
+# Bump Wazuh to the latest wazuh-docker release: rewrites the version, the
+# config source hash and the image tags in homelab/wazuh.nix, then resolves
+# the new tags to digests.
+[group('dev')]
+[no-exit-message]
+update-wazuh:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    aspect="{{ justfile_directory() }}/modules/aspects/homelab/wazuh.nix"
+    latest="$(gh api repos/wazuh/wazuh-docker/releases/latest --jq .tag_name)"
+    [[ "$latest" =~ ^v[0-9]+(\.[0-9]+)+$ ]] || { echo "cannot read latest wazuh-docker release" >&2; exit 1; }
+    ver="${latest#v}"
+    current="$(sed -n 's/^[[:space:]]*version = "\(.*\)";$/\1/p' "$aspect")"
+    if [[ "$ver" == "$current" ]]; then
+      echo "wazuh $current already latest"
+      exit 0
+    fi
+    hash="$(nix flake prefetch --json "github:wazuh/wazuh-docker/$latest" | jq -r .hash)"
+    sed -i -E \
+      -e "s|^([[:space:]]*version = )\"[^\"]*\";|\\1\"$ver\";|" \
+      -e "s|^([[:space:]]*hash = )\"sha256-[^\"]*\";|\\1\"$hash\";|" \
+      -e "s#(docker.io/wazuh/wazuh-(manager|indexer|dashboard)):$current@#\\1:$ver@#" \
+      "$aspect"
+    just update-images
+    echo "wazuh $current -> $ver"
 
 # Update AI packages (Codex, Claude, OpenCode, T3 Code, Pi, Hermes, and more).
 [group('dev')]

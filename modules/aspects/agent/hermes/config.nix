@@ -280,7 +280,7 @@
           ];
         backend = {
           mode = "dashboard";
-          host = "0.0.0.0";
+          host = "127.0.0.1";
           port = 9119;
         };
 
@@ -328,6 +328,9 @@
             # codes or decline bubbles to unknown Signal users.
             unauthorized_dm_behavior = "ignore";
           };
+          # Bound to loopback behind nginx; the backend accepts only the bound
+          # host or this public one.
+          dashboard.public_url = "https://hermes.zaza.haahr.me";
           dashboard.basic_auth = {
             username = "ph";
             password_hash = "scrypt$16384$8$1$M9G8Iaw1h0rCto5u539CDA==$Dig/ENDaIvTR2LUMb69z6FYkyV3WzS9iZKgtHQgx/B4=";

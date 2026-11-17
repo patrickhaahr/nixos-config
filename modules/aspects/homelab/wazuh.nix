@@ -11,6 +11,7 @@
       ...
     }:
     let
+      # `just update-wazuh` bumps this, the image tags and the source hash.
       version = "4.14.10";
       upstream = pkgs.fetchFromGitHub {
         owner = "wazuh";
@@ -19,7 +20,6 @@
         hash = "sha256-dC65ldz6N5AQgrcyKq/ujhlb+t3LjvyJdZoWeqhuF1Y=";
       };
       single = "${upstream}/single-node/config";
-      image = name: digest: "docker.io/wazuh/${name}:${version}@sha256:${digest}";
 
       stateDir = "/var/lib/wazuh";
       certs = "${stateDir}/certs";
@@ -52,7 +52,7 @@
 
       containers = {
         wazuh-indexer = {
-          image = image "wazuh-indexer" "1d2aeadb9de88c6d17ce12030606425deca5a210cdf5c87008843da38eb629ea";
+          image = "docker.io/wazuh/wazuh-indexer:4.14.10@sha256:1d2aeadb9de88c6d17ce12030606425deca5a210cdf5c87008843da38eb629ea";
           environment.OPENSEARCH_JAVA_OPTS = "-Xms1g -Xmx1g";
           volumes =
             let
@@ -75,7 +75,7 @@
         };
 
         wazuh-manager = common // {
-          image = image "wazuh-manager" "eabfa7ee4e63acb51c2130fa0583e30f843d030b091cf45a4fbd93d78fa21517";
+          image = "docker.io/wazuh/wazuh-manager:4.14.10@sha256:eabfa7ee4e63acb51c2130fa0583e30f843d030b091cf45a4fbd93d78fa21517";
           ports = [
             "1514:1514"
             "1515:1515"
@@ -116,7 +116,7 @@
         };
 
         wazuh-dashboard = common // {
-          image = image "wazuh-dashboard" "4d48be7210a291c00a2bd148cbd8bd61a25876e947b81790fd03f7d2aabda95a";
+          image = "docker.io/wazuh/wazuh-dashboard:4.14.10@sha256:4d48be7210a291c00a2bd148cbd8bd61a25876e947b81790fd03f7d2aabda95a";
           dependsOn = [
             "wazuh-indexer"
             "wazuh-manager"

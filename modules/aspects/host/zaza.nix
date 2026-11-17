@@ -35,8 +35,6 @@
     networking = {
       hostName = "zaza";
       networkmanager.enable = true;
-      # Hermes dashboard, reachable only over tailscale.
-      firewall.interfaces."tailscale0".allowedTCPPorts = [ 9119 ];
     };
     users.users.ph.openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIA9QHax4U5wGvtHs+J12lX6VwSfRAboJCAXVuUiNnM0+ nika-to-zaza"
