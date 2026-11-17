@@ -13,7 +13,7 @@
 - Keep host composition thin. `modules/aspects/host/<host>.nix` selects aspects and holds no feature details.
 - Put user-specific wiring in `modules/aspects/identity/<user>.nix`. Tools every agent user needs go in the `agent-tools` aspect.
 - Put WM-specific logic in `modules/aspects/desktop/<wm>.nix` (`niri` today). Shared desktop tools stay out of the WM module.
-- zaza serves a signed harmonia binary cache over tailscale (`binary-cache-server`); every other host imports `binary-cache` to substitute from it.
+- zaza serves a signed harmonia binary cache over tailscale (`binary-cache-server`); every other host imports `binary-cache` to substitute from it. nika (`binary-cache-builder`) signs what it builds, every host trusts that key, and `just deploy` builds on nika and pushes each closure to zaza.
 - zaza web services declare `services.nginx.virtualHosts."<name>.zaza.haahr.me"`; `homelab-proxy` adds the wildcard cert and HTTPS. Prefer native NixOS service modules; fall back to `virtualisation.oci-containers` (podman) only for software nixpkgs lacks.
 - Podman containers join networks through `homelab.podmanNetworks` (import `homelab-podman`) and pin images as `repo:tag@sha256:…`; `just update-images` re-resolves every such tag.
 - Hermes hosts compose through the `agent-hermes-host` seam in `modules/aspects/agent/hermes/host.nix`.
