@@ -81,6 +81,16 @@ _: {
             TERM = "xterm-256color";
           };
         };
+        "vivi" = {
+          HostName = "10.0.10.203";
+          User = "ph";
+          IdentityAgent = "none";
+          IdentityFile = "~/.ssh/id_ed25519_pi";
+          IdentitiesOnly = true;
+          SetEnv = {
+            TERM = "xterm-256color";
+          };
+        };
         "hermes" = {
           HostName = "zaza";
           User = "hermes";

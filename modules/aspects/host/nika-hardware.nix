@@ -1,4 +1,5 @@
-_: {
+{ inputs, ... }:
+{
   flake.modules.nixos.nika-hardware =
     {
       config,
@@ -10,6 +11,9 @@ _: {
     {
       imports = [
         (modulesPath + "/installer/scan/not-detected.nix")
+        # Pi packages (vivi) are not on cache.nixos.org; rebuilding them under
+        # binfmt emulation is slow and trips stale upstream source hashes.
+        inputs.nixos-raspberrypi.nixosModules.trusted-nix-caches
       ];
       boot = {
         binfmt.emulatedSystems = [ "aarch64-linux" ];
