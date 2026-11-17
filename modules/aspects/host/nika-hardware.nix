@@ -12,6 +12,7 @@ _: {
         (modulesPath + "/installer/scan/not-detected.nix")
       ];
       boot = {
+        binfmt.emulatedSystems = [ "aarch64-linux" ];
         initrd = {
           availableKernelModules = [
             "nvme"
