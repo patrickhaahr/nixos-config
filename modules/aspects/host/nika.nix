@@ -36,6 +36,7 @@
         self.modules.nixos.nix-maintenance
         self.modules.nixos.binary-cache
         self.modules.nixos.binary-cache-builder
+        self.modules.nixos.canary
         self.modules.nixos.identity-ph-desktop
         self.modules.nixos.identity-ph-cliproxyapi
         self.modules.nixos.kaigen-studio
@@ -129,6 +130,10 @@
         powerOnBoot = true;
       };
       networking.hostName = "nika";
+      canary = {
+        user = "ph";
+        sopsFile = ../../../secrets/nika.yaml;
+      };
       #networking.extraHosts = ''    '';
       home-manager.users.ph.imports = [
         self.modules.homeManager.spicetify

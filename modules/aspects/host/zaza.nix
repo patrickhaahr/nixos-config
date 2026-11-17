@@ -21,6 +21,7 @@
       self.modules.nixos.nvidia
       self.modules.nixos.nix-maintenance
       self.modules.nixos.binary-cache-server
+      self.modules.nixos.canary
       self.modules.nixos.openssh
       self.modules.nixos.sops
       self.modules.nixos.tailscale
@@ -43,6 +44,11 @@
     # OpenHome CLI for Hermes; the Nika-only speaker lifecycle automations
     # stay disabled.
     services.openhome.enable = true;
+    # Agents read untrusted input; a prompt-injected one tries stolen keys.
+    canary = {
+      user = "hermes";
+      sopsFile = ../../../secrets/zaza.yaml;
+    };
     time.timeZone = "Europe/Copenhagen";
     i18n.defaultLocale = "en_DK.UTF-8";
     console.keyMap = "dk-latin1";

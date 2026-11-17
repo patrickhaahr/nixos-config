@@ -48,7 +48,7 @@ in
 
         sops = {
           age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
-          secrets.nix_signing_key.sopsFile = ../../../secrets/nika-host.yaml;
+          secrets.nix_signing_key.sopsFile = ../../../secrets/nika.yaml;
         };
 
         nix.settings.secret-key-files = [ config.sops.secrets.nix_signing_key.path ];
