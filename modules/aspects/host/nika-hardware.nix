@@ -27,7 +27,11 @@ _: {
           luks.devices."luks-1dbf142a-5b0c-430b-a372-846e8c50f8d7".device =
             "/dev/disk/by-uuid/1dbf142a-5b0c-430b-a372-846e8c50f8d7";
         };
-        kernelModules = [ "kvm-amd" ];
+        # sd_mod is not auto-loaded for USB card readers on this kernel
+        kernelModules = [
+          "kvm-amd"
+          "sd_mod"
+        ];
         extraModulePackages = [ ];
       };
       fileSystems."/" = {
