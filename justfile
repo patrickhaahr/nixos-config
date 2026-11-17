@@ -7,6 +7,7 @@ rebuild := "nixos-rebuild"
 system-args := "--elevate run0 --no-reexec" + if env('WSL_DISTRO_NAME', '') != '' { " --ask-elevate-password" } else { "" }
 elevate := env('ELEVATE', 'doas')
 deploy-elevate := env('DEPLOY_ELEVATE', 'run0')
+cache-host := env('CACHE_HOST', 'zaza')
 
 [private]
 default:
@@ -44,13 +45,16 @@ rollback *args:
       {{ system-args }} \
       {{ args }}
 
+# Builds on this machine unless BUILD_HOST is set, then pushes the system
+# closure to the zaza binary cache so other hosts substitute it.
 [group('rebuild')]
 [no-exit-message]
 deploy host target=host action="switch" *args:
     #!/usr/bin/env bash
     set -euo pipefail
 
-    build_host="${BUILD_HOST:-{{ target }}}"
+    build_args=()
+    [[ -n "${BUILD_HOST:-}" ]] && build_args=(--build-host "$BUILD_HOST")
     ssh_args=()
     if [[ -f "$HOME/.ssh/id_ed25519_{{ target }}" ]]; then
       ssh_args=(-i "$HOME/.ssh/id_ed25519_{{ target }}" -o IdentitiesOnly=yes)
@@ -61,7 +65,7 @@ deploy host target=host action="switch" *args:
     nixos-rebuild "{{ action }}" \
       --flake {{ flake }}#{{ host }} \
       --target-host {{ target }} \
-      --build-host "$build_host" \
+      "${build_args[@]}" \
       --use-substitutes \
       --elevate {{ deploy-elevate }} \
       --ask-elevate-password \
@@ -72,6 +76,12 @@ deploy host target=host action="switch" *args:
       echo
       echo "===== {{ target }} ({{ action }}) ====="
       ssh "${ssh_args[@]}" {{ target }} TERM=xterm-256color nix store diff-closures "$before" "$after" || true
+    fi
+
+    if [[ -z "${BUILD_HOST:-}" && "{{ target }}" != "{{ cache-host }}" ]]; then
+      out="$(nix build --no-link --print-out-paths {{ flake }}#nixosConfigurations.{{ host }}.config.system.build.toplevel)"
+      NIX_SSHOPTS= nix copy --to "ssh-ng://{{ cache-host }}" "$out"
+      echo "pushed {{ host }} closure to {{ cache-host }}"
     fi
 
 # ------------------------------------------------------------------------------

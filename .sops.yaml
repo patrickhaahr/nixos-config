@@ -22,6 +22,12 @@ creation_rules:
           - *nika
           - *nika-host
           - *zaza
+  # nika's NixOS secrets: decryptable by ph and nika's host key only.
+  - path_regex: secrets/nika-host\.yaml$
+    key_groups:
+      - age:
+          - *nika
+          - *nika-host
   - path_regex: secrets/.*\.yaml$
     key_groups:
       - age:
