@@ -1,4 +1,5 @@
-_: {
+{ inputs, ... }:
+{
   flake.modules.nixos.nika-hardware =
     {
       config,
@@ -10,8 +11,12 @@ _: {
     {
       imports = [
         (modulesPath + "/installer/scan/not-detected.nix")
+        # Pi packages (vivi) are not on cache.nixos.org; rebuilding them under
+        # binfmt emulation is slow and trips stale upstream source hashes.
+        inputs.nixos-raspberrypi.nixosModules.trusted-nix-caches
       ];
       boot = {
+        binfmt.emulatedSystems = [ "aarch64-linux" ];
         initrd = {
           availableKernelModules = [
             "nvme"
@@ -26,7 +31,11 @@ _: {
           luks.devices."luks-1dbf142a-5b0c-430b-a372-846e8c50f8d7".device =
             "/dev/disk/by-uuid/1dbf142a-5b0c-430b-a372-846e8c50f8d7";
         };
-        kernelModules = [ "kvm-amd" ];
+        # sd_mod is not auto-loaded for USB card readers on this kernel
+        kernelModules = [
+          "kvm-amd"
+          "sd_mod"
+        ];
         extraModulePackages = [ ];
       };
       fileSystems."/" = {

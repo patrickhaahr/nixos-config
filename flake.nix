@@ -45,6 +45,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    nixos-raspberrypi.url = "github:nvmd/nixos-raspberrypi/4a675b0cf703b66ba515138472cc6fef1e5fbca4";
+
     nixos-wsl = {
       url = "github:nix-community/NixOS-WSL/main";
       inputs.nixpkgs.follows = "nixpkgs";
