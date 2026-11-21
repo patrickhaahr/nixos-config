@@ -129,7 +129,7 @@
                 "hermes-signal-coach-route"
                 "hermes-live-voice-plugin"
                 "hermes-profile-openhome-key"
-                "hermes-homelab-signal-isolation"
+                "hermes-profile-signal-isolation"
               ]
               ''
                 if [ -S "/run/user/$(id -u)/bus" ]; then
