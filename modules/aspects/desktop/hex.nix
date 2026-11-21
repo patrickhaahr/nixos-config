@@ -1,9 +1,38 @@
-{ inputs, ... }:
+{ self, inputs, ... }:
 {
-  flake.modules.nixos.hex = {
-    imports = [ inputs.hex.nixosModules.default ];
-    programs.hex.enable = true;
-  };
+  flake.modules.nixos.hex =
+    { config, lib, ... }:
+    let
+      hex = lib.getExe config.programs.hex.package;
+    in
+    {
+      imports = [
+        inputs.hex.nixosModules.default
+        self.modules.nixos.desktop-session
+      ];
+      programs.hex.enable = true;
+
+      desktop.binds = {
+        "F9" = {
+          command = [
+            hex
+            "annotate"
+            "toggle"
+          ];
+          repeat = false;
+          title = "Toggle Hex Annotate";
+        };
+        "Ctrl+Alt" = {
+          command = [
+            hex
+            "dictation"
+            "toggle"
+          ];
+          repeat = false;
+          title = "Toggle Hex dictation (Ctrl+Alt)";
+        };
+      };
+    };
 
   flake.modules.homeManager.hex =
     { osConfig, ... }:

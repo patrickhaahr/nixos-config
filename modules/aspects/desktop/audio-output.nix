@@ -1,4 +1,5 @@
-_: {
+{ self, ... }:
+{
   flake.modules.nixos.audio-output =
     {
       lib,
@@ -10,6 +11,8 @@ _: {
       cfg = config.services.audio-output;
     in
     {
+      imports = [ self.modules.nixos.desktop-session ];
+
       options.services.audio-output = {
         enable = lib.mkEnableOption "shared audio output toggle";
         headphones = lib.mkOption {
@@ -23,6 +26,8 @@ _: {
       };
 
       config = lib.mkIf cfg.enable {
+        desktop.binds."Super+O".command = [ "toggle-audio-output" ];
+
         environment.systemPackages = [
           (pkgs.writeShellScriptBin "toggle-audio-output" ''
             wpctl_status() {

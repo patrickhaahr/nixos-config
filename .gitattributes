@@ -1,2 +1,1 @@
-modules/aspects/desktop/niri.nix -file-size-guard
 tools/comment-baseline -file-size-guard

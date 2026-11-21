@@ -1,4 +1,26 @@
-_: {
+{ self, ... }:
+{
+  flake.modules.nixos.ghostty =
+    { lib, pkgs, ... }:
+    let
+      newWindow = "${lib.getExe pkgs.ghostty} +new-window";
+    in
+    {
+      imports = [ self.modules.nixos.desktop-session ];
+
+      desktop = {
+        binds."Mod+Return".command = newWindow;
+        startup = [ { command = newWindow; } ];
+        windowRules = [
+          {
+            appId = "^com\\.mitchellh\\.ghostty$";
+            atStartup = true;
+            workspace = "1";
+          }
+        ];
+      };
+    };
+
   flake.modules.homeManager.ghostty = { config, ... }: {
     home.file.".config/ghostty/gtk.css".text = ''
       toolbarview > .bottom-bar,

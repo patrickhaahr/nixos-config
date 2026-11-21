@@ -21,131 +21,162 @@ let
   };
 in
 {
-  flake.modules.homeManager.noctalia-wallpapers =
-    { pkgs, ... }:
-    {
-      home.file.".local/share/noctalia/wallpapers".source = pkgs.linkFarm "wallhaven-wallpapers" (
-        builtins.attrValues (
-          builtins.mapAttrs (file: hash: {
-            name = "wallhaven-${file}";
-            path = pkgs.fetchurl {
-              url = "https://w.wallhaven.cc/full/${builtins.substring 0 2 file}/wallhaven-${file}";
-              inherit hash;
+  flake.modules = {
+    homeManager.noctalia-wallpapers =
+      { pkgs, ... }:
+      {
+        home.file.".local/share/noctalia/wallpapers".source = pkgs.linkFarm "wallhaven-wallpapers" (
+          builtins.attrValues (
+            builtins.mapAttrs (file: hash: {
+              name = "wallhaven-${file}";
+              path = pkgs.fetchurl {
+                url = "https://w.wallhaven.cc/full/${builtins.substring 0 2 file}/wallhaven-${file}";
+                inherit hash;
+              };
+            }) wallhavenIds
+          )
+        );
+      };
+
+    nixos.noctalia =
+      { lib, pkgs, ... }:
+      let
+        noctalia = lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.noctalia;
+        msg = args: "${noctalia} msg ${args}";
+      in
+      {
+        imports = [ self.modules.nixos.desktop-session ];
+
+        hardware.i2c.enable = true;
+
+        desktop = {
+          startup = [
+            { command = [ noctalia ]; }
+            { command = "sleep 5 && ${msg "wallpaper-random"}"; }
+          ];
+          binds = lib.mapAttrs (_: args: { command = msg args; }) {
+            "Mod+Space" = "panel-toggle launcher";
+            "Mod+S" = "panel-toggle control-center";
+            "Mod+F9" = "brightness-down";
+            "Mod+Shift+F9" = "brightness-up";
+            "Mod+Alt+F10" = "nightlight-force-toggle";
+            "Super+W" = "wallpaper-random";
+            "Super+Shift+W" = "panel-toggle wallpaper";
+          };
+        };
+      };
+
+    homeManager.noctalia = { pkgs, ... }: {
+      imports = [ self.modules.homeManager.noctalia-wallpapers ];
+
+      programs.noctalia = {
+        enable = true;
+        package = inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default;
+
+        settings = {
+          shell = {
+            avatar_path = "${../../../assets/nika.jpeg}";
+            clipboard_enabled = false;
+            panel = {
+              launcher_position = "center";
+              control_center_placement = "attached";
             };
-          }) wallhavenIds
-        )
-      );
-    };
-
-  flake.modules.homeManager.noctalia = { pkgs, ... }: {
-    imports = [ self.modules.homeManager.noctalia-wallpapers ];
-
-    programs.noctalia = {
-      enable = true;
-      package = inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default;
-
-      settings = {
-        shell = {
-          avatar_path = "${../../../assets/nika.jpeg}";
-          clipboard_enabled = false;
-          panel = {
-            launcher_position = "center";
-            control_center_placement = "attached";
           };
-        };
-        theme = {
-          mode = "dark";
-          source = "wallpaper";
-          builtin = "Gruvbox";
-          templates = {
-            enable_builtin_templates = false;
-            enable_community_templates = false;
+          theme = {
+            mode = "dark";
+            source = "wallpaper";
+            builtin = "Gruvbox";
+            templates = {
+              enable_builtin_templates = false;
+              enable_community_templates = false;
+            };
           };
-        };
-        bar.main = {
-          position = "top";
-          thickness = 30;
-          margin_ends = 0;
-          margin_edge = 0;
-          radius = 0;
-          shadow = false;
-          capsule = false;
-          reserve_space = true;
-          start = [
-            "control-center"
-            "workspaces"
-          ];
-          center = [ ];
-          end = [
-            "notifications"
-            "power_profile"
-            "volume"
-            "battery"
-            "microphone"
-            "keyboard_layout"
-            "clock"
-            "tray"
-          ];
-        };
-        widget = {
-          control-center = {
-            glyph = "brand-nixos";
-            color = "tertiary";
+          bar.main = {
+            position = "top";
+            thickness = 30;
+            margin_ends = 0;
+            margin_edge = 0;
+            radius = 0;
+            shadow = false;
+            capsule = false;
+            reserve_space = true;
+            start = [
+              "control-center"
+              "workspaces"
+            ];
+            center = [ ];
+            end = [
+              "notifications"
+              "power_profile"
+              "volume"
+              "battery"
+              "microphone"
+              "keyboard_layout"
+              "clock"
+              "tray"
+            ];
           };
-          workspaces = {
-            show_labels = false;
-            show_icons = false;
-            hide_when_empty = true;
-            max_label_chars = 2;
+          widget = {
+            control-center = {
+              glyph = "brand-nixos";
+              color = "tertiary";
+            };
+            workspaces = {
+              show_labels = false;
+              show_icons = false;
+              hide_when_empty = true;
+              max_label_chars = 2;
+            };
+            volume.show_label = false;
+            microphone = {
+              type = "volume";
+              device = "input";
+              show_label = false;
+            };
+            keyboard_layout.hide_when_single_layout = true;
+            clock = {
+              format = "{:%H:%M %a, %b %d}";
+              color = "primary";
+            };
           };
-          volume.show_label = false;
-          microphone = {
-            type = "volume";
-            device = "input";
-            show_label = false;
-          };
-          keyboard_layout.hide_when_single_layout = true;
-          clock = {
-            format = "{:%H:%M %a, %b %d}";
-            color = "primary";
-          };
-        };
-        brightness.enable_ddcutil = true;
-        nightlight = {
-          enabled = true;
-          force = true;
-          temperature_day = 6500;
-          temperature_night = 3000;
-        };
-        location = {
-          auto_locate = false;
-          address = "Copenhagen, Denmark";
-        };
-        weather = {
-          enabled = true;
-          unit = "celsius";
-        };
-        notification = {
-          enable_daemon = true;
-          position = "top_right";
-          layer = "overlay";
-        };
-        osd = {
-          position = "bottom_center";
-          hide_delay_ms = 3000;
-          kinds.privacy = false;
-        };
-        lockscreen.lock_before_suspend = true;
-        wallpaper = {
-          directory = "/home/ph/.local/share/noctalia/wallpapers";
-          automation = {
+          brightness.enable_ddcutil = true;
+          nightlight = {
             enabled = true;
-            interval_seconds = 1800;
-            order = "random";
+            force = true;
+            temperature_day = 6500;
+            temperature_night = 3000;
+          };
+          location = {
+            auto_locate = false;
+            address = "Copenhagen, Denmark";
+          };
+          weather = {
+            enabled = true;
+            unit = "celsius";
+          };
+          notification = {
+            enable_daemon = true;
+            position = "top_right";
+            layer = "overlay";
+          };
+          osd = {
+            position = "bottom_center";
+            hide_delay_ms = 3000;
+            kinds.privacy = false;
+          };
+          lockscreen.lock_before_suspend = true;
+          wallpaper = {
+            directory = "/home/ph/.local/share/noctalia/wallpapers";
+            automation = {
+              enabled = true;
+              interval_seconds = 1800;
+              order = "random";
+            };
           };
         };
       };
     };
+
   };
 
   perSystem = { system, ... }: {

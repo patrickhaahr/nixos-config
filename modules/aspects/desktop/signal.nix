@@ -1,6 +1,12 @@
-_: {
+{ self, ... }:
+{
   flake.modules.nixos.signal =
-    { pkgs, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     let
       signalDesktop = pkgs.signal-desktop.overrideAttrs (old: {
         postPatch = (old.postPatch or "") + ''
@@ -12,6 +18,33 @@ _: {
       });
     in
     {
-      environment.systemPackages = [ signalDesktop ];
+      imports = [ self.modules.nixos.desktop-session ];
+
+      options.programs.signal.autostart = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Start Signal in the background on workspace 2 at login.";
+      };
+
+      config = {
+        environment.systemPackages = [ signalDesktop ];
+
+        desktop = lib.mkIf config.programs.signal.autostart {
+          startup = [
+            {
+              command = [ "signal-desktop" ];
+              workspace = "2";
+            }
+          ];
+          windowRules = [
+            {
+              appId = "^signal$";
+              atStartup = true;
+              workspace = "2";
+              focus = false;
+            }
+          ];
+        };
+      };
     };
 }

@@ -1,11 +1,18 @@
 { self, ... }: {
-  flake.modules.nixos.screenshot-ocr = { pkgs, ... }: {
-    environment.systemPackages = [ self.packages.${pkgs.stdenv.hostPlatform.system}.niriOcrScreenshot ];
-  };
+  flake.modules.nixos.screenshot-ocr =
+    { lib, pkgs, ... }:
+    let
+      ocrScreenshot = self.packages.${pkgs.stdenv.hostPlatform.system}.ocrScreenshot;
+    in
+    {
+      imports = [ self.modules.nixos.desktop-session ];
+      environment.systemPackages = [ ocrScreenshot ];
+      desktop.binds."Mod+Print".command = [ (lib.getExe ocrScreenshot) ];
+    };
 
   perSystem = { pkgs, lib, ... }: {
-    packages.niriOcrScreenshot = pkgs.writeShellApplication {
-      name = "niri-ocr-screenshot";
+    packages.ocrScreenshot = pkgs.writeShellApplication {
+      name = "ocr-screenshot";
       runtimeInputs = with pkgs; [
         coreutils
         grim
