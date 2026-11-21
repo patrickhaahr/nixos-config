@@ -27,6 +27,7 @@
         if heliumEnabled then lib.getExe' config.programs.helium.launcherPackage "helium" else null;
       hexCommand =
         if config.programs.hex.enable or false then lib.getExe config.programs.hex.package else null;
+      t3codeCommand = if pkgs ? t3code then lib.getExe pkgs.t3code else null;
     in
     {
       options.programs.niri.minimalProfile = lib.mkEnableOption "the minimal Niri session profile";
@@ -41,6 +42,7 @@
             inherit qqdictEnabled;
             inherit heliumCommand;
             inherit hexCommand;
+            inherit t3codeCommand;
             inherit (cfg) minimalProfile;
           };
         };
@@ -78,6 +80,7 @@
               null;
           hexCommand =
             if config.programs.hex.enable or false then lib.getExe config.programs.hex.package else null;
+          t3codeCommand = if pkgs ? t3code then lib.getExe pkgs.t3code else null;
         }
       );
     };
@@ -137,6 +140,7 @@
       startupApps =
         {
           heliumCommand ? null,
+          t3codeCommand ? null,
           minimalProfile ? false,
           qqdictEnabled ? false,
         }:
@@ -152,7 +156,8 @@
           (lib.getExe self'.packages.noctalia)
         ]
         ++ lib.optional qqdictEnabled "qqdict"
-        ++ lib.optional (heliumCommand != null) heliumCommand;
+        ++ lib.optional (heliumCommand != null) heliumCommand
+        ++ lib.optional (t3codeCommand != null) t3codeCommand;
       mkNiri =
         {
           settings,
@@ -168,6 +173,7 @@
           openhomeEnabled,
           heliumCommand ? null,
           hexCommand ? null,
+          t3codeCommand ? null,
           minimalProfile ? false,
           qqdictEnabled ? false,
         }:
@@ -180,7 +186,7 @@
           };
 
           spawn-at-startup = startupApps {
-            inherit heliumCommand minimalProfile;
+            inherit heliumCommand t3codeCommand minimalProfile;
             inherit qqdictEnabled;
           };
           spawn-sh-at-startup = [
@@ -544,6 +550,7 @@
             openhomeEnabled ? false,
             heliumCommand ? null,
             hexCommand ? null,
+            t3codeCommand ? null,
             minimalProfile ? false,
             qqdictEnabled ? false,
           }:
@@ -555,6 +562,7 @@
                 openhomeEnabled
                 heliumCommand
                 hexCommand
+                t3codeCommand
                 minimalProfile
                 qqdictEnabled
                 ;
@@ -566,6 +574,7 @@
             openhomeEnabled ? false,
             heliumCommand ? null,
             hexCommand ? null,
+            t3codeCommand ? null,
             qqdictEnabled ? false,
           }:
           let
@@ -574,6 +583,7 @@
                 openhomeEnabled
                 heliumCommand
                 hexCommand
+                t3codeCommand
                 ;
               inherit qqdictEnabled;
             };
