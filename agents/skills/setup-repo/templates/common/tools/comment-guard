@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+baseline=tools/comment-baseline
+
+current_counts() {
+  local json status=0 files exempt
+  json=$(ast-grep scan --json=stream 2>/dev/null) || status=$?
+  if ((status > 1)); then
+    ast-grep scan >/dev/null || true
+    exit "$status"
+  fi
+  files=$(grep -o '"file":"[^"]*"' <<<"$json" | sed -e 's/^"file":"//' -e 's/"$//' -e 's#\\\\#/#g' | sort || true)
+  [[ -z $files ]] && return 0
+  exempt=$(uniq <<<"$files" | git check-attr --stdin comment-guard linguist-generated linguist-vendored |
+    grep -E ': (comment-guard: unset|linguist-(generated|vendored): set)$' | sed -E 's/: [^:]+: [^:]+$//' || true)
+  grep -vxF -f <(printf '%s\n' "$exempt") <<<"$files" | uniq -c | sed -E 's/^ *([0-9]+) /\1\t/' || true
+}
+
+allowed_counts() {
+  [[ -f $baseline ]] && cat "$baseline" || true
+}
+
+rows() {
+  [[ -n $1 ]] && printf '%s\n' "$1" || true
+}
+
+lowered() {
+  awk -F'\t' -v OFS='\t' 'FILENAME == ARGV[1] { now[$2] = $1; next } { n = now[$2] + 0; if (n > 0) print (n < $1 ? n : $1), $2 }' \
+    <(rows "$1") <(allowed_counts)
+}
+
+write_baseline() {
+  local rows
+  rows=$(sort -t $'\t' -k2)
+  if [[ -z $rows ]]; then
+    rm -f "$baseline"
+  else
+    printf '%s\n' "$rows" >"$baseline"
+  fi
+}
+
+check() {
+  local report
+  report=$(awk -F'\t' 'FILENAME == ARGV[1] { allowed[$2] = $1; next }
+    { n = $1; a = allowed[$2] + 0; delete allowed[$2]
+      if (n > a) print "over\t" $2 "\t" n "\t" a; else if (n < a) print "lower\t" $2 }
+    END { for (p in allowed) print "lower\t" p }' <(allowed_counts) <(rows "$1"))
+  [[ -z $report ]] && return 0
+
+  if grep -q '^over' <<<"$report"; then
+    {
+      echo "Comments found (now > allowed by $baseline):"
+      grep '^over' <<<"$report" | awk -F'\t' '{ printf "  %s  %d > %d\n", $2, $3, $4 }'
+      cat <<'MSG'
+
+Delete each comment and move what it knew:
+  - the why of the code into names, types and tests;
+  - a non-obvious decision into an ADR;
+  - a known hack into an issue;
+  - a lint suppression: fix the code it silences, or turn the rule off in the lint config.
+Kept by design: licence headers, SAFETY: notes, prettier-ignore, and a bare issue or RFC link.
+`ast-grep scan <path>` shows each comment; `ast-grep scan --update-all <path>` deletes them all.
+MSG
+    } >&2
+    return 1
+  fi
+
+  echo "Comments were deleted; run \`bash tools/comment-guard --lower\` (or \`just fix\`) to lock in the lower counts." >&2
+  return 1
+}
+
+counts=$(current_counts)
+
+case ${1-} in
+  "") check "$counts" ;;
+  --lower) lowered "$counts" | write_baseline ;;
+  --init)
+    if [[ -f $baseline ]]; then
+      echo "$baseline exists; --init only seeds a repo that has none." >&2
+      exit 1
+    fi
+    rows "$counts" | write_baseline
+    ;;
+  *)
+    echo "usage: comment-guard [--lower | --init]" >&2
+    exit 2
+    ;;
+esac

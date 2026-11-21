@@ -3,6 +3,7 @@
 {
   packages = [
     pkgs.bun
+    pkgs.ast-grep
     pkgs.just
   ];
 

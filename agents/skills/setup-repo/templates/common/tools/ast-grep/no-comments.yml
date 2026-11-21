@@ -1,0 +1,75 @@
+---
+id: no-comments-typescript
+language: TypeScript
+severity: error
+message: Carry the why in names, types and tests, a decision in an ADR, and a known hack in an issue.
+rule:
+  kind: comment
+  not:
+    regex: '^(?:#!|(?://|/\*|#)\s*(?:SAFETY:|prettier-ignore|SPDX-License-Identifier:|Copyright\b|https?://\S+\s*(?:\*/)?$))'
+fix: ""
+---
+id: no-comments-tsx
+language: Tsx
+severity: error
+message: Carry the why in names, types and tests, a decision in an ADR, and a known hack in an issue.
+rule:
+  kind: comment
+  not:
+    regex: '^(?:#!|(?://|/\*|#)\s*(?:SAFETY:|prettier-ignore|SPDX-License-Identifier:|Copyright\b|https?://\S+\s*(?:\*/)?$))'
+fix: ""
+---
+id: no-comments-javascript
+language: JavaScript
+severity: error
+message: Carry the why in names, types and tests, a decision in an ADR, and a known hack in an issue.
+rule:
+  kind: comment
+  not:
+    regex: '^(?:#!|(?://|/\*|#)\s*(?:SAFETY:|prettier-ignore|SPDX-License-Identifier:|Copyright\b|https?://\S+\s*(?:\*/)?$))'
+fix: ""
+---
+id: no-comments-python
+language: Python
+severity: error
+message: Carry the why in names, types and tests, a decision in an ADR, and a known hack in an issue.
+rule:
+  kind: comment
+  not:
+    regex: '^(?:#!|(?://|/\*|#)\s*(?:SAFETY:|prettier-ignore|SPDX-License-Identifier:|Copyright\b|https?://\S+\s*(?:\*/)?$))'
+fix: ""
+---
+id: no-comments-bash
+language: Bash
+severity: error
+message: Carry the why in names, types and tests, a decision in an ADR, and a known hack in an issue.
+rule:
+  kind: comment
+  not:
+    regex: '^(?:#!|(?://|/\*|#)\s*(?:SAFETY:|prettier-ignore|SPDX-License-Identifier:|Copyright\b|https?://\S+\s*(?:\*/)?$))'
+fix: ""
+---
+id: no-comments-nix
+language: Nix
+severity: error
+message: Carry the why in names, types and tests, a decision in an ADR, and a known hack in an issue.
+rule:
+  kind: comment
+  not:
+    regex: '^(?:#!|(?://|/\*|#)\s*(?:SAFETY:|prettier-ignore|SPDX-License-Identifier:|Copyright\b|https?://\S+\s*(?:\*/)?$))'
+fix: ""
+---
+id: no-comments-rust
+language: Rust
+severity: error
+message: Carry the why in names, types and tests, a decision in an ADR, and a known hack in an issue.
+rule:
+  any: [{kind: line_comment}, {kind: block_comment}]
+  not:
+    any:
+      - regex: '^(?:#!|(?://|/\*|#)\s*(?:SAFETY:|prettier-ignore|SPDX-License-Identifier:|Copyright\b|https?://\S+\s*(?:\*/)?$))'
+      - follows:
+          regex: '^//\s*SAFETY:'
+          stopBy:
+            not: {kind: line_comment}
+fix: ""

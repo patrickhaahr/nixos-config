@@ -1,6 +1,6 @@
 ---
 name: setup-repo
-description: Use when the user starts a new repo or wants an existing one aligned with their devenv, just and lint tooling.
+description: Scaffold a new repo, or align an existing one, with the devenv, just and lint tooling.
 disable-model-invocation: true
 ---
 
@@ -13,13 +13,14 @@ Every repo ends with the same contract:
 - `just check` is the full gate (format check, lint, typecheck, test, build). The devenv pre-commit hook runs it.
 - `just fix`, `just dev`, `just build`, `just test-one <name>`; bare `just` lists them.
 - `tools/git-file-size-guard` runs as a pre-commit hook and blocks files over 5000 tokens.
+- `tools/comment-guard` runs in `just check` and ratchets comments: each file may hold at most its count in `tools/comment-baseline` (absent means zero), and `just fix` only lowers it. It skips paths marked `linguist-vendored`, `linguist-generated` or `-comment-guard` in `.gitattributes`.
 
 ## New TypeScript repo
 1. Create the project with the framework the user names, using its own scaffolder with bun as the package manager (e.g. `bunx @tanstack/cli create <name> --package-manager bun --no-toolchain`). No framework named: `bun init -y`.
 2. `cp -r <skill>/templates/common/. <skill>/templates/ts/. .`
 3. `bun add -d oxfmt oxlint oxlint-tsgolint @types/bun`, and make sure `package.json` has a `dev` script.
-4. Add the scaffold's generated paths (route trees, framework caches) to `ignorePatterns` in `.oxfmtrc.json` and `.oxlintrc.json`.
-5. Vendor the anti-slop Oxlint plugin by following `~/.agents/skills/install-anti-slop/SKILL.md`; it is manual-only, so read the file instead of invoking it.
+4. Add the scaffold's generated paths (route trees, framework caches) to `ignorePatterns` in `.oxfmtrc.json` and `.oxlintrc.json`, and mark the committed ones `linguist-generated` in `.gitattributes`.
+5. Vendor the anti-slop Oxlint plugin by following `~/.agents/skills/install-anti-slop/SKILL.md`; it is manual-only, so read the file instead of invoking it. Mark `tools/oxlint/anti-slop/**` `linguist-vendored` in `.gitattributes`.
 6. React UI: add `react` and `jsx-a11y` to the Oxlint plugins. Tailwind: set up `@shadcn/lint` for Oxlint by following https://github.com/shadcn-ui/lint/blob/main/SETUP.md.
 7. Append `.devenv/` and `.direnv/` to `.gitignore`, then `direnv allow`.
 8. `just fix`, then `just check` must pass.
@@ -37,3 +38,4 @@ Compare instead of copying blindly:
 - Merge lint and formatter settings key by key. Report every rule the template adds that the code currently violates, and ask before mass-fixing.
 - Leave existing husky or lefthook setups in place; add the size guard there instead of adding devenv hooks.
 - Existing files over the cap: list them, add `<path> -file-size-guard` to `.gitattributes` for each, and tell the user they need splitting.
+- Existing comments: add a `tools/ast-grep/no-comments.yml` section per missing language (`ast-grep run -l <lang> -p '// x' --debug-query=cst` names its comment kinds), mark vendored and generated paths, run `bash tools/comment-guard --init`, and add `tools/comment-baseline -file-size-guard` to `.gitattributes`. Report the total; `/delete-comment` works it down.
