@@ -7,7 +7,7 @@ let
   nikaKey = "nika-1:dYsHY+f6OIpGr4pe0N97KVIdP8By7Z5w+5G4Om7DUvM=";
 
   numtide = {
-    extra-substituters = [ "https://cache.numtide.com" ];
+    extra-substituters = [ "https://cache.numtide.com?priority=50" ];
     extra-trusted-public-keys = [ "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g=" ];
   };
 in
