@@ -25,11 +25,6 @@
                     substituteInPlace "$desktop/libexec/t3code/apps/desktop/dist-electron/main.cjs" \
                       --replace-fail 'executablePath: process.execPath,' \
                                      'executablePath: "${final.nodejs_24}/bin/node",'
-                    substituteInPlace "$desktop/libexec/t3code/apps/desktop/package.json" \
-                      --replace-fail '"productName": "T3 Code (Beta)"' \
-                                     '"productName": "T3 Code (Alpha)"'
-                    substituteInPlace "$desktop/share/applications/t3code.desktop" \
-                      --replace-fail 'Name=T3 Code (Beta)' 'Name=T3 Code (Alpha)'
                   '';
                 });
           in
