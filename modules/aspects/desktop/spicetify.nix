@@ -1,4 +1,41 @@
-{ inputs, ... }: {
+{ self, inputs, ... }: {
+  flake.modules.nixos.spicetify =
+    { lib, pkgs, ... }:
+    let
+      playerctl = lib.getExe pkgs.playerctl;
+      spotifyAutoplay = pkgs.writeShellScriptBin "spotify-autoplay" ''
+        spotify &
+
+        for _ in $(seq 1 60); do
+          if ${playerctl} -p spotify status >/dev/null 2>&1; then
+            exec ${playerctl} -p spotify play
+          fi
+
+          sleep 1
+        done
+      '';
+    in
+    {
+      imports = [ self.modules.nixos.desktop-session ];
+
+      desktop = {
+        startup = [
+          {
+            command = [ (lib.getExe spotifyAutoplay) ];
+            workspace = "2";
+          }
+        ];
+        windowRules = [
+          {
+            appId = "^Spotify$";
+            atStartup = true;
+            workspace = "2";
+            focus = false;
+          }
+        ];
+      };
+    };
+
   flake.modules.homeManager.spicetify =
     { lib, pkgs, ... }:
     let

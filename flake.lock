@@ -913,26 +913,6 @@
         "type": "github"
       }
     },
-    "qqdict": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1793913136,
-        "narHash": "sha256-gVqqhwiRCGAiVUSoHn7VY8GE3b7FTf0lKybLRkrHtZc=",
-        "owner": "patrickhaahr",
-        "repo": "qqdict",
-        "rev": "5ad5e9dbc44985857e79bccd3492bd9e5401bbb0",
-        "type": "github"
-      },
-      "original": {
-        "owner": "patrickhaahr",
-        "repo": "qqdict",
-        "type": "github"
-      }
-    },
     "root": {
       "inputs": {
         "artcraft": "artcraft",
@@ -956,7 +936,6 @@
         "openhome": "openhome",
         "pyproject-build-systems": "pyproject-build-systems_2",
         "pyproject-nix": "pyproject-nix_2",
-        "qqdict": "qqdict",
         "sops-nix": "sops-nix",
         "spicetify-nix": "spicetify-nix",
         "uv2nix": "uv2nix_2",

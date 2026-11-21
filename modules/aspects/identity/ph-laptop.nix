@@ -4,7 +4,13 @@ let
 in
 {
   flake.modules.nixos.identity-ph-laptop = {
-    imports = [ self.modules.nixos.identity-ph-headless ];
+    imports = [
+      self.modules.nixos.identity-ph-headless
+      self.modules.nixos.ghostty
+      self.modules.nixos.noctalia
+    ];
+
+    services.greetd.settings.default_session.user = userName;
 
     users.users.${userName}.extraGroups = [
       "networkmanager"

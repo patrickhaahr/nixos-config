@@ -27,6 +27,8 @@ let
         '';
     in
     {
+      imports = [ self.modules.nixos.desktop-session ];
+
       options.services.openhome = {
         enable = lib.mkEnableOption "OpenHome integration";
 
@@ -35,6 +37,47 @@ let
 
       config = lib.mkIf cfg.enable {
         environment.systemPackages = [ openhomePackage ];
+
+        desktop.binds = lib.mapAttrs (_: args: { command = [ openhome ] ++ args; }) {
+          "Super+M" = [
+            "ir"
+            "edifier"
+            "mute"
+          ];
+          "Super+Left" = [
+            "ir"
+            "edifier"
+            "bluetooth"
+          ];
+          "Super+Right" = [
+            "ir"
+            "edifier"
+            "optical"
+          ];
+          "Super+Up" = [
+            "ir"
+            "edifier"
+            "volume-up"
+          ];
+          "Super+Down" = [
+            "ir"
+            "edifier"
+            "volume-down"
+          ];
+          "Super+T" = [
+            "ir"
+            "lgtv"
+            "power"
+          ];
+          "Super+Shift+Up" = [
+            "lights"
+            "on"
+          ];
+          "Super+Shift+Down" = [
+            "lights"
+            "off"
+          ];
+        };
 
         systemd.services = lib.mkIf cfg.automations.enable {
           openhome-bluetooth-at-boot = {

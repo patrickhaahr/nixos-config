@@ -1,4 +1,4 @@
-{ inputs, ... }:
+{ self, inputs, ... }:
 {
   flake.modules.nixos.nika-hardware =
     {
@@ -13,7 +13,16 @@
         (modulesPath + "/installer/scan/not-detected.nix")
 
         inputs.nixos-raspberrypi.nixosModules.trusted-nix-caches
+        self.modules.nixos.desktop-session
       ];
+      desktop.outputs = {
+        "DP-1".mode = "1920x1080";
+        "HDMI-A-1".position = {
+          x = 0;
+          y = 0;
+        };
+        "DVI-D-1".enable = false;
+      };
       boot = {
         binfmt.emulatedSystems = [ "aarch64-linux" ];
         initrd = {

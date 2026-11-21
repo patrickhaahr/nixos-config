@@ -1,18 +1,6 @@
 { self, ... }: {
   flake.modules.nixos.nika =
-    {
-      config,
-      lib,
-      pkgs,
-      ...
-    }:
-    let
-      niriEnabled =
-        if builtins.hasAttr "programs" config && builtins.hasAttr "niri" config.programs then
-          config.programs.niri.enable
-        else
-          false;
-    in
+    { pkgs, ... }:
     {
       imports = [
         self.modules.nixos.nika-hardware
@@ -54,11 +42,11 @@
         self.modules.nixos.mpv
 
         self.modules.nixos.signal
+        self.modules.nixos.spicetify
         self.modules.nixos.steam
         self.modules.nixos.sunshine
         self.modules.nixos.t3code
         self.modules.nixos.wl-clipboard
-        self.modules.nixos."niri-dp1-1080p"
         self.modules.nixos.zed
         self.modules.nixos.chatgpt
         self.modules.nixos.claude-desktop
@@ -93,17 +81,6 @@
         openhome = {
           enable = true;
           automations.enable = true;
-        };
-        greetd = {
-          enable = true;
-          settings.default_session = {
-            command =
-              if niriEnabled then
-                lib.getExe' config.programs.niri.package "niri-session"
-              else
-                "${pkgs.niri}/bin/niri-session";
-            user = "ph";
-          };
         };
       };
       console.keyMap = "dk-latin1";

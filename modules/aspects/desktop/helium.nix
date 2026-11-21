@@ -1,4 +1,4 @@
-{ inputs, ... }: {
+{ self, inputs, ... }: {
   flake.modules.nixos.helium =
     {
       lib,
@@ -24,8 +24,11 @@
             }
         '';
       };
+      helium = lib.getExe' launcherPackage "helium";
     in
     {
+      imports = [ self.modules.nixos.desktop-session ];
+
       options.programs.helium = {
         enable = lib.mkEnableOption "Helium browser";
 
@@ -57,6 +60,18 @@
         (lib.mkIf cfg.enable {
           programs.helium.launcherPackage = launcherPackage;
           environment.systemPackages = [ launcherPackage ];
+
+          desktop = {
+            startup = [ { command = [ helium ]; } ];
+            binds."Mod+B".command = [ helium ];
+            windowRules = [
+              {
+                appId = "^helium$";
+                atStartup = true;
+                workspace = "1";
+              }
+            ];
+          };
         })
       ];
     };

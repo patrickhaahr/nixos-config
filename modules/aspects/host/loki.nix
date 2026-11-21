@@ -1,14 +1,6 @@
 { self, ... }: {
   flake.modules.nixos.loki =
-    {
-      config,
-      lib,
-      pkgs,
-      ...
-    }:
-    let
-      niriEnabled = config.programs.niri.enable;
-    in
+    { pkgs, ... }:
     {
       imports = [
         self.modules.nixos.loki-hardware
@@ -24,6 +16,7 @@
         self.modules.nixos.cascadia-code
         self.modules.nixos.mpv
         self.modules.nixos.niri
+        self.modules.nixos.screenshot-ocr
         self.modules.nixos.signal
       ];
 
@@ -43,17 +36,6 @@
         upower.enable = true;
         power-profiles-daemon.enable = true;
         logind.settings.Login.HandleLidSwitch = "suspend";
-        greetd = {
-          enable = true;
-          settings.default_session = {
-            command =
-              if niriEnabled then
-                lib.getExe' config.programs.niri.package "niri-session"
-              else
-                "${pkgs.niri}/bin/niri-session";
-            user = "ph";
-          };
-        };
       };
       console.keyMap = "dk-latin1";
       nixpkgs.config.allowUnfree = true;
@@ -67,7 +49,7 @@
       security.rtkit.enable = true;
       powerManagement.enable = true;
 
-      programs.niri.minimalProfile = true;
+      programs.signal.autostart = false;
 
       system.stateVersion = "25.11";
     };

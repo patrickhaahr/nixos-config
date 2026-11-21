@@ -1,11 +1,6 @@
 { self, ... }: {
   flake.modules.nixos.kuma =
-    {
-      config,
-      lib,
-      pkgs,
-      ...
-    }:
+    { pkgs, ... }:
     {
       imports = [
         self.modules.nixos.kuma-hardware
@@ -47,13 +42,6 @@
         upower.enable = true;
         power-profiles-daemon.enable = true;
         logind.settings.Login.HandleLidSwitch = "suspend";
-        greetd = {
-          enable = true;
-          settings.default_session = {
-            command = lib.getExe' config.programs.niri.package "niri-session";
-            user = "ph";
-          };
-        };
       };
       console.keyMap = "dk-latin1";
       nixpkgs.config.allowUnfree = true;
@@ -69,7 +57,7 @@
       security.rtkit.enable = true;
       powerManagement.enable = true;
 
-      programs.niri.minimalProfile = true;
+      programs.signal.autostart = false;
 
       system.stateVersion = "25.11";
     };
