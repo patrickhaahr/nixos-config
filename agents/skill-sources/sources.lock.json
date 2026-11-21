@@ -22,11 +22,11 @@
     "rev": "20c9e88a5c007461a703f1c213572b073196113e"
   },
   "cathrynlavery/diagram-design": {
-    "hash": "sha256-mcGxmMZV7McjUVF+FSDHuvW+F9R4tpB9oaEblhbyqGY=",
+    "hash": "sha256-71vIi/eX6dT0UNlYZoaL7hclivsd+MJ6Jamz6H9ILHw=",
     "paths": [
       "skills/diagram-design"
     ],
-    "rev": "f6db0decea96de66b901331a0f79a8d4b147ebae"
+    "rev": "d74d8c2d0c78a9e1efd43137f6a9a51182a8b5f0"
   },
   "cloudflare/security-audit-skill": {
     "hash": "sha256-oVVACjotkHvllQGxEP8yWaEt4c3GxT0d909TUM5P3NM=",
@@ -41,22 +41,22 @@
       "skills/cloudflare",
       "skills/wrangler"
     ],
-    "rev": "cbf893b954222276bf1af57e5f23379231e0efb9"
+    "rev": "5108325ecceabc899c761e07aa617b09c02445ee"
   },
   "coreyhaines31/marketingskills": {
-    "hash": "sha256-xOi3IpX0GrskhX7Gtdh2gtZQliY4wbi0QOv00ZoUeTI=",
+    "hash": "sha256-/p2EZrLE08uDmTfAZHi/bdnKj932Z6RBn462Yxz6s1U=",
     "paths": [
       "skills/ai-seo",
       "skills/seo-audit"
     ],
-    "rev": "1f837447b20bb6f0e72d87b80ece1c221c362c7d"
+    "rev": "5b2b400eec1e7e1cec76245a715d0b0d4fd2a9c1"
   },
   "dmmulroy/anti-slop": {
-    "hash": "sha256-V+Efekxdd+uGKyDNUOfNqxlzfGpS7ZoPDDFDzoaZND8=",
+    "hash": "sha256-BCkC5XfJqfTaKocH3tQitxDH+jWYx210wNLCSH7LilA=",
     "paths": [
       "skills/install-anti-slop"
     ],
-    "rev": "13909c9e07590f5a85d93c62712259fe14a883f7"
+    "rev": "63dbb09f73438e550a6991dc6d778f979ffbf183"
   },
   "emilkowalski/skills": {
     "hash": "sha256-HkIv8xmzaZ6e/iHhxcuJciK31iLMkn4mwBAtukPPOq0=",
@@ -66,7 +66,7 @@
     "rev": "64eb3deb9a5fbfa041faf783e0bc3fd635872e9c"
   },
   "jakubkrehel/skills": {
-    "hash": "sha256-0JqKH6ik9v7QhlLNmNOec9HC5/f+Xm40AsDRjnHEetw=",
+    "hash": "sha256-C1fk/umzE2WOGxcwQKosGkoqIU1N8QjqKjgsUlDKcRo=",
     "paths": [
       "skills/better-accessibility",
       "skills/better-colors",
@@ -77,7 +77,7 @@
       "skills/better-writing",
       "skills/interface-review"
     ],
-    "rev": "a72290d140249813898ba8648becf6415abcb059"
+    "rev": "672ae44ace6aaed65b86cbb1e2fd6fbea0e79578"
   },
   "juliobsz/skills": {
     "hash": "sha256-loikbgo6r6P7Wzib5jomLkUpe4JzMZBztXNd77PnVEw=",
@@ -94,7 +94,7 @@
     "rev": "71195e36024ebd2e66c5beac946e81eafd5abc43"
   },
   "mattpocock/skills": {
-    "hash": "sha256-tE/CpoxANDHC6Xa0J6H/P6tTGxK2nT67EhfU+0mUb34=",
+    "hash": "sha256-K4I+/ag/aVFfk1DI6RJiSQtybw4CEsSApsiD9K4x76I=",
     "paths": [
       "skills/engineering/code-review",
       "skills/engineering/codebase-design",
@@ -112,14 +112,14 @@
       "skills/engineering/to-tickets",
       "skills/productivity/writing-for-agents"
     ],
-    "rev": "5863806dd4e15c63174bee4e7515a4256792ecfa"
+    "rev": "abeeaf95660ba9e8b7c753eb38f441ca707a8823"
   },
   "openclaw/openclaw": {
-    "hash": "sha256-tjFQfXswElJnR8uELc+TyqBBlVwbEzYX60hDV1pd0rU=",
+    "hash": "sha256-jPkkl8nnNfculaMLRV9/Bk2VYwrfqd2G5Of26jONre8=",
     "paths": [
       ".agents/skills/test-audit"
     ],
-    "rev": "9e85a1a71795dd067c424923c4e187ab332852dd"
+    "rev": "c98816b7d4dee0608b760884949058eb71128aff"
   },
   "shadcn/improve": {
     "hash": "sha256-PfAUpLXXRyRlxsvdeGjUFUoDD8wTarE4gtmDPslrr60=",
@@ -129,11 +129,11 @@
     "rev": "cac56e1ebd3c279aa9153616cfeac7b174ab90f9"
   },
   "vercel-labs/agent-skills": {
-    "hash": "sha256-RT9Lh/JX81po6yBpGHtupJ75k9AVPP5cykS8Brex6H8=",
+    "hash": "sha256-31iNquTCBCeXU8VK2kuamknzfYvWSNcMTpb4YO1fl90=",
     "paths": [
       "skills/react-best-practices"
     ],
-    "rev": "1a2c79d4e6c4a2283dc2c614b6538cbe1ed5ca62"
+    "rev": "5a37a6329fbad3666c3207392a6a7c0110e92efb"
   },
   "zarazhangrui/frontend-slides": {
     "hash": "sha256-qp2oCn5+YbMZrWCnN7zt/ee1nm/vBGsdb+AIUjIldyY=",

@@ -97,7 +97,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    hermes-agent.url = "github:NousResearch/hermes-agent/v0.23.1";
+    hermes-agent.url = "github:NousResearch/hermes-agent/v0.23.3";
 
     llm-agents = {
       url = "github:numtide/llm-agents.nix";

@@ -3,10 +3,10 @@
   flake.modules.nixos.kaigen-studio =
     { pkgs, ... }:
     let
-      version = "1.0.0.013";
-      cliVersion = "1.0.0.012";
-      cliSha512 = "4e4391d54cf597b97b29561595e59356c5ef68f7b22986b49f89ba1ef2ceca91fc6deb8f795440a06c7b7c5c493eccb83389094992970c3618bd0a9d439919d4";
-      studioSha512 = "7fee04b2971ba4f0fd09454ce3de78380e045bf882175b71e3a4c9df58c08e73df69a6a55187bd17710f7b99cd8e08422882ef653db0c8482328d43a468d9011";
+      version = "1.0.0.015";
+      cliVersion = "1.0.0.014";
+      cliSha512 = "8e3e29ce688c48cf2d64e5d835cc3a1e06fb21febcdc22dd1239b5c2df5f869523054c5140c491b60cf71fcbe93c4bec432a2078dd6e667ceb8ea518db69b0e1";
+      studioSha512 = "f505aa93b82f20c9f11abf06e0802f24d6ea64ee222f5c2b1d41a34a43da11e3dc968ae6713550ae2703ebee9c0debaab2729d9aa67d63887cc59152434c4525";
       iconSha512 = "7a4316e4d3f785471bfbd338a32d60920843ac86dbae43e2672111aebb3963cc3b56ee5b6d423e7f6ba92d5a37677af3761717c1c799be2aa7076f19aa4b83f3";
 
       archiveTools = lib.makeBinPath [
