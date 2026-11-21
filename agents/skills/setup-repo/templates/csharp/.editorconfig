@@ -1,0 +1,4 @@
+root = true
+
+[tests/**.cs]
+dotnet_diagnostic.CA1707.severity = none
