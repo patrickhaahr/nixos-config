@@ -1,6 +1,6 @@
 _: {
   flake.modules.nixos.openssh = _: {
-    # OpenSSH rejects systemd's store-owned proxy drop-in for non-root users.
+
     programs.ssh.systemd-ssh-proxy.enable = false;
 
     services.openssh = {
@@ -52,7 +52,7 @@ _: {
           ];
           IdentitiesOnly = true;
         };
-        # Prefer the router-specific key once it is authorized.
+
         "router" = {
           User = "root";
           IdentityFile = [
@@ -61,8 +61,7 @@ _: {
           ];
           IdentitiesOnly = true;
         };
-        # Ghostty's TERM=xterm-ghostty is meaningless to hosts without its
-        # terminfo (e.g. headless zaza); downgrade for these destinations.
+
         "zaza" = {
           User = "ph";
           IdentityAgent = "none";

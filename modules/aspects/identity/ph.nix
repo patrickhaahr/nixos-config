@@ -16,7 +16,7 @@ in
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICFRDoMg0lCDaI7cG3C5wcRtRz2gJXbFYDemOK+KLS5U nika"
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMWIIdTomMDrLElXLqDg68u7h8Ila5Rjg5TZIngPMUeH ph@loki"
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHJ80qJZCpCmfiSfRaApMHuGcG3yX9lYLks1oXuBQ4Kt grapheneos"
-          # hermes agent outbound key
+
           (lib.removeSuffix "\n" (builtins.readFile ../../../secrets/hermes/hosts.pub))
         ];
       };

@@ -41,7 +41,6 @@ in
     {
       imports = [ self.modules.homeManager.agent-mcp ];
 
-      # Unlike managedState, these settings carry no Linux store paths, so other platforms can reuse them.
       lib.agents.claude.settings = managedSettings;
 
       home = {

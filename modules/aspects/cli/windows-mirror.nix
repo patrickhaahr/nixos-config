@@ -19,17 +19,14 @@ in
 
       git = config.programs.git;
       inherit (config.lib.git) guardrailHooks;
-      # Only the sections without /nix/store paths; Git for Windows' system config
-      # already provides lfs and the credential manager.
-      # Includes go last so they override [user]; toGitINI sorts sections alphabetically.
+
       gitConfig = pkgs.writeText "gitconfig" (
         lib.generators.toGitINI (
           lib.getAttrs [ "user" "url" "init" "pull" "rebase" "alias" ] git.settings
           // {
             core = {
               inherit (git.settings.core) editor;
-              # The Git for Windows installer sets this false system-wide, which checks
-              # symlinks out as text files; Developer Mode lets them be real links.
+
               symlinks = true;
             };
             hook = builtins.mapAttrs (name: hook: {
@@ -42,7 +39,7 @@ in
           includeIf = lib.listToAttrs (
             map (
               include:
-              # The same Windows folder is /mnt/c/... in WSL and C:/... to Git for Windows.
+
               lib.nameValuePair (lib.replaceStrings [ "gitdir:/mnt/c/" ] [ "gitdir:C:/" ] include.condition) {
                 inherit (include) path;
               }
@@ -65,7 +62,6 @@ in
         }
       ];
 
-      # Windows cannot follow WSL symlinks into /nix/store, so the profile gets real copies.
       config.home.activation.windowsMirror = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
         if [[ -d ${home} ]]; then
           run mkdir -p ${home}/.claude/skills ${home}/.codex ${home}/.agents/skills

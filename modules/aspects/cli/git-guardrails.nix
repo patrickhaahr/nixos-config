@@ -2,7 +2,7 @@ _: {
   flake.modules.homeManager.git-guardrails =
     { pkgs, ... }:
     let
-      # Plain bash with no store paths, so the Windows mirror can run the same text under Git Bash.
+
       hooks = {
         file-size-guard = {
           event = "pre-commit";

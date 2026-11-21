@@ -18,9 +18,7 @@ in
               inherit hash;
             };
           };
-          # wrapType2's output is a bare runCommand (only bin/), so the
-          # AppImage-shipped learnharness.desktop/learnharness.png never reach
-          # the system profile. Extract again for a launcher entry and merge.
+
           launcher =
             pkgs.runCommand "learnharness-desktop-${version}"
               {

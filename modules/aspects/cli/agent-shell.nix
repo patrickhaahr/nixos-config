@@ -4,8 +4,7 @@
     { config, ... }:
     let
       direnv = "${config.programs.direnv.package}/bin/direnv";
-      # A fixed path, not a store path: GUI sessions snapshot their environment at
-      # login, so the variable must never change; switches only rewrite the file.
+
       bashEnv = "${config.xdg.configHome}/agent-shell/bash-env";
     in
     {

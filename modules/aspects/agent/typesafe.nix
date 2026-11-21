@@ -14,8 +14,6 @@
         secrets.typesafe_api_key.path = ".config/typesafe/api-key";
       };
 
-      # Load the sops-rendered key into the shell environment at startup;
-      # agents (opencode etc.) inherit it from interactive shells.
       programs.nushell.extraConfig = lib.mkBefore ''
         let keyfile = $"($env.HOME)/.config/typesafe/api-key"
         if ($keyfile | path exists) {

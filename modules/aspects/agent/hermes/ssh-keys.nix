@@ -3,8 +3,7 @@
     imports = [ inputs.sops-nix.nixosModules.sops ];
 
     sops = {
-      # Per-secret sopsFile instead of defaultSopsFile: hosts like zaza
-      # already set a host-wide default we must not override.
+
       age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
       secrets = {
         hermes_git_key = {
@@ -17,8 +16,7 @@
           path = "/home/hermes/.ssh/id_ed25519_hermes_hosts";
           owner = "hermes";
         };
-        # Bootstrap key for hermes's HM sops module: rendered to the exact
-        # path it expects so agent secrets decrypt without manual placement.
+
         hermes_age_key = {
           sopsFile = ../../../../secrets/hermes/ssh.yaml;
           path = "/home/hermes/.config/sops/age/keys.txt";
@@ -84,7 +82,6 @@
     {
       home.packages = [ pkgs.ghostty.terminfo ];
 
-      # OpenSSH rejects store-owned config symlinks, so install an owned file.
       home.activation.installHermesSshClientConfig =
         inputs.home-manager.lib.hm.dag.entryAfter [ "writeBoundary" ]
           ''

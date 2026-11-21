@@ -1,7 +1,5 @@
 _: {
-  # Podman networks for `virtualisation.oci-containers`, which joins
-  # containers to a network but never creates one. Containers on a network
-  # reach each other by name and `--network-alias`.
+
   flake.modules.nixos.homelab-podman =
     { config, lib, ... }:
     let
@@ -9,7 +7,7 @@ _: {
       unit = network: "podman-network-${network}.service";
     in
     {
-      # Imported by several homelab aspects; the key deduplicates it.
+
       key = "homelab-podman";
 
       options.homelab.podmanNetworks = lib.mkOption {
@@ -19,8 +17,7 @@ _: {
       };
 
       config = {
-        # Digest bumps leave the previous image behind; drop every image no
-        # container uses. Volumes are untouched.
+
         virtualisation.podman.autoPrune = {
           enable = true;
           dates = "weekly";
@@ -42,8 +39,7 @@ _: {
             {
               "podman-network-${network}" = {
                 description = "Podman network ${network}";
-                # No RemainAfterExit: autoPrune can delete a network while its
-                # containers are down, so every container start re-checks it.
+
                 serviceConfig.Type = "oneshot";
                 path = [ config.virtualisation.podman.package ];
                 script = "podman network exists ${network} || podman network create ${network}";

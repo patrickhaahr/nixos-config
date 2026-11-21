@@ -1,8 +1,3 @@
-# A checkpoint of Hermes state written by hand or by the agents themselves:
-# skills, their scripts, and the Echo's role (memories/WORKING.md). Seeded, not
-# owned: a file is copied only where ~/.hermes lacks it, because the curator and
-# skill_manage keep rewriting these. A fresh host gets them back; a live edit
-# survives every switch. Refresh the checkpoint by copying the files back here.
 _: {
   flake.modules.homeManager.agent-hermes =
     { config, lib, ... }:

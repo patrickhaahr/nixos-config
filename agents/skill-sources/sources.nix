@@ -1,6 +1,3 @@
-# External skills: GitHub repo -> { skill name = folder in the repo; }.
-# "" installs the whole repo as one skill. Pins live in sources.lock.json;
-# after any change here run `just update-skills <owner/repo>`.
 {
   "apollographql/skills".rust-best-practices = "skills/rust-best-practices";
   "better-auth/skills" = {
@@ -54,8 +51,4 @@
   "vercel-labs/agent-skills".react-best-practices = "skills/react-best-practices";
   "zarazhangrui/frontend-slides".frontend-slides = "";
 
-  # Not installed. Uncomment and run `just update-skills <owner/repo>` to enable.
-  # "cursor/plugins".unslop = "pstack/skills/unslop";
-  # "typesafe-ai/skills".typesafe-ai = "skills/typesafe-ai";
-  # "vercel-labs/agent-browser".agent-browser = "skills/agent-browser";
 }

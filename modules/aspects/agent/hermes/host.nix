@@ -1,6 +1,3 @@
-# Single seam for hosting hermes on a machine: account + HM runtime stack,
-# outbound SSH keys/secrets, the dev workspace bootstrap, and its web
-# endpoints. Compose hosts import this instead of the individual pieces.
 { self, ... }: {
   flake.modules.nixos.agent-hermes-host = {
     imports = [

@@ -12,7 +12,7 @@
         toolsVersion = null;
       };
       sdk = android.androidsdk.overrideAttrs (previous: {
-        # T3 Code discovers avdmanager specifically through cmdline-tools/latest.
+
         postInstall = (previous.postInstall or "") + ''
           ln -s "$out"/libexec/android-sdk/cmdline-tools/* "$out/libexec/android-sdk/cmdline-tools/latest"
         '';
@@ -30,9 +30,6 @@
         ANDROID_SDK_ROOT = sdkRoot;
       };
 
-      # Echo unlock/flash over USB without root (rules from Gamer92000/echo-dot-assist).
-      # A packaged rules file, not extraRules: uaccess only applies before 73-seat-late.rules,
-      # and extraRules lands in 99-local.rules.
       services.udev.packages = [
         (pkgs.writeTextDir "lib/udev/rules.d/51-echo-unlock.rules" ''
           SUBSYSTEM=="usb", ATTR{idVendor}=="0e8d", MODE="0660", TAG+="uaccess"
@@ -42,7 +39,6 @@
         '')
       ];
 
-      # Also let already-running tools discover the SDK at its conventional path.
       home-manager.sharedModules = [
         { home.file."Android/Sdk".source = sdkRoot; }
       ];

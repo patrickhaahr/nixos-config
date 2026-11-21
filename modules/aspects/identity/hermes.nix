@@ -42,8 +42,6 @@
       home.stateVersion = "25.11";
     };
 
-    # Passwordless run0 elevation for hermes so it can `just switch` unattended.
-    # manage-units YES is what run0's transient root unit asks for.
     security.polkit.extraConfig = ''
       polkit.addRule(function(action, subject) {
         if (subject.user == "hermes" &&

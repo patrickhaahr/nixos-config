@@ -91,6 +91,7 @@ deploy host target=host action="switch" *args:
 [group('validation')]
 [no-exit-message]
 check *args: fmt lint
+    bash tools/comment-guard
     nix flake check {{ flake }} {{ args }}
 
 [group('validation')]

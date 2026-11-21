@@ -22,8 +22,7 @@ _: {
         enable = true;
         inherit domain;
         configureNginx = true;
-        # nginx talks to the uwsgi socket; the default extra `http = ":8080"`
-        # listener collides with hermes' signal-cli.
+
         uwsgiConfig = { };
         environmentFile = config.sops.templates."searxng.env".path;
         settings = {

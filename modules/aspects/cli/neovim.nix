@@ -12,7 +12,7 @@ _: {
           };
           extraPlugins = {
             fff = {
-              # nixpkgs' fff-nvim-lib 0.11.0 omits libgit2, and cargo-setup-hook's LIBGIT2_NO_VENDOR forbids the vendored copy. Drop this once nixpkgs adds it.
+
               package =
                 let
                   fffLib = pkgs.vimPlugins.fff-nvim.fff-nvim-lib.overrideAttrs (old: {
@@ -73,7 +73,7 @@ _: {
           lsp = {
             enable = true;
             mappings.goToDefinition = "gd";
-            # Backport nixpkgs ac7b1aa until the fixed pnpm hash reaches nixos-unstable.
+
             servers.typescript-language-server.cmd = lib.mkForce [
               (lib.getExe (
                 if

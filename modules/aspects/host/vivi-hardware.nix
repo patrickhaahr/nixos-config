@@ -5,10 +5,8 @@
 
     boot.loader.raspberry-pi.bootloader = "uboot";
 
-    # The default 512 MiB CMA reservation fails on Vivi's 2 GB Pi 4.
     hardware.raspberry-pi.config.all.dt-overlays.vc4-kms-v3d.params.cma-128.enable = true;
 
-    # rpicam-apps expects the Raspberry Pi OS alias for the Pi 4 CMA heap.
     services.udev.extraRules = ''
       SUBSYSTEM=="dma_heap", KERNEL=="default_cma_region", SYMLINK+="dma_heap/vidbuf_cached"
     '';

@@ -15,8 +15,6 @@ _: {
 
         cargoHash = "sha256-ptm4q76Cqb/mR+K8X/MGDLoKt34OdPbfiDpION3jD0Y=";
 
-        # The upstream ydotool probe test requires a short private temporary path,
-        # which Nix's sandbox cannot provide.
         doCheck = false;
       };
     in

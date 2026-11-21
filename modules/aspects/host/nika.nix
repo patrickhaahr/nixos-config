@@ -24,7 +24,7 @@
         self.modules.nixos.computer-use-linux
         self.modules.nixos.fritzing
         self.modules.nixos.doas
-        #self.modules.nixos.hacking
+
         self.modules.nixos.screenshot-ocr
         self.modules.nixos.home-manager
         self.modules.nixos.helium
@@ -52,7 +52,7 @@
         self.modules.nixos.tailscale
         self.modules.nixos.niri
         self.modules.nixos.mpv
-        #self.modules.nixos.poweroff-scheduler
+
         self.modules.nixos.signal
         self.modules.nixos.steam
         self.modules.nixos.sunshine
@@ -110,7 +110,7 @@
       nixpkgs.config.allowUnfree = true;
 
       boot.kernelPackages = pkgs.linuxPackages_latest;
-      # Docker and Bluetooth gamepads need these before kernel module locking kicks in.
+
       boot.kernelModules = [
         "cp210x"
         "hid_playstation"
@@ -134,7 +134,7 @@
         user = "ph";
         sopsFile = ../../../secrets/nika.yaml;
       };
-      #networking.extraHosts = ''    '';
+
       home-manager.users.ph.imports = [
         self.modules.homeManager.spicetify
         self.modules.homeManager.openhome

@@ -75,20 +75,19 @@ in
     {
       imports = [ self.modules.homeManager.agent-mcp ];
 
-      # MCP servers stay out: they point at Linux store binaries that other platforms cannot run.
       lib.agents.codex = {
         portableSettings = pkgs.writeText "codex-portable-settings.json" (builtins.toJSON portableSettings);
         inherit mergeToml;
       };
 
       home = {
-        # nixpkgs' aws-lc dropped its compat openssl.pc and now prefixes its symbols, so openssl-sys needs real OpenSSL beside it. Drop once llm-agents adapts.
+
         packages = [
           (inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.codex.overrideAttrs (old: {
             buildInputs = old.buildInputs ++ [ pkgs.openssl ];
           }))
         ];
-        # Codex only reads ~/.codex/AGENTS.md, never ~/.agents/AGENTS.md
+
         file.".codex/AGENTS.md".source = agentsSourceDir + "/AGENTS.md";
         activation.codexManagedSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
           run ${mergeToml} ${config.home.homeDirectory}/.codex/config.toml ${managedSettings}

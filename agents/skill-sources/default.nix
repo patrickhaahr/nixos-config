@@ -4,8 +4,7 @@
   pkgs,
 }:
 let
-  # Skills are sparse-fetched from pinned commits instead of flake inputs:
-  # a flake input downloads the whole repo on every `nix flake update`.
+
   lock = lib.importJSON ./sources.lock.json;
 
   fetchSkills =
@@ -19,12 +18,12 @@ let
         owner = lib.elemAt parts 0;
         repo = lib.elemAt parts 1;
         inherit (pin) rev hash;
-        # The hash comes from nix-prefetch-git, so never fall back to fetchzip.
+
         forceFetchGit = true;
         sparseCheckout = sparse;
       };
     in
-    # The hash covers exactly the locked paths; fail early instead of on a hash mismatch.
+
     assert lib.assertMsg (
       pin.paths or null == sparse
     ) "skill-sources: lock for ${slug} is stale; run `just update-skills ${slug}`";

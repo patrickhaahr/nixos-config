@@ -43,8 +43,7 @@ in
     programs.noctalia = {
       enable = true;
       package = inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default;
-      # v5 reads TOML; GUI changes remain writable in ~/.local/state/noctalia.
-      # Keep the old v4 JSON files for rollback, but do not load them into v5.
+
       settings = {
         shell = {
           avatar_path = "${../../../assets/nika.jpeg}";

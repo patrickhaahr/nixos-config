@@ -1,4 +1,3 @@
-# Interactive Bash with programmable completion.
 _: {
   flake.modules.homeManager.bash = {
     programs.bash = {
@@ -22,8 +21,6 @@ _: {
       };
     };
 
-    # Interactive ssh sessions start bash as a login shell, which reads
-    # .bash_profile (not .bashrc). HM only writes .bashrc, so bridge it.
     home.file.".bash_profile".text = ''
       [[ -f ~/.bashrc ]] && . ~/.bashrc
     '';

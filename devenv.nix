@@ -2,6 +2,8 @@
 
 {
   packages = with pkgs; [
+    ast-grep
+    jq
     just
     nixfmt
     nixfmt-tree
