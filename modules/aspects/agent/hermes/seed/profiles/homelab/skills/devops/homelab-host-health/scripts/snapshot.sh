@@ -1,7 +1,4 @@
 #!/bin/sh
-# One-round-trip health snapshot of a homelab host. POSIX sh, so it also runs
-# on the router (busybox ash); a missing tool costs its section, not the run.
-#   ssh <alias> sh -s < snapshot.sh
 has() { command -v "$1" >/dev/null 2>&1; }
 section() { printf "\n== %s\n" "$1"; }
 section host; cat /proc/sys/kernel/hostname; uname -sr; uptime

@@ -18,7 +18,7 @@ in
         self.modules.homeManager.identity-ph-desktop
         self.modules.homeManager.agent-browser
         self.modules.homeManager.browse
-        #self.modules.homeManager.hacking
+
         self.modules.homeManager.ghostty
         self.modules.homeManager.cursor
         self.modules.homeManager.noctalia

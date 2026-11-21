@@ -1,9 +1,22 @@
 { pkgs, lib, ... }:
 
 {
+  languages.python = {
+    enable = true;
+    package = pkgs.python315;
+    venv.enable = true;
+    uv = {
+      enable = true;
+      sync.enable = true;
+    };
+    lsp.package = pkgs.basedpyright;
+  };
+
   packages = [
-    pkgs.bun
+    pkgs.ast-grep
+    pkgs.jq
     pkgs.just
+    pkgs.ruff
   ];
 
   git-hooks.hooks = {

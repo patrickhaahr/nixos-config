@@ -1,0 +1,20 @@
+app := "src/App"
+
+default:
+    @just --list
+
+# Format, build with warnings as errors, comment guard and tests: the gate before every commit.
+check:
+    dotnet format
+    dotnet build
+    bash tools/comment-guard
+    dotnet test --no-build
+
+dev *args:
+    dotnet run --project {{ app }} -- {{ args }}
+
+build:
+    dotnet publish {{ app }} -c Release
+
+test-one name:
+    dotnet test --treenode-filter "/*/*/*/{{ name }}"

@@ -13,7 +13,7 @@
         name = "helium-launcher";
         paths = [ cfg.package ];
         nativeBuildInputs = [ pkgs.makeWrapper ];
-        # Helium needs the system Vulkan loader and driver manifests for native WebGPU.
+
         postBuild = ''
           wrapProgram "$out/bin/helium" \
             --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [ pkgs.vulkan-loader ]}" \

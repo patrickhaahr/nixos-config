@@ -41,10 +41,9 @@
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIA9QHax4U5wGvtHs+J12lX6VwSfRAboJCAXVuUiNnM0+ nika-to-zaza"
     ];
     users.users.ph.extraGroups = [ "networkmanager" ];
-    # OpenHome CLI for Hermes; the Nika-only speaker lifecycle automations
-    # stay disabled.
+
     services.openhome.enable = true;
-    # Agents read untrusted input; a prompt-injected one tries stolen keys.
+
     canary = {
       user = "hermes";
       sopsFile = ../../../secrets/zaza.yaml;

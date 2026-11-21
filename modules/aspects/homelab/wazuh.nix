@@ -1,8 +1,6 @@
 { self, ... }:
 {
-  # Wazuh single-node (manager, indexer, dashboard) as podman containers,
-  # following upstream wazuh-docker/single-node. nginx serves the dashboard;
-  # agents enroll on 1515 and report on 1514.
+
   flake.modules.nixos.homelab-wazuh =
     {
       config,
@@ -11,7 +9,7 @@
       ...
     }:
     let
-      # `just update-wazuh` bumps this, the image tags and the source hash.
+
       version = "4.14.10";
       upstream = pkgs.fetchFromGitHub {
         owner = "wazuh";
@@ -31,7 +29,6 @@
           (builtins.readFile "${single}/wazuh_cluster/wazuh_manager.conf")
       );
 
-      # Upstream's file with server TLS off: nginx terminates TLS.
       dashboardConf = pkgs.writeText "opensearch_dashboards.yml" ''
         server.host: 0.0.0.0
         server.port: ${toString dashboardPort}
@@ -105,7 +102,7 @@
               "${certs}/root-ca-manager.pem:/etc/ssl/root-ca.pem:ro"
               "${certs}/wazuh.manager.pem:/etc/ssl/filebeat.pem:ro"
               "${certs}/wazuh.manager-key.pem:/etc/ssl/filebeat.key:ro"
-              # The entrypoint copies /wazuh-config-mount over /var/ossec.
+
               "${managerConf}:/wazuh-config-mount/etc/ossec.conf:ro"
               "${config.sops.secrets.wazuh_authd_password.path}:/wazuh-config-mount/etc/authd.pass:ro"
             ];
@@ -160,9 +157,6 @@
       virtualisation.oci-containers.containers = containers;
       homelab.podmanNetworks.wazuh = builtins.attrNames containers;
 
-      # Certificates are generated once. The indexer reads internal_users.yml
-      # only when it first creates its security index; changing a password
-      # later needs securityadmin.sh inside the indexer.
       systemd.services = {
         wazuh-setup = {
           description = "Wazuh certificates and indexer users";

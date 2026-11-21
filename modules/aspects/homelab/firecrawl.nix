@@ -1,7 +1,6 @@
 { self, ... }:
 {
-  # Self-hosted firecrawl as podman containers on one network. Images are
-  # pinned as `repo:tag@digest`; `just update-images` re-resolves the tags.
+
   flake.modules.nixos.homelab-firecrawl =
     { config, ... }:
     let

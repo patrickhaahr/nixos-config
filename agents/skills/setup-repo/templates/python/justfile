@@ -1,0 +1,18 @@
+app := "app"
+
+default:
+    @just --list
+
+# Format, ruff with safe autofixes, comment guard, typecheck and tests: the gate before every commit.
+check:
+    ruff format
+    ruff check --fix
+    bash tools/comment-guard
+    basedpyright
+    uv run pytest -q || test $? -eq 5
+
+dev *args:
+    uv run {{ app }} {{ args }}
+
+test-one name:
+    uv run pytest -k {{ name }}

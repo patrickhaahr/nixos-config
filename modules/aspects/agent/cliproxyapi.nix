@@ -8,7 +8,7 @@
       ...
     }:
     let
-      # Generate once at activation; keep credentials out of the Nix store.
+
       readKey = pkgs.writeShellScript "cliproxyapi-read-key" ''
         set -eu
         umask 077

@@ -52,9 +52,7 @@ let
 
           openhome-optical-at-shutdown = {
             description = "Send OpenHome optical request at shutdown";
-            # Start jobs are cancelled during the shutdown transaction, so the
-            # command runs from ExecStop of a RemainAfterExit oneshot instead,
-            # ordered before shutdown.target but before the network stops.
+
             wantedBy = [ "multi-user.target" ];
             after = [ "network.target" ];
             conflicts = [ "shutdown.target" ];

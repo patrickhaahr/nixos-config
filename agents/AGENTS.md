@@ -19,8 +19,8 @@ Fight entropy. Leave the codebase better than you found it.
 - No implicit state machines: model each lifecycle as one tagged union with one transition function, and give every non-terminal state a way out (failure, cancel, timeout, or recovery after restart).
 
 ## Documentation
-- Comment only the *why*: a safety invariant or the reason behind a non-obvious decision.
-- Project knowledge (architecture, flows, conventions) goes in the repo's AGENTS.md. A topic too long for it becomes a repo skill in `.agents/skills/`, with a pointer from AGENTS.md and `.claude/skills` symlinked to `../.agents/skills` so Claude Code reads it.
+- Code carries no comments: the *why* goes in names, types and tests, a decision in an ADR, a known hack in an issue. Fix what a lint suppression silences, or disable the rule in config.
+- Project knowledge goes in the repo's AGENTS.md; a topic too long for it becomes a repo skill in `.agents/skills/` behind a pointer, with `.claude/skills` symlinked to `../.agents/skills`.
 
 ## Tests
 - Write tests only for algorithmic logic, boundary IO, and integration flows.

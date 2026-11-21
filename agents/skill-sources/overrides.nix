@@ -22,7 +22,13 @@ in
   better-typography.disable-model-invocation = true;
   better-ui.disable-model-invocation = true;
   better-writing.disable-model-invocation = true;
-  grilling.disable-model-invocation = true;
+
+  better-interface.replace."Load every owning skill below and complete each domain review" =
+    "Each owning skill below is manual-only, so the Skill tool refuses it: read `~/.agents/skills/<name>/SKILL.md` for each and complete its domain review";
+  cloudflare.replace."and load the `wrangler` skill." =
+    "and read `~/.agents/skills/wrangler/SKILL.md` (manual-only, so the Skill tool refuses it).";
+  interface-review.replace."Hand `better-interface` the scope block" =
+    "Read `~/.agents/skills/better-interface/SKILL.md` (manual-only, so the Skill tool refuses it) and hand it the scope block";
 
   ai-seo = manual "Optimize content to be cited in AI answers such as ChatGPT, Perplexity and AI Overviews.";
   animate = manual "Build a web animation: purpose, properties, curve, duration and interruption.";

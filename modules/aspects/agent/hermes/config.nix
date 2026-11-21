@@ -7,9 +7,7 @@
       ...
     }:
     let
-      # Seeded, not enforced: written only where config.yaml lacks the key, so
-      # runtime edits (dashboard, TUI, `hermes config set`) survive switches.
-      # `hermes config unset <key>` restores the value below on the next switch.
+
       seedSettings = pkgs.writeText "hermes-seed-settings.json" (
         builtins.toJSON {
           model = {
@@ -63,8 +61,7 @@
           };
           agent.max_turns = 90;
           display.tool_progress = "all";
-          # Keep the default Hermes profile limited to its local
-          # orchestration skills. Specialist profiles own domain skills.
+
           skills.external_dirs = [ ];
           approvals.mode = "off";
           delegation = {
@@ -78,8 +75,7 @@
           };
           mcp_servers = {
             politikdata.url = "https://mcp.politikdata.dk/mcp";
-            # OpenHome MCP (shared home-control API).
-            # ${OPENHOME_API_KEY} expands from the sops-owned .hermes/.env.
+
             openhome = {
               url = "https://openhome.haahr.me/mcp";
               headers.Authorization = "Bearer \${OPENHOME_API_KEY}";
@@ -87,8 +83,7 @@
           };
         }
       );
-      # Same YAML dialect and dumper settings as the upstream merge script, so
-      # the perl patches below keep seeing the formatting they match against.
+
       seedConfig = pkgs.writeScript "hermes-config-seed" ''
         #!${pkgs.python3.withPackages (ps: [ ps.ruamel-yaml ])}/bin/python3
         import json, sys
@@ -125,8 +120,7 @@
 
       home = {
         activation = {
-          # Restart even when the unit text is unchanged, after config and units
-          # have been installed, so a switch cannot leave an old process alive.
+
           hermes-restart =
             lib.hm.dag.entryAfter
               [
@@ -145,17 +139,12 @@
                 fi
               '';
 
-          # Opt out of Hermes managed mode so the CLI, TUI and dashboard may
-          # write config.yaml; Nix still enforces `settings` on every switch.
-          # Don't run `hermes update`: the package lives in the Nix store.
           hermes-runtime-config = lib.hm.dag.entryAfter [ "hermesAgentSetup" ] ''
             hermes_home="${config.home.homeDirectory}/.hermes"
             run ${seedConfig} ${seedSettings} "$hermes_home/config.yaml"
             run install -m 0600 ${pkgs.writeText "hermes-unmanaged" "false"} "$hermes_home/.managed"
           '';
 
-          # profile_routes are parsed literally by Hermes; substitute the SOPS-backed
-          # group ID after the managed config merge, without storing it in the flake.
           hermes-signal-coach-route = lib.hm.dag.entryAfter [ "hermesAgentSetup" ] ''
             route_config="${config.home.homeDirectory}/.hermes/config.yaml"
             env_file="${config.home.homeDirectory}/.hermes/.env"
@@ -172,9 +161,6 @@
               if [ -n "$homelab_group_id" ]; then
                 ${pkgs.perl}/bin/perl -0pi -e "s#(?m)^  - chat_id: .*?(?=\\n    name: signal-group-homelab)#  - chat_id: group:$homelab_group_id#" "$route_config"
               fi
-              # The uwu user is the allowed DM user who is not the owner (home channel).
-              # Resolve only when exactly one such user exists; otherwise the
-              # placeholder never matches and their DMs stay on the default.
               home_channel="$(grep '^SIGNAL_HOME_CHANNEL=' "$env_file" | cut -d= -f2- || true)"
               uwu_user_id="$(grep '^SIGNAL_ALLOWED_USERS=' "$env_file" | cut -d= -f2- | tr ',' '\n' | grep -vxF "$home_channel" | grep . || true)"
               if [ -n "$uwu_user_id" ] && [ "$(printf '%s\n' "$uwu_user_id" | wc -l)" -eq 1 ]; then
@@ -183,10 +169,6 @@
             fi
           '';
 
-          # Enable the installed Live Voice plugin in the shared config and
-          # every named profile: named profiles have their own config.yaml, so
-          # the Home Manager-owned setting alone does not reach them. Covers
-          # enabled-with-items, empty list, and key-absent shapes.
           hermes-live-voice-plugin = lib.hm.dag.entryAfter [ "hermesAgentSetup" ] ''
             for route_config in "${config.home.homeDirectory}/.hermes/config.yaml" "${config.home.homeDirectory}/.hermes"/profiles/*/config.yaml; do
               [ -f "$route_config" ] || continue
@@ -197,9 +179,6 @@
             done
           '';
 
-          # Named profiles load their own .env, not the shared one, so
-          # ${OPENHOME_API_KEY} in a profile's openhome MCP header expands empty
-          # (401). Sync the sops-backed key into every profile that uses it.
           hermes-profile-openhome-key = lib.hm.dag.entryAfter [ "hermesAgentSetup" ] ''
             key_file="${config.sops.secrets.openhome_api_key.path}"
             if [ -r "$key_file" ]; then
@@ -217,11 +196,6 @@
             fi
           '';
 
-          # Only the shared default profile owns the Signal adapter; named
-          # profiles are targets of group routes. The gateway reads every
-          # profile's .env at boot, and a profile account signal-cli lacks
-          # fails its contact refresh and home-channel notice ("Specified
-          # account does not exist").
           hermes-profile-signal-isolation = lib.hm.dag.entryAfter [ "hermesAgentSetup" ] ''
             for profile_env in "${config.home.homeDirectory}/.hermes"/profiles/*/.env; do
               [ -f "$profile_env" ] || continue
@@ -235,8 +209,6 @@
         };
       };
 
-      # Appended after the upstream HERMES_MANAGED=home-manager; systemd keeps
-      # the last assignment.
       systemd.user.services = lib.genAttrs [ "hermes-agent" "hermes-backend" ] (_: {
         Service.Environment = lib.mkAfter [ "HERMES_MANAGED=false" ];
       });
@@ -245,10 +217,6 @@
         enable = true;
         gateway.enable = true;
 
-        # GPT-Live voice for hermes-talk (its `live` extra): aiortc and the
-        # packages the sealed venv lacks. Their dependencies are build-only
-        # here: av, cryptography and cffi come from the venv at run time, and
-        # propagating them again fails the module's collision check.
         extraPythonPackages =
           let
             py = config.services.hermes-agent.package.python.pkgs;
@@ -264,8 +232,7 @@
                 {
                   dependencies = [ ];
                   propagatedBuildInputs = [ ];
-                  # Python deps build-only; C libraries (libsrtp, openssl) stay
-                  # host inputs so their headers and rpath reach the extension.
+
                   nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ isPy;
                   buildInputs = (old.buildInputs or [ ]) ++ notPy;
                   doCheck = false;
@@ -291,51 +258,43 @@
         };
 
         settings = {
-          # talk-desktop is enabled per-config-file by the
-          # hermes-live-voice-plugin activation below, not via
-          # plugins.enabled here: a managed list would replace the
-          # runtime-enabled plugins globally (herdr-agent-state).
+
           gateway.profile_routes = [
             {
               name = "signal-group-coach";
               platform = "signal";
-              # The group ID is secret-backed in HERMES_HOME/.env (sops), never
-              # in the repo: config expands ${VAR} at load time.
+
               chat_id = "group:__COACH_GID__";
               profile = "coach";
             }
             {
               name = "signal-group-home";
               platform = "signal";
-              # Household group; resolved from SOPS at activation.
+
               chat_id = "group:__HOME_GID__";
               profile = "household";
             }
             {
               name = "signal-group-homelab";
               platform = "signal";
-              # Homelab operations group; resolved from SOPS at activation.
+
               chat_id = "group:__HOMELAB_GID__";
               profile = "homelab";
             }
             {
               name = "signal-dm-uwu";
               platform = "signal";
-              # Signal DM chat_id is the sender ID, so this scopes to the uwu user's
-              # DMs only; their group messages keep the group's profile.
-              # Resolved from SIGNAL_ALLOWED_USERS (sops) at activation.
+
               chat_id = "__UWU_UID__";
               profile = "uwu";
             }
           ];
           platforms.signal = {
             enabled = true;
-            # Silently drop unauthorized direct messages; never send pairing
-            # codes or decline bubbles to unknown Signal users.
+
             unauthorized_dm_behavior = "ignore";
           };
-          # Bound to loopback behind nginx; the backend accepts only the bound
-          # host or this public one.
+
           dashboard.public_url = "https://hermes.zaza.haahr.me";
           dashboard.basic_auth = {
             username = "ph";

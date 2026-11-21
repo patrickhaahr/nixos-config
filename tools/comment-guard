@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+baseline=tools/comment-baseline
+
+current_counts() {
+  local json status=0 matches exempt
+  json=$(ast-grep scan --json=stream 2>/dev/null) || status=$?
+  if ((status > 1)); then
+    ast-grep scan >/dev/null || true
+    exit "$status"
+  fi
+  if jq -e -s 'any(.[]; .text | test("ast-grep-ignore"))' <<<"$json" >/dev/null; then
+    echo "ast-grep-ignore hides comments from the guard; delete it." >&2
+    exit 1
+  fi
+  matches=$(jq -r '[(.file | gsub("\\\\"; "/")), .range.end.line - .range.start.line + 1] | @tsv' <<<"$json")
+  [[ -z $matches ]] && return 0
+  exempt=$(cut -f1 <<<"$matches" | sort -u | tr '\n' '\0' |
+    git check-attr -z --stdin comment-guard linguist-generated linguist-vendored |
+    xargs -0 -n3 printf '%s\t%s\t%s\n' |
+    awk -F'\t' '($2 == "comment-guard" && $3 == "unset") || ($2 ~ /^linguist-/ && ($3 == "set" || $3 == "true")) { print $1 }')
+  awk -F'\t' -v OFS='\t' 'FILENAME == ARGV[1] { skip[$1] = 1; next } !skip[$1] { lines[$1] += $2 }
+    END { for (f in lines) print lines[f], f }' <(rows "$exempt") <(rows "$matches")
+}
+
+allowed_counts() {
+  [[ -f $baseline ]] && tr -d '\r' <"$baseline" || true
+}
+
+rows() {
+  [[ -n $1 ]] && printf '%s\n' "$1" || true
+}
+
+lowered() {
+  awk -F'\t' -v OFS='\t' 'FILENAME == ARGV[1] { now[$2] = $1; next } { n = now[$2] + 0; if (n > 0) print (n < $1 ? n : $1), $2 }' \
+    <(rows "$1") <(allowed_counts)
+}
+
+write_baseline() {
+  local rows
+  rows=$(sort -t $'\t' -k2)
+  if [[ -z $rows ]]; then
+    rm -f "$baseline"
+  else
+    printf '%s\n' "$rows" >"$baseline"
+  fi
+}
+
+check() {
+  local over
+  over=$(awk -F'\t' 'FILENAME == ARGV[1] { allowed[$2] = $1; next }
+    $1 > allowed[$2] + 0 { printf "  %s  %d > %d\n", $2, $1, allowed[$2] + 0 }' <(allowed_counts) <(rows "$1"))
+  [[ -z $over ]] && return 0
+
+  {
+    echo "Comment lines over the count in $baseline (now > allowed):"
+    echo "$over"
+    cat <<'MSG'
+
+Delete each comment and move what it knew:
+  - the why of the code into names, types and tests;
+  - a non-obvious decision into an ADR;
+  - a known hack into an issue;
+  - a lint suppression: fix the code it silences, or turn the rule off in the lint config.
+Kept by design: licence headers, Rust SAFETY: notes and # Safety docs, prettier-ignore, and a bare issue or RFC link.
+`ast-grep scan <path>` shows each comment; `ast-grep scan --update-all <path>` deletes them all.
+MSG
+  } >&2
+  return 1
+}
+
+counts=$(current_counts)
+
+case ${1-} in
+  "")
+    lowered "$counts" | write_baseline
+    check "$counts"
+    ;;
+  --init)
+    if [[ -f $baseline ]]; then
+      echo "$baseline exists; --init only seeds a repo that has none." >&2
+      exit 1
+    fi
+    rows "$counts" | write_baseline
+    ;;
+  *)
+    echo "usage: comment-guard [--init]" >&2
+    exit 2
+    ;;
+esac

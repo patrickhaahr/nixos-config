@@ -106,7 +106,7 @@
 
     hex = {
       url = "github:anomalyco/hex/v3.3.0";
-      # Keep Hex's libc compatible with the host's Vulkan drivers.
+
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
     };

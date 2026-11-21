@@ -38,7 +38,6 @@
           };
         };
 
-        # sops-nix creates a missing parent as root; hand it back to the user.
         systemd.tmpfiles.settings.canary."${account.home}/.aws".d = {
           inherit (cfg) user;
           inherit (account) group;

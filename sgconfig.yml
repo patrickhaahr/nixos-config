@@ -1,0 +1,3 @@
+ruleDirs: [tools/ast-grep]
+languageGlobs:
+  bash: ["*-guard"]

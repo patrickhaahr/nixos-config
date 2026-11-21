@@ -16,7 +16,7 @@ Done when every decision has, in your notes, the answer you would accept and the
 
 ## 2. Examine
 
-Open by naming the scope and the number of decisions you will cover. Then ask one question per turn, in plain prose, and end the turn to wait for the answer. Each question targets one decision and takes one of these shapes:
+Examine in rounds. Round one names the scope and asks every question at once as a numbered list, then ends the turn; the defendant answers them in one go. Each question targets one decision and takes one of these shapes:
 
 - **How**: walk me through what happens when…
 - **Why**: why X instead of Y, where Y is the alternative this code actually had.
@@ -24,15 +24,15 @@ Open by naming the scope and the number of decisions you will cover. Then ask on
 - **Structure**: what holds this data, and why that shape?
 - **Failure**: where does this break, and what does the user see when it does?
 
-Questions carry no hints. Ask about the decision and withhold its answer.
+Questions carry no hints. Ask about the decision and withhold its answer, including from the other questions in the same round: word each so that reading the whole list gives nothing away.
 
-Dig into each answer before moving on:
+Each later round digs, keeping the original numbers and asking only about the answers that need it:
 
 - Vague or hand-waved: ask for the mechanism one level deeper.
-- "I don't know": descend a rung instead of moving on. First "how does it work in this system?", then "from what you know about the underlying layer in general, what are a couple of ways it could work?", then the bare concept. Sound reasoning from principles that lands on or near what the code does counts.
+- Skipped or "I don't know": descend a rung. First "how does it work in this system?", then "from what you know about the underlying layer in general, what are a couple of ways it could work?", then the bare concept. Sound reasoning from principles that lands on or near what the code does counts.
 - Confident and wrong: say it is wrong and give one more attempt before recording it.
 
-Record a verdict per decision: **defended** (correct, or missing only names and details), **reasoned** (reached through the rungs), or **gap** (wrong, or no working model at any rung).
+A decision leaves the rounds once it has a verdict: **defended** (correct, or missing only names and details), **reasoned** (reached through the rungs), or **gap** (wrong, or no working model at any rung).
 
 Done when every decision has a verdict, or the defendant calls time.
 

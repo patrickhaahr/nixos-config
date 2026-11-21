@@ -1,15 +1,12 @@
 _: {
-  # nginx terminates TLS for *.zaza.haahr.me with one wildcard certificate
-  # (Cloudflare DNS-01). Service aspects only declare
-  # `services.nginx.virtualHosts."<name>.zaza.haahr.me"`.
+
   flake.modules.nixos.homelab-proxy =
     { config, lib, ... }:
     let
       domain = "zaza.haahr.me";
     in
     {
-      # Re-declaring a submodule option merges into the upstream one, so every
-      # vhost on this host defaults to the wildcard cert and HTTPS redirect.
+
       options.services.nginx.virtualHosts = lib.mkOption {
         type = lib.types.attrsOf (
           lib.types.submodule {
@@ -28,9 +25,7 @@ _: {
           certs.${domain} = {
             domain = "*.${domain}";
             dnsProvider = "cloudflare";
-            # The router hijacks all port-53 traffic to AdGuard, whose cache
-            # never sees the fresh TXT record, so propagation checks time out.
-            # Wait a fixed time instead.
+
             extraLegoFlags = [
               "--dns.propagation.wait"
               "120s"

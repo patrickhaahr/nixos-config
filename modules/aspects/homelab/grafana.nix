@@ -1,7 +1,5 @@
 _: {
-  # Grafana over loki (logs, from the journal via alloy) and prometheus
-  # (metrics, `homelab-prometheus`). Everything listens on loopback; nginx
-  # serves grafana.
+
   flake.modules.nixos.homelab-grafana =
     { config, ... }:
     let
@@ -55,8 +53,7 @@ _: {
               http_listen_port = lokiPort;
               grpc_listen_address = "127.0.0.1";
             };
-            # The querier dials the frontend at its advertised address, which
-            # defaults to the LAN IP, not the loopback gRPC listener.
+
             frontend.address = "127.0.0.1";
             common = {
               path_prefix = config.services.loki.dataDir;

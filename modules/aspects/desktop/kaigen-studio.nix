@@ -1,8 +1,3 @@
-# Kaigen Studio and CLI. Version and sha512 pins come from the vendor's
-# https://api.kaigen3d.com/studio.sh and install.sh scripts respectively.
-#
-# To bump a release: re-read https://api.kaigen3d.com/studio.sh and update
-# Studio version + both sha512 values; use install.sh for the CLI pin.
 { lib, ... }:
 {
   flake.modules.nixos.kaigen-studio =
@@ -13,16 +8,13 @@
       cliSha512 = "4e4391d54cf597b97b29561595e59356c5ef68f7b22986b49f89ba1ef2ceca91fc6deb8f795440a06c7b7c5c493eccb83389094992970c3618bd0a9d439919d4";
       studioSha512 = "7fee04b2971ba4f0fd09454ce3de78380e045bf882175b71e3a4c9df58c08e73df69a6a55187bd17710f7b99cd8e08422882ef653db0c8482328d43a468d9011";
       iconSha512 = "7a4316e4d3f785471bfbd338a32d60920843ac86dbae43e2672111aebb3963cc3b56ee5b6d423e7f6ba92d5a37677af3761717c1c799be2aa7076f19aa4b83f3";
-      # Toolchain installation shells out to tar; supply its decompressors too
-      # so desktop launches do not depend on the user's shell environment.
+
       archiveTools = lib.makeBinPath [
         pkgs.gnutar
         pkgs.gzip
         pkgs.xz
       ];
-      # The engine scans /usr/share/fonts, /usr/local/share/fonts and ~/.fonts
-      # for system fonts; NixOS has none of those, so this tmpfiles rule exposes
-      # the fonts we ship to one of them.
+
       systemFonts = pkgs.symlinkJoin {
         name = "kaigen-studio-system-fonts";
         paths = with pkgs; [
@@ -51,8 +43,7 @@
             install -Dm755 "$src" "$out/bin/kaigen"
             runHook postInstall
           '';
-          # HTTPS support is loaded with dlopen, so ELF dependency scanning
-          # cannot discover OpenSSL automatically.
+
           postFixup = ''
             wrapProgram "$out/bin/kaigen" \
               --prefix PATH : "${archiveTools}" \

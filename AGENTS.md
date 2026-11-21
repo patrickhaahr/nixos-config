@@ -4,6 +4,7 @@
 - This repo is a `flake-parts` flake with `import-tree ./modules` in `flake.nix`. Every `.nix` file under `modules/` is loaded automatically; do not add scratch files there.
 - New files are invisible to `nix flake` evaluation until Git tracks them. Stage a new file with `git add <path>` before `nix eval`, `nix flake check`, or `nix build`.
 - The active config is the dendritic tree under `modules/aspects/`. Prefer editing those files over anything in `modules/hosts/` except the host entrypoint you are wiring.
+- Decisions the code cannot show live in `docs/adr/`. Before changing an aspect, read the ADRs that name it; record a new constraint as an ADR there (domain-modeling format), never as a comment.
 - Hosts: `nika` is the desktop, `zaza` the headless homelab running Hermes and T3 Code as the `hermes` user, `imu` the WSL host. Use the host relevant to the change, not `nika` by default.
 
 ## Dendritic Rules
@@ -18,6 +19,7 @@
 - Podman containers join networks through `homelab.podmanNetworks` (import `homelab-podman`) and pin images as `repo:tag@sha256:…`; `just update-images` re-resolves every such tag.
 - Hermes hosts compose through the `agent-hermes-host` seam in `modules/aspects/agent/hermes/host.nix`.
 - External skills are listed in `agents/skill-sources/sources.nix` and sparse-fetched, never added as flake inputs (an input downloads the whole repo). After changing an entry, run `just update-skills <owner/repo>`; only that recipe writes `sources.lock.json`.
+- Before making a skill manual-only in `agents/skill-sources/overrides.nix`, find the skills that load it: rewrite each reference with `<skill>.replace."<exact text>"` so it reads `~/.agents/skills/<name>/SKILL.md` instead, or leave the skill model-invocable.
 - `modules/aspects/agent/browser-use/` vendors a `uv.lock`; regenerate it with `uv lock --python 3.12` when bumping.
 - `nix flake check` warns `unknown flake output 'modules'`; this is expected here.
 - After every implementation, ask: is the dendritic pattern implemented correctly? If not, redo the implementation.

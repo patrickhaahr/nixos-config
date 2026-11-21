@@ -8,7 +8,7 @@ _: {
       ];
       openssh.authorizedKeys.keyFiles = [
         ./ph-vivi.pub
-        # hermes agent outbound key
+
         ../../../secrets/hermes/hosts.pub
       ];
     };

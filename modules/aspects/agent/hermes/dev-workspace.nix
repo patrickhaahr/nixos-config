@@ -1,13 +1,8 @@
-# Dev workspace + PR pipeline: gh authenticated only from the
-# sops-rendered GITHUB_TOKEN, nixos-config cloned at the root of the
-# hermes home (trust boundary — deliberately outside ~/dev). Git/gh
-# configuration itself lives in git.nix.
 _: {
   flake.modules.nixos.agent-hermes-dev-workspace =
     { lib, pkgs, ... }:
     {
-      # Runs in the system manager (so it can order after network-online and
-      # the NixOS-level sops render), as hermes with her own ssh config.
+
       systemd.services.hermes-workspace = {
         description = "Hermes dev workspace bootstrap";
         wantedBy = [ "multi-user.target" ];

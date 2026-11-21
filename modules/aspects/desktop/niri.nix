@@ -388,7 +388,7 @@
                     ];
                   };
                 }
-                # The last modifier pressed is the keysym; support either order.
+
                 //
                   lib.genAttrs
                     [

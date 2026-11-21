@@ -4,8 +4,7 @@
   pkgs,
 }:
 let
-  # Skills are sparse-fetched from pinned commits instead of flake inputs:
-  # a flake input downloads the whole repo on every `nix flake update`.
+
   lock = lib.importJSON ./sources.lock.json;
 
   fetchSkills =
@@ -19,12 +18,12 @@ let
         owner = lib.elemAt parts 0;
         repo = lib.elemAt parts 1;
         inherit (pin) rev hash;
-        # The hash comes from nix-prefetch-git, so never fall back to fetchzip.
+
         forceFetchGit = true;
         sparseCheckout = sparse;
       };
     in
-    # The hash covers exactly the locked paths; fail early instead of on a hash mismatch.
+
     assert lib.assertMsg (
       pin.paths or null == sparse
     ) "skill-sources: lock for ${slug} is stale; run `just update-skills ${slug}`";
@@ -36,8 +35,8 @@ let
   overrides = import ./overrides.nix;
   unknown = lib.subtractLists (builtins.attrNames skills) (builtins.attrNames overrides);
 
-  patchFrontmatter =
-    pkgs.writers.writePython3 "skill-patch-frontmatter"
+  patchSkill =
+    pkgs.writers.writePython3 "skill-patch"
       {
         libraries = [ pkgs.python3Packages.pyyaml ];
       }
@@ -52,6 +51,10 @@ let
         _, front, body = path.read_text().split("---\n", 2)
         meta = yaml.safe_load(front)
         meta.update(json.loads(sys.argv[2]))
+        for old, new in json.loads(sys.argv[3]).items():
+            if body.count(old) != 1:
+                sys.exit(f"{path}: replace target must occur once: {old!r}")
+            body = body.replace(old, new)
         dumped = yaml.safe_dump(
             meta, sort_keys=False, allow_unicode=True, width=1000
         )
@@ -59,10 +62,12 @@ let
       '';
 
   patch =
-    name: src: fields:
+    name: src: override:
     pkgs.runCommand "skill-${name}" { } ''
       cp -rL --no-preserve=mode ${src} $out
-      ${patchFrontmatter} $out/SKILL.md ${lib.escapeShellArg (builtins.toJSON fields)}
+      ${patchSkill} $out/SKILL.md \
+        ${lib.escapeShellArg (builtins.toJSON (removeAttrs override [ "replace" ]))} \
+        ${lib.escapeShellArg (builtins.toJSON (override.replace or { }))}
     '';
 in
 assert lib.assertMsg (unknown == [ ]) "skill overrides name missing skills: ${toString unknown}";
