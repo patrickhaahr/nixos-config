@@ -67,23 +67,6 @@ _: {
           lsp = {
             enable = true;
             mappings.goToDefinition = "gd";
-
-            servers.typescript-language-server.cmd = lib.mkForce [
-              (lib.getExe (
-                if
-                  pkgs.typescript-language-server.pnpmDeps.outputHash
-                  == "sha256-MUSxDMlbG21KSesGdEvqa2kEpuVfLlXRUX1qV/FGsSo="
-                then
-                  pkgs.typescript-language-server.overrideAttrs (old: {
-                    pnpmDeps = old.pnpmDeps.overrideAttrs {
-                      outputHash = "sha256-xR/EF60lVBsITKgH7wCM2wHM46PFQevD51KfCENSUH4=";
-                    };
-                  })
-                else
-                  pkgs.typescript-language-server
-              ))
-              "--stdio"
-            ];
           };
           globals.netrw_banner = 0;
           options = {
