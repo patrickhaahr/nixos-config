@@ -5,6 +5,7 @@
 
   packages = [
     pkgs.ast-grep
+    pkgs.jq
     pkgs.just
   ];
 

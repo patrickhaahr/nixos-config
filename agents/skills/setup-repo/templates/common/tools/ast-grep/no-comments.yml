@@ -6,7 +6,8 @@ message: Carry the why in names, types and tests, a decision in an ADR, and a kn
 rule:
   kind: comment
   not:
-    regex: '^(?:#!|(?://|/\*|#)\s*(?:SAFETY:|prettier-ignore|SPDX-License-Identifier:|Copyright\b|https?://\S+\s*(?:\*/)?$))'
+    any:
+      - regex: '^(?://|/\*|#)\s*(?:prettier-ignore\b|SPDX-License-Identifier:|Copyright\s+(?:\(c\)\s*|©\s*)?\d{4}|https?://\S+\s*(?:\*/)?$)'
 fix: ""
 ---
 id: no-comments-tsx
@@ -16,7 +17,8 @@ message: Carry the why in names, types and tests, a decision in an ADR, and a kn
 rule:
   kind: comment
   not:
-    regex: '^(?:#!|(?://|/\*|#)\s*(?:SAFETY:|prettier-ignore|SPDX-License-Identifier:|Copyright\b|https?://\S+\s*(?:\*/)?$))'
+    any:
+      - regex: '^(?://|/\*|#)\s*(?:prettier-ignore\b|SPDX-License-Identifier:|Copyright\s+(?:\(c\)\s*|©\s*)?\d{4}|https?://\S+\s*(?:\*/)?$)'
 fix: ""
 ---
 id: no-comments-javascript
@@ -26,7 +28,8 @@ message: Carry the why in names, types and tests, a decision in an ADR, and a kn
 rule:
   kind: comment
   not:
-    regex: '^(?:#!|(?://|/\*|#)\s*(?:SAFETY:|prettier-ignore|SPDX-License-Identifier:|Copyright\b|https?://\S+\s*(?:\*/)?$))'
+    any:
+      - regex: '^(?://|/\*|#)\s*(?:prettier-ignore\b|SPDX-License-Identifier:|Copyright\s+(?:\(c\)\s*|©\s*)?\d{4}|https?://\S+\s*(?:\*/)?$)'
 fix: ""
 ---
 id: no-comments-python
@@ -36,7 +39,12 @@ message: Carry the why in names, types and tests, a decision in an ADR, and a kn
 rule:
   kind: comment
   not:
-    regex: '^(?:#!|(?://|/\*|#)\s*(?:SAFETY:|prettier-ignore|SPDX-License-Identifier:|Copyright\b|https?://\S+\s*(?:\*/)?$))'
+    any:
+      - regex: '^(?://|/\*|#)\s*(?:prettier-ignore\b|SPDX-License-Identifier:|Copyright\s+(?:\(c\)\s*|©\s*)?\d{4}|https?://\S+\s*(?:\*/)?$)'
+      - all:
+          - regex: '^#!'
+          - inside: {kind: module, stopBy: neighbor}
+          - nthChild: 1
 fix: ""
 ---
 id: no-comments-bash
@@ -46,7 +54,12 @@ message: Carry the why in names, types and tests, a decision in an ADR, and a kn
 rule:
   kind: comment
   not:
-    regex: '^(?:#!|(?://|/\*|#)\s*(?:SAFETY:|prettier-ignore|SPDX-License-Identifier:|Copyright\b|https?://\S+\s*(?:\*/)?$))'
+    any:
+      - regex: '^(?://|/\*|#)\s*(?:prettier-ignore\b|SPDX-License-Identifier:|Copyright\s+(?:\(c\)\s*|©\s*)?\d{4}|https?://\S+\s*(?:\*/)?$)'
+      - all:
+          - regex: '^#!'
+          - inside: {kind: program, stopBy: neighbor}
+          - nthChild: 1
 fix: ""
 ---
 id: no-comments-nix
@@ -56,7 +69,8 @@ message: Carry the why in names, types and tests, a decision in an ADR, and a kn
 rule:
   kind: comment
   not:
-    regex: '^(?:#!|(?://|/\*|#)\s*(?:SAFETY:|prettier-ignore|SPDX-License-Identifier:|Copyright\b|https?://\S+\s*(?:\*/)?$))'
+    any:
+      - regex: '^(?://|/\*|#)\s*(?:prettier-ignore\b|SPDX-License-Identifier:|Copyright\s+(?:\(c\)\s*|©\s*)?\d{4}|https?://\S+\s*(?:\*/)?$)'
 fix: ""
 ---
 id: no-comments-csharp
@@ -66,7 +80,8 @@ message: Carry the why in names, types and tests, a decision in an ADR, and a kn
 rule:
   kind: comment
   not:
-    regex: '^(?:#!|(?://|/\*|#)\s*(?:SAFETY:|prettier-ignore|SPDX-License-Identifier:|Copyright\b|https?://\S+\s*(?:\*/)?$))'
+    any:
+      - regex: '^(?://|/\*|#)\s*(?:prettier-ignore\b|SPDX-License-Identifier:|Copyright\s+(?:\(c\)\s*|©\s*)?\d{4}|https?://\S+\s*(?:\*/)?$)'
 fix: ""
 ---
 id: no-comments-rust
@@ -77,9 +92,15 @@ rule:
   any: [{kind: line_comment}, {kind: block_comment}]
   not:
     any:
-      - regex: '^(?:#!|(?://|/\*|#)\s*(?:SAFETY:|prettier-ignore|SPDX-License-Identifier:|Copyright\b|https?://\S+\s*(?:\*/)?$))'
+      - regex: '^(?://|/\*|#)\s*(?:prettier-ignore\b|SPDX-License-Identifier:|Copyright\s+(?:\(c\)\s*|©\s*)?\d{4}|https?://\S+\s*(?:\*/)?$)'
+      - regex: '^//\s*SAFETY:'
       - follows:
           regex: '^//\s*SAFETY:'
+          stopBy:
+            not: {kind: line_comment}
+      - regex: '^///\s*# Safety'
+      - follows:
+          regex: '^///\s*# Safety'
           stopBy:
             not: {kind: line_comment}
 fix: ""

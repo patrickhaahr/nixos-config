@@ -1,20 +1,14 @@
 default:
     @just --list
 
-# Format check, lint, comment guard, typecheck, test and build: the gate before every commit.
+# Format, lint with safe autofixes, comment guard, typecheck, test and build: the gate before every commit.
 check:
-    bunx oxfmt --check
-    bunx oxlint --type-aware --deny-warnings
+    bunx oxfmt
+    bunx oxlint --type-aware --fix --deny-warnings
     bash tools/comment-guard
     bunx tsc --noEmit
     bun test --pass-with-no-tests
     bun run --if-present build
-
-# Apply formatter and lint autofixes.
-fix:
-    bunx oxfmt
-    bunx oxlint --type-aware --fix
-    bash tools/comment-guard --lower
 
 dev:
     bun run dev
