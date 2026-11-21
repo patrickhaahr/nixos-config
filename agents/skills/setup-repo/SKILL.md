@@ -8,6 +8,8 @@ disable-model-invocation: true
 
 Templates live next to this file in `templates/`: `common/` for every repo, plus one stack directory (`typescript/`, `rust/`, `python/` or `csharp/`). Copy them; do not retype them.
 
+Copy `tools/ast-grep/no-comments.yml` whole, even its sections for languages the repo lacks: ast-grep skips a language with no section, so a deleted one lets that language's comments through unseen. Add a section for a missing language; never delete one.
+
 Every repo ends with the same contract:
 - `.envrc` runs `use devenv`, so agent shells get the tools without wrapping commands.
 - `just check` is the full gate and applies safe fixes first (format, lint autofix, comment-baseline lowering), then lints, typechecks, tests and builds. The devenv pre-commit hook runs it and fails when it rewrites a file: stage everything and commit again. CI, when a repo has it, runs `just check && git diff --exit-code`.
@@ -42,6 +44,9 @@ Every repo ends with the same contract:
 2. `dotnet new install TUnit.Templates`, `dotnet new TUnit -o tests/<Name>.Tests`, `dotnet sln add src/<Name> tests/<Name>.Tests` and `dotnet add tests/<Name>.Tests reference src/<Name>`. Replace the template's sample tests, which break the analyzers, with one test of the app.
 3. `dotnet new gitignore`, append `.devenv/` and `.direnv/`, then `direnv allow`.
 4. Delete the scaffold's comments with `ast-grep scan --update-all src tests`, then `just check` must pass.
+
+## Other stacks
+Copy `common/` alone and write the `justfile` and `devenv.nix` by hand, wrapping the stack's own CLI so the contract above holds. Mark vendored engine or SDK directories `linguist-vendored`.
 
 ## Align an existing repo
 Compare instead of copying blindly:

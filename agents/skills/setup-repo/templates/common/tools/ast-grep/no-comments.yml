@@ -84,6 +84,28 @@ rule:
       - regex: '^(?://|/\*|#)\s*(?:prettier-ignore\b|SPDX-License-Identifier:|Copyright\s+(?:\(c\)\s*|©\s*)?\d{4}|https?://\S+\s*(?:\*/)?$)'
 fix: ""
 ---
+id: no-comments-c
+language: C
+severity: error
+message: Carry the why in names, types and tests, a decision in an ADR, and a known hack in an issue.
+rule:
+  kind: comment
+  not:
+    any:
+      - regex: '^(?://|/\*|#)\s*(?:prettier-ignore\b|SPDX-License-Identifier:|Copyright\s+(?:\(c\)\s*|©\s*)?\d{4}|https?://\S+\s*(?:\*/)?$)'
+fix: ""
+---
+id: no-comments-cpp
+language: Cpp
+severity: error
+message: Carry the why in names, types and tests, a decision in an ADR, and a known hack in an issue.
+rule:
+  kind: comment
+  not:
+    any:
+      - regex: '^(?://|/\*|#)\s*(?:prettier-ignore\b|SPDX-License-Identifier:|Copyright\s+(?:\(c\)\s*|©\s*)?\d{4}|https?://\S+\s*(?:\*/)?$)'
+fix: ""
+---
 id: no-comments-rust
 language: Rust
 severity: error
