@@ -5,6 +5,11 @@ let
   zazaKey = "zaza-cache-1:++x3xekex6IMky+2z5oUYwxEt5F3LGSpYpw7Yspze44=";
 
   nikaKey = "nika-1:dYsHY+f6OIpGr4pe0N97KVIdP8By7Z5w+5G4Om7DUvM=";
+
+  numtide = {
+    extra-substituters = [ "https://cache.numtide.com" ];
+    extra-trusted-public-keys = [ "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g=" ];
+  };
 in
 {
 
@@ -20,18 +25,21 @@ in
           settings.bind = "[::]:${toString port}";
         };
 
-        nix.settings.extra-trusted-public-keys = [ nikaKey ];
+        nix.settings = numtide // {
+          extra-trusted-public-keys = numtide.extra-trusted-public-keys ++ [ nikaKey ];
+        };
 
         networking.firewall.interfaces."tailscale0".allowedTCPPorts = [ port ];
       };
 
     binary-cache = {
       nix.settings = {
-        extra-substituters = [ url ];
+        extra-substituters = [ url ] ++ numtide.extra-substituters;
         extra-trusted-public-keys = [
           zazaKey
           nikaKey
-        ];
+        ]
+        ++ numtide.extra-trusted-public-keys;
 
         connect-timeout = 5;
       };

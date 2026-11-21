@@ -35,10 +35,6 @@
           in
           (inputs.llm-agents.packages.${prev.stdenv.hostPlatform.system}.t3code.override {
             t3code-unwrapped = patched-unwrapped;
-
-            codex = inputs.llm-agents.packages.${prev.stdenv.hostPlatform.system}.codex.overrideAttrs (old: {
-              buildInputs = old.buildInputs ++ [ final.openssl ];
-            });
           }).overrideAttrs
             (old: {
               postFixup = (old.postFixup or "") + ''

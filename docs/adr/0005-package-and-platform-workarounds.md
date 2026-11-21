@@ -9,7 +9,6 @@ Constraints imposed by upstream packages or by NixOS itself, which the code work
 - **computer-use-linux** skips the ydotool probe test, which needs a short private temp path the Nix sandbox cannot provide.
 - **Helium** is wrapped with the Vulkan loader and the system driver manifests, which it needs for native WebGPU.
 - **Hex** follows this flake's nixpkgs, so its libc stays compatible with the host's Vulkan drivers.
-- **Codex** (also the copy bundled with T3 Code) gets OpenSSL as a build input: nixpkgs' aws-lc dropped its compat `openssl.pc` and prefixes its symbols, so openssl-sys needs real OpenSSL until llm-agents adapts.
 - **ffmpeg** includes libx264 because T3 Code's Android video stream needs it; T3 Code finds `avdmanager` only under `cmdline-tools/latest`.
 - **Echo Dot** unlock and flashing over USB uses a packaged udev rules file, not `extraRules`: `uaccess` applies only before `73-seat-late.rules`, and `extraRules` lands in `99-local.rules`.
 - **OpenSSH** rejects store-owned config for non-root users: systemd's ssh proxy drop-in is disabled, and hermes' ssh client config is installed as an owned file rather than a store symlink. Hosts without Ghostty's terminfo get `TERM=xterm-256color` instead of `xterm-ghostty`.

@@ -99,10 +99,7 @@
 
     hermes-agent.url = "github:NousResearch/hermes-agent/v0.23.3";
 
-    llm-agents = {
-      url = "github:numtide/llm-agents.nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    llm-agents.url = "github:numtide/llm-agents.nix";
 
     hex = {
       url = "github:anomalyco/hex/v3.3.0";

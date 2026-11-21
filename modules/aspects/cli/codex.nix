@@ -83,9 +83,7 @@ in
       home = {
 
         packages = [
-          (inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.codex.overrideAttrs (old: {
-            buildInputs = old.buildInputs ++ [ pkgs.openssl ];
-          }))
+          inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.codex
         ];
 
         file.".codex/AGENTS.md".source = agentsSourceDir + "/AGENTS.md";
