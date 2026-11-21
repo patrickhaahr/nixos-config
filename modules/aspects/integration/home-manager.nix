@@ -6,7 +6,7 @@
       useGlobalPkgs = true;
       useUserPackages = true;
       backupFileExtension = "hm-backup";
-      sharedModules = [ inputs.nvf.homeManagerModules.default ];
+      sharedModules = [ inputs.nvf.homeModules.default ];
     };
   };
 }
