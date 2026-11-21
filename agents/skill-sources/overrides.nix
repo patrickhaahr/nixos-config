@@ -22,7 +22,6 @@ in
   better-typography.disable-model-invocation = true;
   better-ui.disable-model-invocation = true;
   better-writing.disable-model-invocation = true;
-  grilling.disable-model-invocation = true;
 
   ai-seo = manual "Optimize content to be cited in AI answers such as ChatGPT, Perplexity and AI Overviews.";
   animate = manual "Build a web animation: purpose, properties, curve, duration and interruption.";
