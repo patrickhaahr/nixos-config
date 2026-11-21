@@ -112,6 +112,48 @@
         if merged != existing:
             yaml.dump(merged, config_path)
       '';
+
+      patchConfig = pkgs.writeScript "hermes-config-patch" ''
+        #!${pkgs.python3.withPackages (ps: [ ps.ruamel-yaml ])}/bin/python3
+        import sys
+        from pathlib import Path
+        from ruamel.yaml import YAML
+
+        yaml = YAML()
+        yaml.preserve_quotes = True
+
+        config_path, command, *args = sys.argv[1:]
+        doc = yaml.load(Path(config_path)) or {}
+
+        def set_route_chat_ids(assignments):
+            routes = (doc.get("gateway") or {}).get("profile_routes") or []
+            chat_ids = dict(a.split("=", 1) for a in assignments)
+            changed = False
+            for route in routes:
+                chat_id = chat_ids.get(route.get("name"))
+                if chat_id is not None and route.get("chat_id") != chat_id:
+                    route["chat_id"] = chat_id
+                    changed = True
+            return changed
+
+        def enable_plugin(name):
+            plugins = doc.get("plugins")
+            if plugins is None:
+                plugins = doc["plugins"] = {}
+            if plugins.get("enabled") is None:
+                plugins["enabled"] = []
+            if name in plugins["enabled"]:
+                return False
+            plugins["enabled"].insert(0, name)
+            return True
+
+        commands = {
+            "route-chat-ids": lambda: set_route_chat_ids(args),
+            "enable-plugin": lambda: enable_plugin(*args),
+        }
+        if commands[command]():
+            yaml.dump(doc, Path(config_path))
+      '';
     in
     {
       imports = [
@@ -152,30 +194,23 @@
               group_id="$(grep '^SIGNAL_COACH_GROUP_ID=' "$env_file" | cut -d= -f2- | sed 's#^group:##' || true)"
               home_group_id="$(grep '^SIGNAL_HOME_GROUP_ID=' "$env_file" | cut -d= -f2- | sed 's#^group:##' || true)"
               homelab_group_id="$(grep '^SIGNAL_HOMELAB_GROUP_ID=' "$env_file" | cut -d= -f2- | sed 's#^group:##' || true)"
-              if [ -n "$group_id" ]; then
-                ${pkgs.perl}/bin/perl -0pi -e "s#(?m)^  - chat_id: .*?(?=\\n    name: signal-group-coach)#  - chat_id: group:$group_id#" "$route_config"
-              fi
-              if [ -n "$home_group_id" ]; then
-                ${pkgs.perl}/bin/perl -0pi -e "s#(?m)^  - chat_id: .*?(?=\\n    name: signal-group-home)#  - chat_id: group:$home_group_id#" "$route_config"
-              fi
-              if [ -n "$homelab_group_id" ]; then
-                ${pkgs.perl}/bin/perl -0pi -e "s#(?m)^  - chat_id: .*?(?=\\n    name: signal-group-homelab)#  - chat_id: group:$homelab_group_id#" "$route_config"
-              fi
               home_channel="$(grep '^SIGNAL_HOME_CHANNEL=' "$env_file" | cut -d= -f2- || true)"
               uwu_user_id="$(grep '^SIGNAL_ALLOWED_USERS=' "$env_file" | cut -d= -f2- | tr ',' '\n' | grep -vxF "$home_channel" | grep . || true)"
+              route_chat_ids=()
+              [ -z "$group_id" ] || route_chat_ids+=("signal-group-coach=group:$group_id")
+              [ -z "$home_group_id" ] || route_chat_ids+=("signal-group-home=group:$home_group_id")
+              [ -z "$homelab_group_id" ] || route_chat_ids+=("signal-group-homelab=group:$homelab_group_id")
               if [ -n "$uwu_user_id" ] && [ "$(printf '%s\n' "$uwu_user_id" | wc -l)" -eq 1 ]; then
-                ${pkgs.perl}/bin/perl -0pi -e "s#(?m)^  - chat_id: .*?(?=\\n    name: signal-dm-uwu)#  - chat_id: $uwu_user_id#" "$route_config"
+                route_chat_ids+=("signal-dm-uwu=$uwu_user_id")
               fi
+              run ${patchConfig} "$route_config" route-chat-ids "''${route_chat_ids[@]}"
             fi
           '';
 
           hermes-live-voice-plugin = lib.hm.dag.entryAfter [ "hermesAgentSetup" ] ''
             for route_config in "${config.home.homeDirectory}/.hermes/config.yaml" "${config.home.homeDirectory}/.hermes"/profiles/*/config.yaml; do
               [ -f "$route_config" ] || continue
-              grep -q '^  - talk-desktop$' "$route_config" && continue
-              ${pkgs.gnugrep}/bin/grep -q '^plugins:' "$route_config" ||
-                printf '\nplugins:\n  enabled:\n  - talk-desktop\n' >> "$route_config"
-              ${pkgs.perl}/bin/perl -0pi -e 's#^(plugins:\n  enabled:)\n(  - (?!talk-desktop))#$1\n  - talk-desktop\n$2#m; s#(plugins:\n  enabled:) \[\]$#$1\n  - talk-desktop#m' "$route_config"
+              run ${patchConfig} "$route_config" enable-plugin talk-desktop
             done
           '';
 
