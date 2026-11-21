@@ -13,7 +13,7 @@
 - In Home Manager aspects, prefer `programs.<tool>.enable` when the HM option exists; fall back to `home.packages` only when it does not.
 - Keep host composition thin. `modules/aspects/host/<host>.nix` selects aspects and holds no feature details.
 - Put user-specific wiring in `modules/aspects/identity/<user>.nix`. Tools every agent user needs go in the `agent-tools` aspect.
-- Put WM-specific logic in `modules/aspects/desktop/<wm>.nix` (`niri` today). Shared desktop tools stay out of the WM module.
+- An app's keybinds, startup commands and window rules live in the app's own NixOS aspect as `desktop.*` options (`desktop/session.nix`), never in the WM. The WM adapter in `modules/aspects/desktop/<wm>/` (`niri` today) translates them and owns only WM-native settings and binds; see `docs/adr/0007-window-manager-is-a-desktop-session-adapter.md`.
 - zaza serves a signed harmonia binary cache over tailscale (`binary-cache-server`); every other host imports `binary-cache` to substitute from it. nika (`binary-cache-builder`) signs what it builds, every host trusts that key, and `just deploy` builds on nika and pushes each closure to zaza.
 - zaza web services declare `services.nginx.virtualHosts."<name>.zaza.haahr.me"`; `homelab-proxy` adds the wildcard cert and HTTPS. Prefer native NixOS service modules; fall back to `virtualisation.oci-containers` (podman) only for software nixpkgs lacks.
 - Podman containers join networks through `homelab.podmanNetworks` (import `homelab-podman`) and pin images as `repo:tag@sha256:…`; `just update-images` re-resolves every such tag.
