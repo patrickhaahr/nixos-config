@@ -13,20 +13,14 @@ _: {
           extraPlugins = {
             fff = {
 
-              package =
-                let
-                  fffLib = pkgs.vimPlugins.fff-nvim.fff-nvim-lib.overrideAttrs (old: {
-                    buildInputs = old.buildInputs ++ [ pkgs.libgit2 ];
-                  });
-                in
-                pkgs.vimPlugins.fff-nvim.overrideAttrs {
-                  postPatch = ''
-                    substituteInPlace lua/fff/download.lua \
-                      --replace-fail \
-                        "return plugin_dir .. '/../target/release'" \
-                        "return '${fffLib}/lib'"
-                  '';
-                };
+              package = pkgs.vimPlugins.fff-nvim.overrideAttrs {
+                postPatch = ''
+                  substituteInPlace lua/fff/download.lua \
+                    --replace-fail \
+                      "return plugin_dir .. '/../target/release'" \
+                      "return '${pkgs.vimPlugins.fff-nvim.fff-nvim-lib}/lib'"
+                '';
+              };
               setup = ''
                 require("fff").setup({
                   keymaps = {
