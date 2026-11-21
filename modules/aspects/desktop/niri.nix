@@ -27,7 +27,8 @@
         if heliumEnabled then lib.getExe' config.programs.helium.launcherPackage "helium" else null;
       hexCommand =
         if config.programs.hex.enable or false then lib.getExe config.programs.hex.package else null;
-      t3codeCommand = if pkgs ? t3code then lib.getExe pkgs.t3code else null;
+      t3codeCommand =
+        if pkgs ? t3code.desktop then lib.getExe' pkgs.t3code.desktop "t3code-desktop" else null;
     in
     {
       options.programs.niri.minimalProfile = lib.mkEnableOption "the minimal Niri session profile";
@@ -80,7 +81,8 @@
               null;
           hexCommand =
             if config.programs.hex.enable or false then lib.getExe config.programs.hex.package else null;
-          t3codeCommand = if pkgs ? t3code then lib.getExe pkgs.t3code else null;
+          t3codeCommand =
+            if pkgs ? t3code.desktop then lib.getExe' pkgs.t3code.desktop "t3code-desktop" else null;
         }
       );
     };
