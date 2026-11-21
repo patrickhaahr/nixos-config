@@ -59,6 +59,16 @@ rule:
     regex: '^(?:#!|(?://|/\*|#)\s*(?:SAFETY:|prettier-ignore|SPDX-License-Identifier:|Copyright\b|https?://\S+\s*(?:\*/)?$))'
 fix: ""
 ---
+id: no-comments-csharp
+language: CSharp
+severity: error
+message: Carry the why in names, types and tests, a decision in an ADR, and a known hack in an issue.
+rule:
+  kind: comment
+  not:
+    regex: '^(?:#!|(?://|/\*|#)\s*(?:SAFETY:|prettier-ignore|SPDX-License-Identifier:|Copyright\b|https?://\S+\s*(?:\*/)?$))'
+fix: ""
+---
 id: no-comments-rust
 language: Rust
 severity: error
