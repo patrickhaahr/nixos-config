@@ -18,23 +18,13 @@ in
       ];
       imports = [
         self.modules.homeManager.agent-tools
-        self.modules.homeManager.bash
-        self.modules.homeManager.direnv
-        self.modules.homeManager.devenv
         self.modules.homeManager.bun
-        self.modules.homeManager.claude-code
         self.modules.homeManager.gh
         self.modules.homeManager.git
-        self.modules.homeManager.herdr
         self.modules.homeManager.hunk
-        self.modules.homeManager.codex
         self.modules.homeManager.jj
         self.modules.homeManager.nushell
-        self.modules.homeManager.nvf
-        self.modules.homeManager.opencode
         self.modules.homeManager.openssh
-        self.modules.homeManager.pi
-        self.modules.homeManager.yazi
       ];
     };
   };

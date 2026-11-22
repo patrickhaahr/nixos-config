@@ -3,7 +3,19 @@
   flake.modules.homeManager.agent-tools =
     { pkgs, ... }:
     {
-      imports = [ self.modules.homeManager.agent-shell ];
+      imports = with self.modules.homeManager; [
+        agent-shell
+        bash
+        direnv
+        devenv
+        codex
+        claude-code
+        opencode
+        pi
+        nvf
+        yazi
+        herdr
+      ];
 
       programs = {
         fd.enable = true;
