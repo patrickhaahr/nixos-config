@@ -20,7 +20,9 @@ in
       ...
     }:
     let
-      settingsOf = host: self.nixosConfigurations.${host}.config.nix.settings;
+      configOf = host: self.nixosConfigurations.${host}.config;
+      settingsOf = host: (configOf host).nix.settings;
+      harmonia = (configOf "zaza").services.harmonia.cache;
       listOf = host: name: (settingsOf host).${name} or [ ] ++ (settingsOf host)."extra-${name}" or [ ];
       hosts = lib.attrNames self.nixosConfigurations;
       clients = lib.remove "zaza" hosts;
@@ -28,6 +30,8 @@ in
         nikaKey = lib.filter (host: !lib.elem nikaKey (listOf host "trusted-public-keys")) hosts;
         zazaKey = lib.filter (host: !lib.elem zazaKey (listOf host "trusted-public-keys")) clients;
         substituter = lib.filter (host: !lib.elem url (listOf host "substituters")) clients;
+        server = lib.optional (!harmonia.enable || harmonia.signKeyPaths == [ ]) "zaza";
+        signer = lib.optional ((settingsOf "nika").secret-key-files or [ ] == [ ]) "nika";
       };
     in
     {
