@@ -29,6 +29,7 @@
       self.modules.nixos.canary
       self.modules.nixos.openssh
       self.modules.nixos.sops
+      self.modules.nixos.nix-github-token
       self.modules.nixos.tailscale
       self.modules.nixos.t3code-service
     ];
