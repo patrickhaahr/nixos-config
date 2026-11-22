@@ -31,7 +31,6 @@
         self.modules.homeManager.opencode
         self.modules.homeManager.pi
         self.modules.homeManager.browser-use
-        self.modules.homeManager.yt-dlp
         self.modules.homeManager.agent-tools
         self.modules.homeManager.agent-browser
         self.modules.homeManager.browse-headless
@@ -39,6 +38,7 @@
         self.modules.homeManager.yazi
         self.modules.homeManager.herdr
       ];
+      programs.yt-dlp.enable = true;
       home.stateVersion = "25.11";
     };
 
