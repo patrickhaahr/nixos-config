@@ -1,8 +1,6 @@
 { self, inputs, ... }:
 let
-  agentsSourceDir = ../../../agents;
   configDir = ".agents";
-  localSkillsDir = agentsSourceDir + "/skills";
 in
 {
   flake.modules.homeManager.opencode =
@@ -23,26 +21,6 @@ in
         '';
       };
 
-      externalSkills = removeAttrs (import (agentsSourceDir + "/skill-sources") {
-        inherit inputs lib pkgs;
-      }) config.agents.skills.exclude;
-
-      localSkillNames = builtins.attrNames (
-        lib.filterAttrs (name: type: type == "directory" && !(builtins.hasAttr name externalSkills)) (
-          builtins.readDir localSkillsDir
-        )
-      );
-
-      mergedSkillsDir = pkgs.linkFarm "opencode-skills" (
-        builtins.map (name: {
-          inherit name;
-          path = localSkillsDir + "/${name}";
-        }) localSkillNames
-        ++ lib.mapAttrsToList (name: path: {
-          inherit name;
-          inherit path;
-        }) externalSkills
-      );
       managedSettings = pkgs.writeText "opencode-managed-settings.json" (
         builtins.toJSON {
           "$schema" = "https://opencode.ai/v2/config.json";
@@ -65,25 +43,17 @@ in
       );
     in
     {
-      imports = [ self.modules.homeManager.agent-mcp ];
+      imports = [
+        self.modules.homeManager.agent-mcp
+        self.modules.homeManager.agent-skills
+      ];
 
-      options.agents.skills.exclude = lib.mkOption {
-        type = lib.types.listOf lib.types.str;
-        default = [ ];
-        description = "External skills left out of this user's shared skill directory.";
-      };
-
-      config.home = {
+      home = {
         packages = [
           pkgs.nodejs
           pkgs.uv
           opencode
         ];
-        file = {
-          "${configDir}/AGENTS.md".source = agentsSourceDir + "/AGENTS.md";
-          "${configDir}/skills".source = mergedSkillsDir;
-        };
-
         activation.opencodeManagedSettings = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
           run ${lib.getExe config.lib.agents.mergeJson} ${config.home.homeDirectory}/${configDir}/opencode.json ${managedSettings}
         '';

@@ -1,7 +1,4 @@
 { self, inputs, ... }:
-let
-  agentsSourceDir = ../../../agents;
-in
 {
   flake.modules.homeManager.claude-code =
     {
@@ -39,7 +36,12 @@ in
       homeDir = config.home.homeDirectory;
     in
     {
-      imports = [ self.modules.homeManager.agent-mcp ];
+      key = "claude-code";
+
+      imports = [
+        self.modules.homeManager.agent-mcp
+        self.modules.homeManager.agent-skills
+      ];
 
       lib.agents.claude.settings = managedSettings;
 
@@ -47,7 +49,7 @@ in
         packages = [ inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-code ];
 
         file = {
-          ".claude/CLAUDE.md".source = agentsSourceDir + "/AGENTS.md";
+          ".claude/CLAUDE.md".source = config.lib.agents.instructions;
 
           ".claude/skills".source = config.lib.file.mkOutOfStoreSymlink "${homeDir}/.agents/skills";
         };

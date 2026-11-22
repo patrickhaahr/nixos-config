@@ -1,7 +1,4 @@
-_:
-let
-  agentsSourceDir = ../../../agents;
-in
+{ self, ... }:
 {
   flake.modules.homeManager.windows-mirror =
     {
@@ -13,7 +10,7 @@ in
     let
       inherit (config.agents.windows) home;
       inherit (config.lib.agents) claude codex;
-      instructions = agentsSourceDir + "/AGENTS.md";
+      inherit (config.lib.agents) instructions;
       skills = config.home.file.".agents/skills".source;
       rsync = "${lib.getExe pkgs.rsync} -rLt --delete --chmod=u+w";
 
@@ -49,6 +46,12 @@ in
       );
     in
     {
+      imports = [
+        self.modules.homeManager.agent-skills
+        self.modules.homeManager.claude-code
+        self.modules.homeManager.codex
+      ];
+
       options.agents.windows.home = lib.mkOption {
         type = lib.types.str;
         example = "/mnt/c/Users/me";
