@@ -5,17 +5,11 @@ in
 {
   flake.modules.nixos.identity-ph-desktop = {
     imports = [
-      self.modules.nixos.identity-ph-headless
-      self.modules.nixos.ghostty
-      self.modules.nixos.noctalia
+      self.modules.nixos.identity-ph-graphical
     ];
 
-    services.greetd.settings.default_session.user = userName;
-
     users.users.${userName}.extraGroups = [
-      "networkmanager"
       "dialout"
-      "i2c"
       "input"
       "docker"
     ];
@@ -25,13 +19,9 @@ in
         self.modules.homeManager.agent-browser
         self.modules.homeManager.browse
 
-        self.modules.homeManager.ghostty
-        self.modules.homeManager.cursor
-        self.modules.homeManager.noctalia
         self.modules.homeManager.osu-lazer
         self.modules.homeManager.steam-hm
         self.modules.homeManager.typesafe
-        self.modules.homeManager.agent-hermes-desktop
       ];
     };
   };

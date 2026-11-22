@@ -13,7 +13,7 @@
       self.modules.nixos.nix-features
       self.modules.nixos.nix-maintenance
       self.modules.nixos.binary-cache
-      self.modules.nixos.identity-ph-laptop
+      self.modules.nixos.identity-ph-graphical
       self.modules.nixos.helium
       self.modules.nixos.openssh
       self.modules.nixos.tailscale

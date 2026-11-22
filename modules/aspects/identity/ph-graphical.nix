@@ -3,7 +3,7 @@ let
   userName = "ph";
 in
 {
-  flake.modules.nixos.identity-ph-laptop = {
+  flake.modules.nixos.identity-ph-graphical = {
     imports = [
       self.modules.nixos.identity-ph-headless
       self.modules.nixos.ghostty
