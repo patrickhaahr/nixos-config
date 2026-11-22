@@ -1,5 +1,5 @@
 { self, inputs, ... }: {
-  flake.nixosConfigurations.imu = inputs.nixpkgs-unstable.lib.nixosSystem {
+  flake.nixosConfigurations.imu = inputs.nixpkgs.lib.nixosSystem {
     modules = [
       self.modules.nixos.imu
     ];

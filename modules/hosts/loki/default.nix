@@ -1,5 +1,5 @@
 { self, inputs, ... }: {
-  flake.nixosConfigurations.loki = inputs.nixpkgs-unstable.lib.nixosSystem {
+  flake.nixosConfigurations.loki = inputs.nixpkgs.lib.nixosSystem {
     modules = [
       self.modules.nixos.loki
     ];
