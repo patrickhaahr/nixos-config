@@ -11,6 +11,7 @@
         self.modules.nixos.desktop-session
       ];
       programs.hex.enable = true;
+      home-manager.sharedModules = [ self.modules.homeManager.hex ];
 
       desktop.binds = {
         "F9" = {

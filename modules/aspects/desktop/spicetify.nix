@@ -18,6 +18,7 @@
     in
     {
       imports = [ self.modules.nixos.desktop-session ];
+      home-manager.sharedModules = [ self.modules.homeManager.spicetify ];
 
       desktop = {
         startup = [

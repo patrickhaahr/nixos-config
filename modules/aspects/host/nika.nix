@@ -80,10 +80,6 @@
       sopsFile = ../../../secrets/nika.yaml;
     };
 
-    home-manager.users.ph.imports = [
-      self.modules.homeManager.spicetify
-      self.modules.homeManager.openhome
-    ];
     system.stateVersion = "25.11";
   };
 }
