@@ -22,7 +22,7 @@ in
         )
       );
 
-      mergedSkillsDir = pkgs.linkFarm "opencode-skills" (
+      mergedSkillsDir = pkgs.linkFarm "agent-skills" (
         builtins.map (name: {
           inherit name;
           path = localSkillsDir + "/${name}";
