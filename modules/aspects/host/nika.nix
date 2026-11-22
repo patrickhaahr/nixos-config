@@ -4,6 +4,7 @@
     {
       imports = [
         self.modules.nixos.nika-hardware
+        self.modules.nixos.locale-dk
         self.modules.nixos.audio-output
         self.modules.nixos.android-emulator
         self.modules.nixos.blender
@@ -55,8 +56,6 @@
       ];
 
       networking.networkmanager.enable = true;
-      time.timeZone = "Europe/Copenhagen";
-      i18n.defaultLocale = "en_DK.UTF-8";
       i18n.extraLocaleSettings = {
         LC_ADDRESS = "da_DK.UTF-8";
         LC_IDENTIFICATION = "da_DK.UTF-8";
@@ -69,10 +68,6 @@
         LC_TIME = "da_DK.UTF-8";
       };
       services = {
-        xserver.xkb = {
-          layout = "dk";
-          variant = "";
-        };
         audio-output = {
           enable = true;
           headphones = "alsa_output.usb-SteelSeries_Arctis_Pro_Wireless-00.analog-stereo";
@@ -83,8 +78,6 @@
           automations.enable = true;
         };
       };
-      console.keyMap = "dk-latin1";
-      nixpkgs.config.allowUnfree = true;
 
       boot.kernelPackages = pkgs.linuxPackages_latest;
 

@@ -2,6 +2,7 @@
   flake.modules.nixos.zaza = { pkgs, ... }: {
     imports = [
       self.modules.nixos.zaza-hardware
+      self.modules.nixos.locale-dk
       self.modules.nixos.doas
       self.modules.nixos.nix-features
       self.modules.nixos.nix-ld
@@ -48,10 +49,6 @@
       user = "hermes";
       sopsFile = ../../../secrets/zaza.yaml;
     };
-    time.timeZone = "Europe/Copenhagen";
-    i18n.defaultLocale = "en_DK.UTF-8";
-    console.keyMap = "dk-latin1";
-    nixpkgs.config.allowUnfree = true;
     system.stateVersion = "25.11";
   };
 }
