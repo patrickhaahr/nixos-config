@@ -1,7 +1,4 @@
 { self, inputs, ... }:
-let
-  agentsSourceDir = ../../../agents;
-in
 {
   flake.modules.homeManager.codex =
     {
@@ -73,7 +70,12 @@ in
           '';
     in
     {
-      imports = [ self.modules.homeManager.agent-mcp ];
+      key = "codex";
+
+      imports = [
+        self.modules.homeManager.agent-mcp
+        self.modules.homeManager.agent-skills
+      ];
 
       lib.agents.codex = {
         portableSettings = pkgs.writeText "codex-portable-settings.json" (builtins.toJSON portableSettings);
@@ -86,7 +88,7 @@ in
           inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.codex
         ];
 
-        file.".codex/AGENTS.md".source = agentsSourceDir + "/AGENTS.md";
+        file.".codex/AGENTS.md".source = config.lib.agents.instructions;
         activation.codexManagedSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
           run ${mergeToml} ${config.home.homeDirectory}/.codex/config.toml ${managedSettings}
         '';

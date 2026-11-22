@@ -1,7 +1,4 @@
 { self, inputs, ... }:
-let
-  agentsSourceDir = ../../../agents;
-in
 {
   flake.modules.homeManager.pi =
     {
@@ -19,7 +16,10 @@ in
       };
     in
     {
-      imports = [ self.modules.homeManager.agent-mcp ];
+      imports = [
+        self.modules.homeManager.agent-mcp
+        self.modules.homeManager.agent-skills
+      ];
 
       home = {
         packages = [ inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.pi ];
@@ -37,7 +37,7 @@ in
             ];
           };
 
-          ".pi/agent/AGENTS.md".source = agentsSourceDir + "/AGENTS.md";
+          ".pi/agent/AGENTS.md".source = config.lib.agents.instructions;
 
           ".pi/web-search.json".source = settingsFormat.generate "pi-web-search.json" {
             provider = "firecrawl";
