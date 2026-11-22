@@ -1,4 +1,8 @@
-{ self, ... }: {
+{ self, inputs, ... }: {
+  flake.nixosConfigurations.loki = inputs.nixpkgs.lib.nixosSystem {
+    modules = [ self.modules.nixos.loki ];
+  };
+
   flake.modules.nixos.loki = {
     imports = [
       self.modules.nixos.loki-hardware

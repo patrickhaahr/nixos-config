@@ -1,4 +1,8 @@
-{ self, ... }: {
+{ self, inputs, ... }: {
+  flake.nixosConfigurations.kuma = inputs.nixpkgs.lib.nixosSystem {
+    modules = [ self.modules.nixos.kuma ];
+  };
+
   flake.modules.nixos.kuma = {
     imports = [
       self.modules.nixos.kuma-hardware

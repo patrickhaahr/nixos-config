@@ -1,4 +1,8 @@
-{ self, ... }: {
+{ self, inputs, ... }: {
+  flake.nixosConfigurations.zaza = inputs.nixpkgs.lib.nixosSystem {
+    modules = [ self.modules.nixos.zaza ];
+  };
+
   flake.modules.nixos.zaza = { pkgs, ... }: {
     imports = [
       self.modules.nixos.zaza-hardware

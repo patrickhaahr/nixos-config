@@ -1,4 +1,8 @@
-{ self, ... }: {
+{ self, inputs, ... }: {
+  flake.nixosConfigurations.nika = inputs.nixpkgs.lib.nixosSystem {
+    modules = [ self.modules.nixos.nika ];
+  };
+
   flake.modules.nixos.nika =
     { pkgs, ... }:
     {

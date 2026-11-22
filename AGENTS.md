@@ -3,7 +3,7 @@
 ## Source Of Truth
 - This repo is a `flake-parts` flake with `import-tree ./modules` in `flake.nix`. Every `.nix` file under `modules/` is loaded automatically; do not add scratch files there.
 - New files are invisible to `nix flake` evaluation until Git tracks them. Stage a new file with `git add <path>` before `nix eval`, `nix flake check`, or `nix build`.
-- The active config is the dendritic tree under `modules/aspects/`. Prefer editing those files over anything in `modules/hosts/` except the host entrypoint you are wiring.
+- The active config is the dendritic tree under `modules/aspects/`. Each host is one file, `modules/aspects/host/<host>.nix`, declaring both `flake.nixosConfigurations.<host>` and the `<host>` aspect it builds.
 - Decisions the code cannot show live in `docs/adr/`. Before changing an aspect, read the ADRs that name it; record a new constraint as an ADR there (domain-modeling format), never as a comment.
 - Hosts: `nika` is the desktop, `zaza` the headless homelab running Hermes and T3 Code as the `hermes` user, `imu` the WSL host. Use the host relevant to the change, not `nika` by default.
 
@@ -11,7 +11,7 @@
 - Keep modules aspect-oriented. Add to an existing aspect before creating a new one.
 - Use `flake.modules.nixos.<aspect>` for NixOS aspects and `flake.modules.homeManager.<aspect>` for Home Manager aspects.
 - In Home Manager aspects, prefer `programs.<tool>.enable` when the HM option exists; fall back to `home.packages` only when it does not.
-- Keep host composition thin. `modules/aspects/host/<host>.nix` selects aspects and holds no feature details.
+- Keep host composition thin. `modules/aspects/host/<host>.nix` picks the nixpkgs builder, selects aspects and holds no feature details.
 - Put user-specific wiring in `modules/aspects/identity/<user>.nix`. Tools every agent user needs go in the `agent-tools` aspect.
 - An app's keybinds, startup commands and window rules live in the app's own NixOS aspect as `desktop.*` options (`desktop/session.nix`), never in the WM. The WM adapter in `modules/aspects/desktop/<wm>/` (`niri` today) translates them and owns only WM-native settings and binds; see `docs/adr/0007-window-manager-is-a-desktop-session-adapter.md`.
 - zaza serves a signed harmonia binary cache over tailscale (`binary-cache-server`); every other host imports `binary-cache` to substitute from it. nika (`binary-cache-builder`) signs what it builds, every host trusts that key, and `just deploy` builds on nika and pushes each closure to zaza.

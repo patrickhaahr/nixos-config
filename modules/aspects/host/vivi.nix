@@ -1,5 +1,9 @@
-{ self, ... }:
+{ self, inputs, ... }:
 {
+  flake.nixosConfigurations.vivi = inputs.nixos-raspberrypi.lib.nixosSystem {
+    modules = [ self.modules.nixos.vivi ];
+  };
+
   flake.modules.nixos.vivi = {
     imports = with self.modules.nixos; [
       vivi-hardware
