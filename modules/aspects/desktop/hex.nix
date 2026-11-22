@@ -13,7 +13,7 @@
       programs.hex.enable = true;
       home-manager.sharedModules = [ self.modules.homeManager.hex ];
 
-      desktop.binds = {
+      desktop.binds = lib.mkIf config.programs.hex.enable {
         "F9" = {
           command = [
             hex
