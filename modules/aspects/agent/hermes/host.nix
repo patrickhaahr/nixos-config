@@ -9,11 +9,11 @@
       ];
 
       services.nginx.virtualHosts = {
-        "hermes.zaza.haahr.me".locations."/" = {
+        "hermes.${config.homelab.domain}".locations."/" = {
           proxyPass = "http://127.0.0.1:${toString config.home-manager.users.hermes.services.hermes-agent.backend.port}";
           proxyWebsockets = true;
         };
-        "hermes-api.zaza.haahr.me".locations."/" = {
+        "hermes-api.${config.homelab.domain}".locations."/" = {
           proxyPass = "http://127.0.0.1:8642";
           proxyWebsockets = true;
         };

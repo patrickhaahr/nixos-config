@@ -213,7 +213,7 @@
         1515
       ];
 
-      services.nginx.virtualHosts."wazuh.zaza.haahr.me".locations."/" = {
+      services.nginx.virtualHosts."wazuh.${config.homelab.domain}".locations."/" = {
         proxyPass = "http://127.0.0.1:${toString dashboardPort}";
         proxyWebsockets = true;
       };

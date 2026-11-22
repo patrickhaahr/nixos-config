@@ -41,7 +41,7 @@ in
 
           ".pi/web-search.json".source = settingsFormat.generate "pi-web-search.json" {
             provider = "firecrawl";
-            firecrawlBaseUrl = "https://firecrawl.zaza.haahr.me";
+            firecrawlBaseUrl = "https://firecrawl.${self.nixosConfigurations.zaza.config.homelab.domain}";
             firecrawlApiVersion = "v2";
             firecrawlFreshScrape = true;
             ssrf.allowRanges = [ "100.120.202.71/32" ];

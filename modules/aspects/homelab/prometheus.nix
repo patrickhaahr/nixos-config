@@ -31,7 +31,7 @@ _: {
         ];
       };
 
-      services.nginx.virtualHosts."prometheus.zaza.haahr.me".locations."/".proxyPass =
+      services.nginx.virtualHosts."prometheus.${config.homelab.domain}".locations."/".proxyPass =
         "http://127.0.0.1:${toString cfg.port}";
     };
 }

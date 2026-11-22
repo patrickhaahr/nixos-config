@@ -25,7 +25,7 @@
             REDIS_URL = "redis://redis:6379";
             REDIS_RATE_LIMIT_URL = "redis://redis:6379";
             PLAYWRIGHT_MICROSERVICE_URL = "http://playwright-service:3000/scrape";
-            SEARXNG_ENDPOINT = "https://searxng.zaza.haahr.me/";
+            SEARXNG_ENDPOINT = "https://${config.services.searx.domain}/";
             USE_DB_AUTHENTICATION = "false";
             ENV = "production";
             LOGGING_LEVEL = "INFO";
@@ -86,7 +86,7 @@
 
       homelab.podmanNetworks.firecrawl = builtins.attrNames containers;
 
-      services.nginx.virtualHosts."firecrawl.zaza.haahr.me".locations."/".proxyPass =
+      services.nginx.virtualHosts."firecrawl.${config.homelab.domain}".locations."/".proxyPass =
         "http://127.0.0.1:${toString apiPort}";
     };
 }
