@@ -26,6 +26,11 @@
 
     wrapper-modules.url = "github:BirdeeHub/nix-wrapper-modules";
 
+    pi-claude-code = {
+      url = "github:earendil-works/pi-claude-code";
+      flake = false;
+    };
+
     helium.url = "github:schembriaiden/helium-browser-nix-flake";
     helium.inputs.nixpkgs.follows = "nixpkgs";
 

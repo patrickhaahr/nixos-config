@@ -26,26 +26,17 @@
 
         file = {
           ".pi/agent/settings.json".source = settingsFormat.generate "pi-settings.json" {
-            defaultProvider = "github-copilot";
-            defaultModel = "gpt-5.6-sol";
+            defaultProvider = "claude-code";
+            defaultModel = "claude-opus-5-5";
             npmCommand = [ "${pkgs.nodejs_22}/bin/npm" ];
 
             packages = [
               "npm:@ff-labs/pi-fff@0.10.3"
-              "npm:pi-web-access@0.23.0"
-              "npm:pi-subagents@0.50.0"
+              "${inputs.pi-claude-code}"
             ];
           };
 
           ".pi/agent/AGENTS.md".source = config.lib.agents.instructions;
-
-          ".pi/web-search.json".source = settingsFormat.generate "pi-web-search.json" {
-            provider = "firecrawl";
-            firecrawlBaseUrl = "https://firecrawl.${self.nixosConfigurations.zaza.config.homelab.domain}";
-            firecrawlApiVersion = "v2";
-            firecrawlFreshScrape = true;
-            ssrf.allowRanges = [ "100.120.202.71/32" ];
-          };
         };
 
         activation.piManagedMcp = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
