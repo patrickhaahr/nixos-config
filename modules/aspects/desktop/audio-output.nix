@@ -14,7 +14,6 @@
       imports = [ self.modules.nixos.desktop-session ];
 
       options.services.audio-output = {
-        enable = lib.mkEnableOption "shared audio output toggle";
         headphones = lib.mkOption {
           type = lib.types.str;
           description = "PipeWire sink name for the headphone output.";
@@ -25,7 +24,7 @@
         };
       };
 
-      config = lib.mkIf cfg.enable {
+      config = {
         desktop.binds."Super+O".command = [ "toggle-audio-output" ];
 
         environment.systemPackages = [
