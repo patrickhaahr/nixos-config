@@ -41,7 +41,7 @@
       imports = [ inputs.hex.homeManagerModules.default ];
 
       programs.hex = {
-        enable = true;
+        inherit (osConfig.programs.hex) enable;
         autostart = true;
         package = osConfig.programs.hex.package;
         settings = {
