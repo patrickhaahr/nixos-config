@@ -7,7 +7,7 @@ _: {
         domain = "speedtest.${config.homelab.domain}";
         frontend = {
           enable = true;
-          pageTitle = "zaza speedtest";
+          pageTitle = "${config.networking.hostName} speedtest";
           contactEmail = "traefik@haahr.me";
         };
         settings = {

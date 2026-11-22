@@ -1,4 +1,5 @@
-_: {
+{ self, ... }:
+{
 
   flake.modules.nixos.homelab-proxy =
     { config, lib, ... }:
@@ -6,6 +7,8 @@ _: {
       inherit (config.homelab) domain;
     in
     {
+      imports = [ self.modules.nixos.sops ];
+
       options.homelab.domain = lib.mkOption {
         type = lib.types.str;
         default = "${config.networking.hostName}.haahr.me";
@@ -27,7 +30,7 @@ _: {
 
         security.acme = {
           acceptTerms = true;
-          defaults.email = "traefik@haahr.me";
+          defaults.email = lib.mkDefault "traefik@haahr.me";
           certs.${domain} = {
             domain = "*.${domain}";
             dnsProvider = "cloudflare";
