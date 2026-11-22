@@ -26,6 +26,11 @@ _: {
             crypttabExtraOpts = [ "tpm2-device=auto" ];
           };
         };
+        loader = {
+          systemd-boot.enable = true;
+          efi.canTouchEfiVariables = true;
+        };
+        kernelPackages = pkgs.linuxPackages_latest;
         kernelModules = [ "kvm-intel" ];
         extraModulePackages = [ ];
       };

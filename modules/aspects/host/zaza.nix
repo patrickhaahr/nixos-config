@@ -3,7 +3,7 @@
     modules = [ self.modules.nixos.zaza ];
   };
 
-  flake.modules.nixos.zaza = { pkgs, ... }: {
+  flake.modules.nixos.zaza = {
     imports = [
       self.modules.nixos.zaza-hardware
       self.modules.nixos.locale-dk
@@ -33,11 +33,6 @@
       self.modules.nixos.t3code-service
     ];
 
-    boot = {
-      loader.systemd-boot.enable = true;
-      loader.efi.canTouchEfiVariables = true;
-      kernelPackages = pkgs.linuxPackages_latest;
-    };
     networking = {
       hostName = "zaza";
       networkmanager.enable = true;
