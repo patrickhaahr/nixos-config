@@ -1,4 +1,8 @@
 { self, inputs, ... }: {
+  flake.nixosConfigurations.imu = inputs.nixpkgs.lib.nixosSystem {
+    modules = [ self.modules.nixos.imu ];
+  };
+
   flake.modules.nixos.imu = { ... }: {
     imports = [
       inputs.nixos-wsl.nixosModules.default
@@ -13,7 +17,6 @@
 
     networking.hostName = "imu";
     nixpkgs.hostPlatform = "x86_64-linux";
-    nixpkgs.config.allowUnfree = true;
 
     wsl = {
       enable = true;

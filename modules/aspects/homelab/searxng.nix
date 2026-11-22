@@ -2,7 +2,7 @@ _: {
   flake.modules.nixos.homelab-searxng =
     { config, ... }:
     let
-      domain = "searxng.zaza.haahr.me";
+      domain = "searxng.${config.homelab.domain}";
       disabled = map (name: {
         inherit name;
         disabled = true;

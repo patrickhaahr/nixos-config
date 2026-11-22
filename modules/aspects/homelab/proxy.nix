@@ -1,11 +1,20 @@
-_: {
+{ self, ... }:
+{
 
   flake.modules.nixos.homelab-proxy =
     { config, lib, ... }:
     let
-      domain = "zaza.haahr.me";
+      inherit (config.homelab) domain;
     in
     {
+      imports = [ self.modules.nixos.sops ];
+
+      options.homelab.domain = lib.mkOption {
+        type = lib.types.str;
+        default = "${config.networking.hostName}.haahr.me";
+        readOnly = true;
+        description = "Domain under which this host's homelab services are named, covered by its wildcard certificate.";
+      };
 
       options.services.nginx.virtualHosts = lib.mkOption {
         type = lib.types.attrsOf (
@@ -21,7 +30,7 @@ _: {
 
         security.acme = {
           acceptTerms = true;
-          defaults.email = "traefik@haahr.me";
+          defaults.email = lib.mkDefault "traefik@haahr.me";
           certs.${domain} = {
             domain = "*.${domain}";
             dnsProvider = "cloudflare";

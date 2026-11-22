@@ -1,7 +1,12 @@
-{ self, ... }: {
-  flake.modules.nixos.zaza = { pkgs, ... }: {
+{ self, inputs, ... }: {
+  flake.nixosConfigurations.zaza = inputs.nixpkgs.lib.nixosSystem {
+    modules = [ self.modules.nixos.zaza ];
+  };
+
+  flake.modules.nixos.zaza = {
     imports = [
       self.modules.nixos.zaza-hardware
+      self.modules.nixos.locale-dk
       self.modules.nixos.doas
       self.modules.nixos.nix-features
       self.modules.nixos.nix-ld
@@ -24,15 +29,11 @@
       self.modules.nixos.canary
       self.modules.nixos.openssh
       self.modules.nixos.sops
+      self.modules.nixos.nix-github-token
       self.modules.nixos.tailscale
       self.modules.nixos.t3code-service
     ];
 
-    boot = {
-      loader.systemd-boot.enable = true;
-      loader.efi.canTouchEfiVariables = true;
-      kernelPackages = pkgs.linuxPackages_latest;
-    };
     networking = {
       hostName = "zaza";
       networkmanager.enable = true;
@@ -48,10 +49,6 @@
       user = "hermes";
       sopsFile = ../../../secrets/zaza.yaml;
     };
-    time.timeZone = "Europe/Copenhagen";
-    i18n.defaultLocale = "en_DK.UTF-8";
-    console.keyMap = "dk-latin1";
-    nixpkgs.config.allowUnfree = true;
     system.stateVersion = "25.11";
   };
 }

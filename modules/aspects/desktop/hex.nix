@@ -11,8 +11,9 @@
         self.modules.nixos.desktop-session
       ];
       programs.hex.enable = true;
+      home-manager.sharedModules = [ self.modules.homeManager.hex ];
 
-      desktop.binds = {
+      desktop.binds = lib.mkIf config.programs.hex.enable {
         "F9" = {
           command = [
             hex
@@ -40,7 +41,7 @@
       imports = [ inputs.hex.homeManagerModules.default ];
 
       programs.hex = {
-        enable = true;
+        inherit (osConfig.programs.hex) enable;
         autostart = true;
         package = osConfig.programs.hex.package;
         settings = {

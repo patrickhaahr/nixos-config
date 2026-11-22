@@ -1,16 +1,18 @@
 { self, ... }:
 {
 
-  flake.modules.nixos.t3code-service = {
-    imports = [ self.modules.nixos.t3code-package ];
+  flake.modules.nixos.t3code-service =
+    { config, ... }:
+    {
+      imports = [ self.modules.nixos.t3code-package ];
 
-    home-manager.users.hermes.imports = [ self.modules.homeManager.t3code-service ];
+      home-manager.users.hermes.imports = [ self.modules.homeManager.t3code-service ];
 
-    services.nginx.virtualHosts."t3code.zaza.haahr.me".locations."/" = {
-      proxyPass = "http://127.0.0.1:3773";
-      proxyWebsockets = true;
+      services.nginx.virtualHosts."t3code.${config.homelab.domain}".locations."/" = {
+        proxyPass = "http://127.0.0.1:3773";
+        proxyWebsockets = true;
+      };
     };
-  };
 
   flake.modules.homeManager.t3code-service =
     { pkgs, ... }:

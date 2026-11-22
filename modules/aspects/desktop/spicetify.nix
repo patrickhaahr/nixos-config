@@ -8,6 +8,7 @@
 
         for _ in $(seq 1 60); do
           if ${playerctl} -p spotify status >/dev/null 2>&1; then
+            ${playerctl} -p spotify volume 1.0
             exec ${playerctl} -p spotify play
           fi
 
@@ -17,6 +18,7 @@
     in
     {
       imports = [ self.modules.nixos.desktop-session ];
+      home-manager.sharedModules = [ self.modules.homeManager.spicetify ];
 
       desktop = {
         startup = [

@@ -1,6 +1,6 @@
 # Homelab services listen on loopback behind nginx
 
-zaza's web services bind to loopback and nginx terminates TLS for `*.zaza.haahr.me` (tailnet-only names), so no service handles certificates. Only nginx (80/443), the Wazuh agent ports (1514/1515) and the harmonia binary cache (tailnet interface only) are reachable from outside the host.
+zaza's web services bind to loopback and nginx terminates TLS for `*.zaza.haahr.me` (tailnet-only names; each homelab host gets its own `*.<host>.haahr.me` wildcard through `homelab.domain`, because a wildcard covers only one label), so no service handles certificates. Only nginx (80/443), the Wazuh agent ports (1514/1515) and the harmonia binary cache (tailnet interface only) are reachable from outside the host.
 
 - `homelab-proxy` re-declares the `virtualHosts` submodule option; NixOS merges a re-declared submodule into the upstream one, so every vhost on the host defaults to the wildcard cert and the HTTPS redirect.
 - The ACME DNS-01 challenge waits a fixed time instead of checking propagation: the router hijacks all port-53 traffic to AdGuard, whose cache never sees the fresh TXT record, so propagation checks time out.

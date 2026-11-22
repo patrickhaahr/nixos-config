@@ -5,6 +5,7 @@ _: {
     let
       lokiPort = 3100;
       grafanaPort = 3000;
+      domain = "grafana.${config.homelab.domain}";
       secret = name: "$__file{${config.sops.secrets.${name}.path}}";
     in
     {
@@ -20,8 +21,8 @@ _: {
             server = {
               http_addr = "127.0.0.1";
               http_port = grafanaPort;
-              domain = "grafana.zaza.haahr.me";
-              root_url = "https://grafana.zaza.haahr.me/";
+              inherit domain;
+              root_url = "https://${domain}/";
             };
             security = {
               admin_password = secret "grafana_admin_password";
@@ -90,7 +91,7 @@ _: {
           enable = true;
           extraFlags = [ "--server.http.listen-addr=127.0.0.1:12345" ];
         };
-        nginx.virtualHosts."grafana.zaza.haahr.me".locations."/" = {
+        nginx.virtualHosts.${domain}.locations."/" = {
           proxyPass = "http://127.0.0.1:${toString grafanaPort}";
           proxyWebsockets = true;
         };
