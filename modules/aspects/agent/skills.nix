@@ -12,9 +12,11 @@ in
       ...
     }:
     let
-      externalSkills = removeAttrs (import (contentDir + "/skill-sources") {
+      sources = import (contentDir + "/skill-sources") {
         inherit inputs lib pkgs;
-      }) config.agents.skills.exclude;
+      };
+
+      externalSkills = removeAttrs sources.skills config.agents.skills.exclude;
 
       localSkillNames = builtins.attrNames (
         lib.filterAttrs (name: type: type == "directory" && !(builtins.hasAttr name externalSkills)) (
@@ -43,7 +45,13 @@ in
       };
 
       config = {
-        lib.agents.instructions = contentDir + "/AGENTS.md";
+        lib.agents = {
+          instructions = contentDir + "/AGENTS.md";
+          specialists = lib.mapAttrs (name: skills: {
+            inherit skills;
+            instructions = contentDir + "/specialists/${name}.md";
+          }) sources.bundles;
+        };
 
         home.file = {
           ".agents/AGENTS.md".source = config.lib.agents.instructions;

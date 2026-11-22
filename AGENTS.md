@@ -21,6 +21,7 @@
 - Agent tooling lives in `modules/aspects/agent/`, grouped by subject rather than CLI or desktop; a tool with several aspects gets a directory (`hermes/`, `t3code/`). The root `agents/` holds only what agents read (instructions, skills, skill sources). Agent instructions and skills reach aspects only through `agent-skills`, which deploys `~/.agents/AGENTS.md` and `~/.agents/skills` and exposes `config.lib.agents.instructions`; `git-guardrails` reads its file-size guard straight from the `setup-repo` skill template.
 - Hermes hosts compose through the `agent-hermes-host` seam in `modules/aspects/agent/hermes/host.nix`.
 - External skills are listed in `agents/skill-sources/sources.nix` and sparse-fetched, never added as flake inputs (an input downloads the whole repo). After changing an entry, run `just update-skills <owner/repo>`; only that recipe writes `sources.lock.json`.
+- A skill pack only one specialist agent uses goes in `agents/skill-sources/bundles.nix` with a role prompt in `agents/specialists/<name>.md`, never in `sources.nix`; see `docs/adr/0008-specialist-agents-own-their-skills.md`.
 - Before making a skill manual-only in `agents/skill-sources/overrides.nix`, find the skills that load it: rewrite each reference with `<skill>.replace."<exact text>"` so it reads `~/.agents/skills/<name>/SKILL.md` instead, or leave the skill model-invocable.
 - `modules/aspects/agent/browser-use/` vendors a `uv.lock`; regenerate it with `uv lock --python 3.12` when bumping.
 - `nix flake check` warns `unknown flake output 'modules'`; this is expected here.

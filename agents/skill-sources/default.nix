@@ -29,7 +29,9 @@ let
     ) "skill-sources: lock for ${slug} is stale; run `just update-skills ${slug}`";
     lib.mapAttrs (_: path: if path == "" then src else src + "/${path}") skills;
 
-  skills = lib.foldl' lib.mergeAttrs { } (lib.mapAttrsToList fetchSkills (import ./sources.nix)) // {
+  fetchAll = sources: lib.foldl' lib.mergeAttrs { } (lib.mapAttrsToList fetchSkills sources);
+
+  skills = fetchAll (import ./sources.nix) // {
     openhome = inputs.openhome + "/skills/openhome";
   };
   overrides = import ./overrides.nix;
@@ -71,6 +73,17 @@ let
     '';
 in
 assert lib.assertMsg (unknown == [ ]) "skill overrides name missing skills: ${toString unknown}";
-lib.mapAttrs (
-  name: src: if overrides ? ${name} then patch name src overrides.${name} else src
-) skills
+{
+  skills = lib.mapAttrs (
+    name: src: if overrides ? ${name} then patch name src overrides.${name} else src
+  ) skills;
+  bundles = lib.mapAttrs (
+    name: src:
+    pkgs.runCommand "skill-bundle-${name}" { } ''
+      cp -rL --no-preserve=mode ${src} $out
+      for skill in $out/*/SKILL.md; do
+        ${patchSkill} "$skill" '{}' '{}'
+      done
+    ''
+  ) (fetchAll (import ./bundles.nix));
+}

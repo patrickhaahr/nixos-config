@@ -13,6 +13,13 @@
     ],
     "rev": "9dda1397730370aeb8df4ff8f2015c34c86b5003"
   },
+  "arjun988/blender-skills": {
+    "hash": "sha256-SxWTGvrxo6+YqCIcQhyR01+n1m7BCAwCzzZMSS6jl7M=",
+    "paths": [
+      ".claude/skills"
+    ],
+    "rev": "904f095d8f36a6e72adaebb08d07f884a074743d"
+  },
   "better-auth/skills": {
     "hash": "sha256-h6LKfIR/bmPdgfWPlaTIOmH1befMh+VtXVmlqT2S0xI=",
     "paths": [
