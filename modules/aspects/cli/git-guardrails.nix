@@ -46,6 +46,8 @@ in
         "Merge branch 'topic'"
         "Revert \"feat: add a thing\""
         "fixup! feat: add a thing"
+        "squash! feat: add a thing"
+        "amend! feat: add a thing"
         "# a comment line\n\nchore: subject after comments"
       ];
       rejected = [
@@ -57,12 +59,14 @@ in
         "Feat: capitalised type"
         "feat(): empty scope"
         "feat:  "
+        "feat: a literal \\c before a period."
       ];
       run = expected: message: ''
-        printf '%b\n' ${lib.escapeShellArg message} > msg
-        if ${lib.getExe hook} msg 2>/dev/null; then got=accepted; else got=rejected; fi
-        if [ "$got" != ${expected} ]; then
-          echo "expected ${expected}, got $got: "${lib.escapeShellArg message} >&2
+        printf '%s\n' ${lib.escapeShellArg message} > msg
+        status=0
+        ${lib.getExe hook} msg 2>/dev/null || status=$?
+        if [ "$status" != ${expected} ]; then
+          echo "expected exit ${expected}, got $status: "${lib.escapeShellArg message} >&2
           failed=1
         fi
       '';
@@ -70,8 +74,8 @@ in
     {
       checks.git-conventional-commit = pkgs.runCommand "git-conventional-commit" { } ''
         failed=0
-        ${lib.concatMapStrings (run "accepted") accepted}
-        ${lib.concatMapStrings (run "rejected") rejected}
+        ${lib.concatMapStrings (run "0") accepted}
+        ${lib.concatMapStrings (run "1") rejected}
         [ "$failed" = 0 ] && touch $out
       '';
     };
