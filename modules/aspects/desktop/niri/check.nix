@@ -47,6 +47,7 @@
         }).config.wrappers.niri
         )
         settings
+        wrapper
         ;
 
       failures = lib.runTests {
@@ -103,6 +104,11 @@
           };
         };
 
+        testLayoutBindKeepsNativeAction = {
+          expr = lib.attrNames settings.binds."Mod+H";
+          expected = [ "focus-column-left" ];
+        };
+
         testWindowRuleMapsEveryField = {
           expr = settings.window-rules;
           expected = [
@@ -123,7 +129,7 @@
     {
       checks.niri-adapter =
         if failures == [ ] then
-          pkgs.runCommand "niri-adapter" { } "touch $out"
+          pkgs.runCommand "niri-adapter" { validatedConfig = wrapper; } "touch $out"
         else
           throw "niri adapter tests failed: ${lib.generators.toPretty { } failures}";
     };
