@@ -30,6 +30,7 @@
           in
           (inputs.llm-agents.packages.${prev.stdenv.hostPlatform.system}.t3code.override {
             t3code-unwrapped = patched-unwrapped;
+            providerPackages = [ ];
           }).overrideAttrs
             (old: {
               postFixup = (old.postFixup or "") + ''
