@@ -217,7 +217,7 @@ update-skills *repos:
     set -euo pipefail
     dir="{{ justfile_directory() }}/agents/skill-sources"
     lock="$dir/sources.lock.json"
-    spec="$(nix eval --json --impure --expr "import $dir/sources.nix // import $dir/bundles.nix")"
+    spec="$(nix eval --json --impure --expr "import \"$dir/sources.nix\" // import \"$dir/bundles.nix\"")"
     prefetch="$(nix build --no-link --print-out-paths nixpkgs#nix-prefetch-git)/bin/nix-prefetch-git"
     new='{}'
     for slug in $(jq -r 'keys[]' <<<"$spec"); do
