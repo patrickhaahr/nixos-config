@@ -12,6 +12,8 @@ let
       CLAUDE_CODE_GB_DISK_CACHE_WHEN_TELEMETRY_OFF = "1";
     };
     disableClaudeAiConnectors = true;
+    disableBundledSkills = true;
+    autoMemoryEnabled = false;
     permissions.defaultMode = "bypassPermissions";
     skipDangerousModePermissionPrompt = true;
     enabledPlugins = {
