@@ -5,7 +5,7 @@
     { config, ... }:
     let
       apiPort = 3002;
-      firecrawlImage = "ghcr.io/firecrawl/firecrawl:latest@sha256:e12baea631bc48c30566403166192735c2e31b0232aed81274c9a6dea67d1d19";
+      firecrawlImage = "ghcr.io/firecrawl/firecrawl:latest@sha256:060a247438227b419bfdc8d2afc4980c2fd34e53fcc248a117f0d3e0264dd193";
 
       common.environmentFiles = [ config.sops.templates."firecrawl.env".path ];
 

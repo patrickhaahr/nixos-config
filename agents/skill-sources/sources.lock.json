@@ -21,11 +21,11 @@
     "rev": "904f095d8f36a6e72adaebb08d07f884a074743d"
   },
   "cathrynlavery/diagram-design": {
-    "hash": "sha256-71vIi/eX6dT0UNlYZoaL7hclivsd+MJ6Jamz6H9ILHw=",
+    "hash": "sha256-FZs7pvfafSl477laEWbe3SE+yE5+tZY8qFq0djyff2U=",
     "paths": [
       "skills/diagram-design"
     ],
-    "rev": "d74d8c2d0c78a9e1efd43137f6a9a51182a8b5f0"
+    "rev": "0eeda75a708f419560d5e032693618bb9954f17b"
   },
   "cloudflare/security-audit-skill": {
     "hash": "sha256-oVVACjotkHvllQGxEP8yWaEt4c3GxT0d909TUM5P3NM=",
@@ -57,11 +57,11 @@
     "rev": "63dbb09f73438e550a6991dc6d778f979ffbf183"
   },
   "e2e-inc/e2e": {
-    "hash": "sha256-gaRI7IzheAgo383qz2Ktt+tjijp4CFD5bcVp0/o6w9s=",
+    "hash": "sha256-h0pMveIR0/ZcyBjnm891RVOAb2lA2awvK3ksICywaxo=",
     "paths": [
       "skills"
     ],
-    "rev": "5acb82235d7e88364d614cbd23b96d2b9e8233a6"
+    "rev": "7afe2ea34aba17153c9b968b9fe5ad5b7cf9097b"
   },
   "emilkowalski/skills": {
     "hash": "sha256-zZnblPcn3vvekGH4YIHMOZ2XMA3sBngwhwLBnNFpD/E=",
@@ -106,11 +106,11 @@
     "rev": "abeeaf95660ba9e8b7c753eb38f441ca707a8823"
   },
   "openclaw/openclaw": {
-    "hash": "sha256-jPkkl8nnNfculaMLRV9/Bk2VYwrfqd2G5Of26jONre8=",
+    "hash": "sha256-ypGrIw1CA1B1FPl8G59T9YsZmqS4wLg1b/cQOewMQs0=",
     "paths": [
       ".agents/skills/test-audit"
     ],
-    "rev": "c98816b7d4dee0608b760884949058eb71128aff"
+    "rev": "380031e8604f7ed9c978e39b1911be01e9652010"
   },
   "shadcn/improve": {
     "hash": "sha256-PfAUpLXXRyRlxsvdeGjUFUoDD8wTarE4gtmDPslrr60=",
@@ -120,11 +120,11 @@
     "rev": "cac56e1ebd3c279aa9153616cfeac7b174ab90f9"
   },
   "vercel-labs/ui": {
-    "hash": "sha256-XcI3ZfTgSvqJkdvK17mtvJxrc6wGTR7qShgxXDxstVg=",
+    "hash": "sha256-f+ca37N9aOgwFHB5DtxUVHa3c3RC0mS5MRcoUl8XjwQ=",
     "paths": [
       "packages/core/skills"
     ],
-    "rev": "8060d16d7a9ab3fc79fee25764607344df078c36"
+    "rev": "5609b9606cf8f1928e255243eae9cc50272905cd"
   },
   "zarazhangrui/frontend-slides": {
     "hash": "sha256-qp2oCn5+YbMZrWCnN7zt/ee1nm/vBGsdb+AIUjIldyY=",
