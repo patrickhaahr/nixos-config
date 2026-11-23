@@ -8,6 +8,7 @@
         bash
         direnv
         devenv
+        antigravity
         codex
         claude-code
         opencode
