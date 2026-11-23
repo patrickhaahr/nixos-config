@@ -6,29 +6,12 @@
   };
   "cathrynlavery/diagram-design".diagram-design = "skills/diagram-design";
   "cloudflare/security-audit-skill".security-audit = "skills/security-audit";
-  "cloudflare/skills" = {
-    cloudflare = "skills/cloudflare";
-    wrangler = "skills/wrangler";
-  };
   "coreyhaines31/marketingskills" = {
     ai-seo = "skills/ai-seo";
     seo-audit = "skills/seo-audit";
   };
   "dmmulroy/anti-slop".install-anti-slop = "skills/install-anti-slop";
-  "emilkowalski/skills".animate = "skills/animate";
-  "jakubkrehel/skills" = {
-    better-accessibility = "skills/better-accessibility";
-    better-colors = "skills/better-colors";
-    better-interface = "skills/better-interface";
-    better-layout = "skills/better-layout";
-    better-typography = "skills/better-typography";
-    better-ui = "skills/better-ui";
-    better-writing = "skills/better-writing";
-    interface-review = "skills/interface-review";
-  };
-  "juliobsz/skills".awwwards = "awwwards";
   "kitlangton/skills".effect = "skills/effect";
-  "Leonxlnx/taste-skill".design-taste-frontend = "skills/taste-skill";
   "mattpocock/skills" = {
     code-review = "skills/engineering/code-review";
     codebase-design = "skills/engineering/codebase-design";

@@ -78,12 +78,18 @@ assert lib.assertMsg (unknown == [ ]) "skill overrides name missing skills: ${to
     name: src: if overrides ? ${name} then patch name src overrides.${name} else src
   ) skills;
   bundles = lib.mapAttrs (
-    name: src:
+    name: srcs:
     pkgs.runCommand "skill-bundle-${name}" { } ''
-      cp -rL --no-preserve=mode ${src} $out
+      mkdir $out
+      for src in ${lib.escapeShellArgs srcs}; do
+        for skill in "$src"/*/; do
+          [[ ! -e $out/$(basename "$skill") ]] || { echo "bundle ${name}: duplicate skill $skill" >&2; exit 1; }
+          cp -rL --no-preserve=mode "$skill" $out/
+        done
+      done
       for skill in $out/*/SKILL.md; do
-        ${patchSkill} "$skill" '{}' '{}'
+        ${patchSkill} "$skill" '{"disable-model-invocation": false}' '{}'
       done
     ''
-  ) (fetchAll (import ./bundles.nix));
+  ) (lib.zipAttrs (lib.mapAttrsToList fetchSkills (import ./bundles.nix)));
 }

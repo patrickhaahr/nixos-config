@@ -1,4 +1,11 @@
 { self, inputs, ... }:
+let
+  claudeSettings = {
+    defaultProvider = "claude-code";
+    defaultModel = "claude-opus-5-5";
+    packages = [ "${inputs.pi-claude-code}" ];
+  };
+in
 {
   flake.modules.homeManager.pi =
     {
@@ -25,16 +32,13 @@
         packages = [ inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.pi ];
 
         file = {
-          ".pi/agent/settings.json".source = settingsFormat.generate "pi-settings.json" {
-            defaultProvider = "claude-code";
-            defaultModel = "claude-opus-5-5";
-            npmCommand = [ "${pkgs.nodejs_22}/bin/npm" ];
-
-            packages = [
-              "npm:@ff-labs/pi-fff@0.10.3"
-              "${inputs.pi-claude-code}"
-            ];
-          };
+          ".pi/agent/settings.json".source = settingsFormat.generate "pi-settings.json" (
+            claudeSettings
+            // {
+              npmCommand = [ "${pkgs.nodejs_22}/bin/npm" ];
+              packages = [ "npm:@ff-labs/pi-fff@0.10.3" ] ++ claudeSettings.packages;
+            }
+          );
 
           ".pi/agent/AGENTS.md".source = config.lib.agents.instructions;
         };
@@ -42,6 +46,120 @@
         activation.piManagedMcp = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
           run ${lib.getExe config.lib.agents.mergeJson} ${config.home.homeDirectory}/.pi/agent/mcp.json ${managedMcp}
         '';
+      };
+    };
+
+  flake.modules.homeManager.pi-specialists =
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
+    let
+      settingsFormat = pkgs.formats.json { };
+      pi = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.pi;
+      agentDir = name: ".pi/specialists/${name}";
+
+      command =
+        name: specialist:
+        let
+          content = config.lib.agents.specialists.${name};
+          mcpTools = map (server: "mcp__${server}__*") (builtins.attrNames specialist.mcpServers);
+        in
+        pkgs.writeShellApplication {
+          name = "pi-${name}";
+          runtimeInputs = specialist.packages;
+          text = ''
+            export PI_CODING_AGENT_DIR=${config.home.homeDirectory}/${agentDir name}
+            if [[ ''${1-} == mcp ]]; then exec ${lib.getExe pi} "$@"; fi
+            exec ${lib.getExe pi} \
+              --no-skills ${lib.optionalString (content.skills != null) "--skill ${content.skills}"} \
+              --no-context-files --no-prompt-templates ${lib.optionalString (mcpTools == [ ]) "--no-mcp"} \
+              --tools ${lib.escapeShellArg (lib.concatStringsSep "," (specialist.tools ++ mcpTools))} \
+              --append-system-prompt ${content.instructions} \
+              "$@"
+          '';
+        };
+
+      mcpConfig =
+        name: specialist:
+        settingsFormat.generate "pi-${name}-mcp.json" {
+          mcpServers = lib.mapAttrs (_: server: { exposure = "direct"; } // server) specialist.mcpServers;
+        };
+    in
+    {
+      imports = [
+        self.modules.homeManager.agent-mcp
+        self.modules.homeManager.agent-skills
+        self.modules.homeManager.t3code-settings
+      ];
+
+      key = "pi-specialists";
+
+      options.pi.specialists = lib.mkOption {
+        default = { };
+        description = "Specialist agents, each the command `pi-<name>` and a T3 Code provider instance that see only their skill bundle, MCP servers and role prompt from `agents/specialists/<name>.md`.";
+        type = lib.types.attrsOf (
+          lib.types.submodule {
+            options = {
+              displayName = lib.mkOption { type = lib.types.str; };
+              tools = lib.mkOption {
+                type = lib.types.listOf lib.types.str;
+                default = [
+                  "read"
+                  "write"
+                  "edit"
+                  "bash"
+                ];
+              };
+              mcpServers = lib.mkOption {
+                type = lib.types.attrsOf (lib.types.attrsOf lib.types.anything);
+                default = { };
+                description = "Pi `mcp.json` server entries; tools are declared directly unless an entry sets `exposure`.";
+              };
+              packages = lib.mkOption {
+                type = lib.types.listOf lib.types.package;
+                default = [ ];
+                description = "Executables the specialist's skills call, added to its PATH.";
+              };
+            };
+          }
+        );
+      };
+
+      config = {
+        home = {
+          packages = lib.mapAttrsToList command config.pi.specialists;
+
+          file = lib.mapAttrs' (
+            name: _:
+            lib.nameValuePair "${agentDir name}/settings.json" {
+              source = settingsFormat.generate "pi-${name}-settings.json" claudeSettings;
+            }
+          ) config.pi.specialists;
+
+          activation.piSpecialistMcp = lib.hm.dag.entryAfter [ "writeBoundary" ] (
+            lib.concatStrings (
+              lib.mapAttrsToList (
+                name: specialist:
+                lib.optionalString (specialist.mcpServers != { }) ''
+                  run ${lib.getExe config.lib.agents.mergeJson} ${config.home.homeDirectory}/${agentDir name}/mcp.json ${mcpConfig name specialist}
+                ''
+              ) config.pi.specialists
+            )
+          );
+        };
+
+        t3code.providerInstances = lib.mapAttrs' (
+          name: specialist:
+          lib.nameValuePair "pi-${name}" {
+            driver = "pi";
+            inherit (specialist) displayName;
+            enabled = true;
+            config.binaryPath = "pi-${name}";
+          }
+        ) config.pi.specialists;
       };
     };
 }

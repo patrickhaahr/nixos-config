@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, self, ... }:
 {
   flake.modules.nixos.kaigen-studio =
     { pkgs, ... }:
@@ -110,5 +110,15 @@
         "d /usr/share 0755 root root -"
         "L+ /usr/share/fonts - - - - ${systemFonts}/share/fonts"
       ];
+
+      home-manager.sharedModules = [ self.modules.homeManager.kaigen-studio ];
     };
+
+  flake.modules.homeManager.kaigen-studio = {
+    imports = [ self.modules.homeManager.pi-specialists ];
+    pi.specialists.kaigen = {
+      displayName = "Pi Kaigen";
+      mcpServers.kaigen.url = "https://kaigen3d.com/mcp";
+    };
+  };
 }

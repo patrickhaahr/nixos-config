@@ -1,10 +1,10 @@
 {
-  "Leonxlnx/taste-skill": {
-    "hash": "sha256-QezKA1+hiurvz6AgBCqlIEiOYXpIldB4q+wsmNdkDwM=",
+  "Kaigen-Technologies/kaigen-plugins": {
+    "hash": "sha256-cstsA3Q7Ym/BLRMkOiotjZ4264wSWmpvJ1+19yJ6JYs=",
     "paths": [
-      "skills/taste-skill"
+      "plugins/kaigen/skills"
     ],
-    "rev": "f6b76575f949707b4e3c37cd86cb44b0b98643e8"
+    "rev": "feaa79493a6fbcb89435729a4ce298523d95233a"
   },
   "apollographql/skills": {
     "hash": "sha256-BG9jAjCdPFHhhtJaul1HDN0vjsldDGGjWDoIG42DV6Y=",
@@ -43,10 +43,9 @@
     "rev": "c1c8a8c1471069fb0e188eeaff69b8e8db6564a8"
   },
   "cloudflare/skills": {
-    "hash": "sha256-ZlE7rUvR5ErLYl8YOPPxhTnH3Y08SvBHaWoD/V6yU1M=",
+    "hash": "sha256-8C8xt0325F/cFSYR3JyfyqJEDmjupGlE/v0wQfYL3lg=",
     "paths": [
-      "skills/cloudflare",
-      "skills/wrangler"
+      "skills"
     ],
     "rev": "5108325ecceabc899c761e07aa617b09c02445ee"
   },
@@ -65,33 +64,26 @@
     ],
     "rev": "63dbb09f73438e550a6991dc6d778f979ffbf183"
   },
-  "emilkowalski/skills": {
-    "hash": "sha256-HkIv8xmzaZ6e/iHhxcuJciK31iLMkn4mwBAtukPPOq0=",
+  "e2e-inc/e2e": {
+    "hash": "sha256-gaRI7IzheAgo383qz2Ktt+tjijp4CFD5bcVp0/o6w9s=",
     "paths": [
-      "skills/animate"
+      "skills"
+    ],
+    "rev": "5acb82235d7e88364d614cbd23b96d2b9e8233a6"
+  },
+  "emilkowalski/skills": {
+    "hash": "sha256-zZnblPcn3vvekGH4YIHMOZ2XMA3sBngwhwLBnNFpD/E=",
+    "paths": [
+      "skills"
     ],
     "rev": "64eb3deb9a5fbfa041faf783e0bc3fd635872e9c"
   },
   "jakubkrehel/skills": {
-    "hash": "sha256-C1fk/umzE2WOGxcwQKosGkoqIU1N8QjqKjgsUlDKcRo=",
+    "hash": "sha256-k4gzDawZw1ovkRJIGlDRKuBM09sZI7BpoksEZjrp0y0=",
     "paths": [
-      "skills/better-accessibility",
-      "skills/better-colors",
-      "skills/better-interface",
-      "skills/better-layout",
-      "skills/better-typography",
-      "skills/better-ui",
-      "skills/better-writing",
-      "skills/interface-review"
+      "skills"
     ],
     "rev": "672ae44ace6aaed65b86cbb1e2fd6fbea0e79578"
-  },
-  "juliobsz/skills": {
-    "hash": "sha256-loikbgo6r6P7Wzib5jomLkUpe4JzMZBztXNd77PnVEw=",
-    "paths": [
-      "awwwards"
-    ],
-    "rev": "add880bd6ec9f5592a1482846fc0dd282c9161bc"
   },
   "kitlangton/skills": {
     "hash": "sha256-OAG3JMZjB5NVnuEn9McboxhqQ7sWbuT+9m0YjFIm/WU=",
@@ -141,6 +133,13 @@
       "skills/react-best-practices"
     ],
     "rev": "5a37a6329fbad3666c3207392a6a7c0110e92efb"
+  },
+  "vercel-labs/ui": {
+    "hash": "sha256-XcI3ZfTgSvqJkdvK17mtvJxrc6wGTR7qShgxXDxstVg=",
+    "paths": [
+      "packages/core/skills"
+    ],
+    "rev": "8060d16d7a9ab3fc79fee25764607344df078c36"
   },
   "zarazhangrui/frontend-slides": {
     "hash": "sha256-qp2oCn5+YbMZrWCnN7zt/ee1nm/vBGsdb+AIUjIldyY=",

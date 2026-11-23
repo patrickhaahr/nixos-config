@@ -47,10 +47,16 @@ in
       config = {
         lib.agents = {
           instructions = contentDir + "/AGENTS.md";
-          specialists = lib.mapAttrs (name: skills: {
-            inherit skills;
-            instructions = contentDir + "/specialists/${name}.md";
-          }) sources.bundles;
+          specialists = lib.mapAttrs' (
+            file: _:
+            let
+              name = lib.removeSuffix ".md" file;
+            in
+            lib.nameValuePair name {
+              skills = sources.bundles.${name} or null;
+              instructions = contentDir + "/specialists/${file}";
+            }
+          ) (builtins.readDir (contentDir + "/specialists"));
         };
 
         home.file = {
