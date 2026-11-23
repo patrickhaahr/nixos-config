@@ -24,7 +24,7 @@
       };
 
       config.home.activation.t3codeProviderInstances = lib.mkIf (config.t3code.providerInstances != { }) (
-        lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        lib.hm.dag.entryAfter [ "linkGeneration" ] ''
           run ${lib.getExe config.lib.agents.mergeJson} ${lib.escapeShellArg "${config.home.homeDirectory}/.t3/userdata/settings.json"} ${instances}
         ''
       );

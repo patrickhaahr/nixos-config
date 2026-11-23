@@ -18,7 +18,9 @@
             DISABLE_TELEMETRY = "1";
             DISABLE_ERROR_REPORTING = "1";
             CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY = "1";
+            CLAUDE_CODE_GB_DISK_CACHE_WHEN_TELEMETRY_OFF = "1";
           };
+          disableClaudeAiConnectors = true;
           permissions.defaultMode = "bypassPermissions";
           skipDangerousModePermissionPrompt = true;
           extraKnownMarketplaces.cursor-plugins.source = {
@@ -27,8 +29,10 @@
           };
           enabledPlugins = {
             "cc-plugin-plugin-authoring@builtin" = false;
+            "cc-plugin-telemetry@builtin" = false;
             "pstack@cursor-plugins" = true;
           };
+          pluginConfigs."cc-plugin-agents-md@builtin".options.instructionFiles = "claude-md-or-agents-md";
         }
       );
       managedState = pkgs.writeText "claude-managed-state.json" (

@@ -34,10 +34,29 @@ in
               effect = "allow";
             }
           ];
+          policies = [
+            {
+              action = "provider.use";
+              resource = "*";
+              effect = "deny";
+            }
+          ]
+          ++
+            map
+              (provider: {
+                action = "provider.use";
+                resource = provider;
+                effect = "allow";
+              })
+              [
+                "opencode"
+                "opencode-go"
+              ];
           mcp.servers = lib.mapAttrs (_: server: {
             type = "local";
             command = [ server.command ] ++ server.args;
             environment = server.env;
+            disabled = true;
           }) config.agents.mcpServers;
         }
       );
