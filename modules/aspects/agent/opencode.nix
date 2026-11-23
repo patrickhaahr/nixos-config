@@ -54,6 +54,7 @@ in
             type = "local";
             command = [ server.command ] ++ server.args;
             environment = server.env;
+            disabled = true;
           }) config.agents.mcpServers;
         }
       );
