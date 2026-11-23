@@ -115,9 +115,13 @@
     };
 
   flake.modules.homeManager.kaigen-studio = {
-    imports = [ self.modules.homeManager.pi-specialists ];
-    pi.specialists.kaigen = {
-      displayName = "Pi Kaigen";
+    imports = [ self.modules.homeManager.specialists ];
+    agents.specialists.kaigen = {
+      displayName = "Kaigen";
+      harnesses = [
+        "pi"
+        "antigravity"
+      ];
       domain = "Kaigen games and 3D apps: build, screenshot, publish.";
       mcpServers.kaigen.url = "https://kaigen3d.com/mcp";
     };

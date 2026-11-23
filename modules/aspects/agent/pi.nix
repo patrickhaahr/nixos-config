@@ -59,6 +59,9 @@ in
     let
       settingsFormat = pkgs.formats.json { };
       pi = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.pi;
+      specialists = lib.filterAttrs (
+        _: specialist: lib.elem "pi" specialist.harnesses
+      ) config.agents.specialists;
       agentDir = name: ".pi/specialists/${name}";
 
       command =
@@ -101,55 +104,9 @@ in
 
       key = "pi-specialists";
 
-      options.pi.specialists = lib.mkOption {
-        default = { };
-        description = "Specialist agents, each the command `pi-<name>` and a T3 Code provider instance that see only their skill bundle, MCP servers and role prompt from `agents/specialists/<name>.md`.";
-        type = lib.types.attrsOf (
-          lib.types.submodule {
-            options = {
-              displayName = lib.mkOption { type = lib.types.str; };
-              domain = lib.mkOption {
-                type = lib.types.str;
-                description = "The work to hand this specialist, listed in every harness's instructions.";
-              };
-              tools = lib.mkOption {
-                type = lib.types.listOf lib.types.str;
-                default = [
-                  "read"
-                  "write"
-                  "edit"
-                  "bash"
-                ];
-              };
-              mcpServers = lib.mkOption {
-                type = lib.types.attrsOf (lib.types.attrsOf lib.types.anything);
-                default = { };
-                description = "Pi `mcp.json` server entries; tools are declared directly unless an entry sets `exposure`.";
-              };
-              packages = lib.mkOption {
-                type = lib.types.listOf lib.types.package;
-                default = [ ];
-                description = "Executables the specialist's skills call, added to its PATH.";
-              };
-            };
-          }
-        );
-      };
-
       config = {
-        agents.extraInstructions = lib.mkIf (config.pi.specialists != { }) ''
-          ## Specialists
-
-          Unless you are a subagent or a delegated child, delegate every task in a specialist's domain, test runs included, with `delegate_task` to `providerInstanceId: "pi-<name>"`. A specialist is a Pi agent, not a Claude or Codex child: it runs Claude models (`claude-code/<model>`) or Codex models (`openai-codex/<model>`) with skills and MCP servers that a Claude or Codex child lacks, so only its own instance does its work. It sees only your brief: the goal, input paths, output directory, deliverables and acceptance bar. Name the outcome and leave the design, method and skills to it. Check its deliverables against the brief before you report.
-
-          ${lib.concatStrings (
-            lib.mapAttrsToList (name: specialist: ''
-              - `pi-${name}`: ${specialist.domain}
-            '') config.pi.specialists
-          )}'';
-
         home = {
-          packages = lib.mapAttrsToList command config.pi.specialists;
+          packages = lib.mapAttrsToList command specialists;
 
           file = lib.concatMapAttrs (
             name: specialist:
@@ -167,18 +124,18 @@ in
                 force = true;
               };
             }
-          ) config.pi.specialists;
+          ) specialists;
         };
 
         t3code.providerInstances = lib.mapAttrs' (
           name: specialist:
           lib.nameValuePair "pi-${name}" {
             driver = "pi";
-            inherit (specialist) displayName;
+            displayName = "Pi ${specialist.displayName}";
             enabled = true;
             config.binaryPath = "pi-${name}";
           }
-        ) config.pi.specialists;
+        ) specialists;
       };
     };
 }
