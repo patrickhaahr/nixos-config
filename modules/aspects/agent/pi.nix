@@ -1,9 +1,9 @@
 { self, inputs, ... }:
 let
-  claudeSettings = {
+  claudeProvider.packages = [ "${inputs.pi-claude-code}" ];
+  claudeModel = {
     defaultProvider = "claude-code";
     defaultModel = "claude-opus-5-5";
-    packages = [ "${inputs.pi-claude-code}" ];
   };
 in
 {
@@ -33,10 +33,10 @@ in
 
         file = {
           ".pi/agent/settings.json".source = settingsFormat.generate "pi-settings.json" (
-            claudeSettings
+            claudeModel
             // {
               npmCommand = [ "${pkgs.nodejs_22}/bin/npm" ];
-              packages = [ "npm:@ff-labs/pi-fff@0.10.3" ] ++ claudeSettings.packages;
+              packages = [ "npm:@ff-labs/pi-fff@0.10.3" ] ++ claudeProvider.packages;
             }
           );
 
@@ -81,6 +81,7 @@ in
                 lib.optionalString (mcpTools == [ ]) "--no-mcp"
               } \
               --tools ${lib.escapeShellArg (lib.concatStringsSep "," (specialist.tools ++ mcpTools))} \
+              --model ${claudeModel.defaultProvider}/${claudeModel.defaultModel} \
               --append-system-prompt ${content.instructions} \
               "$@"
           '';
@@ -107,6 +108,10 @@ in
           lib.types.submodule {
             options = {
               displayName = lib.mkOption { type = lib.types.str; };
+              domain = lib.mkOption {
+                type = lib.types.str;
+                description = "The work to hand this specialist, listed in every harness's instructions.";
+              };
               tools = lib.mkOption {
                 type = lib.types.listOf lib.types.str;
                 default = [
@@ -132,6 +137,17 @@ in
       };
 
       config = {
+        agents.extraInstructions = lib.mkIf (config.pi.specialists != { }) ''
+          ## Specialists
+
+          Specialist agents carry skills and MCP servers you lack. When a task falls in one's domain, delegate it: in T3 Code to the provider instance `pi-<name>` with the model `claude-opus-5-5`, elsewhere with `pi-<name> -p "<brief>"`. The specialist sees only the brief: the goal, input paths, output directory, deliverables and acceptance bar. Open its deliverables and check them against the brief before you report.
+
+          ${lib.concatStrings (
+            lib.mapAttrsToList (name: specialist: ''
+              - `pi-${name}`: ${specialist.domain}
+            '') config.pi.specialists
+          )}'';
+
         home = {
           packages = lib.mapAttrsToList command config.pi.specialists;
 
@@ -139,7 +155,7 @@ in
             name: specialist:
             {
               "${agentDir name}/settings.json".source =
-                settingsFormat.generate "pi-${name}-settings.json" claudeSettings;
+                settingsFormat.generate "pi-${name}-settings.json" claudeProvider;
             }
             // lib.optionalAttrs (specialist.mcpServers != { }) {
               "${agentDir name}/mcp.json" = {
