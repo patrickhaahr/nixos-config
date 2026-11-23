@@ -140,7 +140,7 @@ in
         agents.extraInstructions = lib.mkIf (config.pi.specialists != { }) ''
           ## Specialists
 
-          Unless you are a subagent or a delegated child, delegate every task in a specialist's domain, test runs included, with `delegate_task` to `providerInstanceId: "pi-<name>"`. A specialist is a Pi agent running Claude models (`claude-code/<model>`) with skills and MCP servers that a Claude or Codex child lacks, so only its own instance does its work. It sees only your brief: the goal, input paths, output directory, deliverables and acceptance bar. Check its deliverables against the brief before you report.
+          Unless you are a subagent or a delegated child, delegate every task in a specialist's domain, test runs included, with `delegate_task` to `providerInstanceId: "pi-<name>"`. A specialist is a Pi agent, not a Claude or Codex child: it runs Claude models (`claude-code/<model>`) or Codex models (`openai-codex/<model>`) with skills and MCP servers that a Claude or Codex child lacks, so only its own instance does its work. It sees only your brief: the goal, input paths, output directory, deliverables and acceptance bar. Check its deliverables against the brief before you report.
 
           ${lib.concatStrings (
             lib.mapAttrsToList (name: specialist: ''
@@ -156,6 +156,10 @@ in
             {
               "${agentDir name}/settings.json".source =
                 settingsFormat.generate "pi-${name}-settings.json" claudeProvider;
+              "${agentDir name}/auth.json" = {
+                source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.pi/agent/auth.json";
+                force = true;
+              };
             }
             // lib.optionalAttrs (specialist.mcpServers != { }) {
               "${agentDir name}/mcp.json" = {
