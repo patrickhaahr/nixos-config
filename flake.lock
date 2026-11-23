@@ -779,6 +779,22 @@
         "type": "github"
       }
     },
+    "pi-claude-code": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1793912427,
+        "narHash": "sha256-86zfGr9YoM+I/PmWHDJb8AbcxhYC1m8aOeghJjvN414=",
+        "owner": "earendil-works",
+        "repo": "pi-claude-code",
+        "rev": "d5b5e04c314d3452d357174d16d10dda34daa2d2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "earendil-works",
+        "repo": "pi-claude-code",
+        "type": "github"
+      }
+    },
     "pre-commit": {
       "inputs": {
         "flake-compat": "flake-compat",
@@ -917,6 +933,7 @@
         "noctalia": "noctalia",
         "nvf": "nvf",
         "openhome": "openhome",
+        "pi-claude-code": "pi-claude-code",
         "pyproject-build-systems": "pyproject-build-systems_2",
         "pyproject-nix": "pyproject-nix_2",
         "sops-nix": "sops-nix",

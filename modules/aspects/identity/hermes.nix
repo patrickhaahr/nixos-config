@@ -24,6 +24,7 @@
       imports = [
         self.modules.homeManager.agent-hermes
         self.modules.homeManager.browser-use
+        self.modules.homeManager.agent-specialists
         self.modules.homeManager.agent-tools
         self.modules.homeManager.agent-browser
         self.modules.homeManager.browse-headless

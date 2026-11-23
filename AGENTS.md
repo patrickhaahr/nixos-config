@@ -21,6 +21,7 @@
 - Agent tooling lives in `modules/aspects/agent/`, grouped by subject rather than CLI or desktop; a tool with several aspects gets a directory (`hermes/`, `t3code/`). The root `agents/` holds only what agents read (instructions, skills, skill sources). Agent instructions and skills reach aspects only through `agent-skills`, which deploys `~/.agents/AGENTS.md` and `~/.agents/skills` and exposes `config.lib.agents.instructions`; `git-guardrails` reads its file-size guard straight from the `setup-repo` skill template.
 - Hermes hosts compose through the `agent-hermes-host` seam in `modules/aspects/agent/hermes/host.nix`.
 - External skills are listed in `agents/skill-sources/sources.nix` and sparse-fetched, never added as flake inputs (an input downloads the whole repo). After changing an entry, run `just update-skills <owner/repo>`; only that recipe writes `sources.lock.json`.
+- A skill pack or MCP server only one specialist agent uses belongs to that specialist, never to `sources.nix` or `agents.mcpServers`: its skills go in `agents/skill-sources/bundles.nix`, its role prompt in `agents/specialists/<name>.md`, and its MCP servers and tools in a `pi.specialists.<name>` entry in the aspect of the app it drives (`agent-specialists` when there is none); see `docs/adr/0008-specialist-agents-own-their-skills.md`.
 - Before making a skill manual-only in `agents/skill-sources/overrides.nix`, find the skills that load it: rewrite each reference with `<skill>.replace."<exact text>"` so it reads `~/.agents/skills/<name>/SKILL.md` instead, or leave the skill model-invocable.
 - `modules/aspects/agent/browser-use/` vendors a `uv.lock`; regenerate it with `uv lock --python 3.12` when bumping.
 - `nix flake check` warns `unknown flake output 'modules'`; this is expected here.
@@ -29,4 +30,4 @@
 
 ## Verification
 - After every implementation, run `just verify <host>` from the repository root. It formats, runs Statix and `nix flake check`, and dry-runs the host build. Use `just check` when no host is relevant.
-- `just switch` needs the user's password on nika. Hand the user the command and report the change as built, not activated.
+- Activate changes yourself with `just test` (nika, until reboot) or `just deploy <host>`, piping the password file from `request_secret` on stdin and deleting it after: `just test nika --ask-elevate-password < "$file"`, `just deploy <host> < "$file"`. `just switch` stays the user's: hand them the command.

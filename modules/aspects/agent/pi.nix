@@ -1,4 +1,11 @@
 { self, inputs, ... }:
+let
+  claudeProvider.packages = [ "${inputs.pi-claude-code}" ];
+  claudeModel = {
+    defaultProvider = "claude-code";
+    defaultModel = "claude-opus-5-5";
+  };
+in
 {
   flake.modules.homeManager.pi =
     {
@@ -25,32 +32,153 @@
         packages = [ inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.pi ];
 
         file = {
-          ".pi/agent/settings.json".source = settingsFormat.generate "pi-settings.json" {
-            defaultProvider = "github-copilot";
-            defaultModel = "gpt-5.6-sol";
-            npmCommand = [ "${pkgs.nodejs_22}/bin/npm" ];
-
-            packages = [
-              "npm:@ff-labs/pi-fff@0.10.3"
-              "npm:pi-web-access@0.23.0"
-              "npm:pi-subagents@0.50.0"
-            ];
-          };
+          ".pi/agent/settings.json".source = settingsFormat.generate "pi-settings.json" (
+            claudeModel
+            // {
+              npmCommand = [ "${pkgs.nodejs_22}/bin/npm" ];
+              packages = [ "npm:@ff-labs/pi-fff@0.10.3" ] ++ claudeProvider.packages;
+            }
+          );
 
           ".pi/agent/AGENTS.md".source = config.lib.agents.instructions;
-
-          ".pi/web-search.json".source = settingsFormat.generate "pi-web-search.json" {
-            provider = "firecrawl";
-            firecrawlBaseUrl = "https://firecrawl.${self.nixosConfigurations.zaza.config.homelab.domain}";
-            firecrawlApiVersion = "v2";
-            firecrawlFreshScrape = true;
-            ssrf.allowRanges = [ "100.120.202.71/32" ];
-          };
         };
 
         activation.piManagedMcp = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
           run ${lib.getExe config.lib.agents.mergeJson} ${config.home.homeDirectory}/.pi/agent/mcp.json ${managedMcp}
         '';
+      };
+    };
+
+  flake.modules.homeManager.pi-specialists =
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
+    let
+      settingsFormat = pkgs.formats.json { };
+      pi = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.pi;
+      agentDir = name: ".pi/specialists/${name}";
+
+      command =
+        name: specialist:
+        let
+          content = config.lib.agents.specialists.${name};
+          mcpTools = map (server: "mcp__${lib.replaceStrings [ "-" ] [ "_" ] server}__*") (
+            builtins.attrNames specialist.mcpServers
+          );
+        in
+        pkgs.writeShellApplication {
+          name = "pi-${name}";
+          runtimeInputs = specialist.packages;
+          text = ''
+            export PI_CODING_AGENT_DIR=${lib.escapeShellArg "${config.home.homeDirectory}/${agentDir name}"}
+            if [[ ''${1-} == mcp ]]; then exec ${lib.getExe pi} "$@"; fi
+            exec ${lib.getExe pi} \
+              --no-skills ${lib.optionalString (content.skills != null) "--skill ${content.skills}"} \
+              --no-approve --no-context-files --no-prompt-templates ${
+                lib.optionalString (mcpTools == [ ]) "--no-mcp"
+              } \
+              --tools ${lib.escapeShellArg (lib.concatStringsSep "," (specialist.tools ++ mcpTools))} \
+              --model ${claudeModel.defaultProvider}/${claudeModel.defaultModel} \
+              --append-system-prompt ${content.instructions} \
+              "$@"
+          '';
+        };
+
+      mcpConfig =
+        name: specialist:
+        settingsFormat.generate "pi-${name}-mcp.json" {
+          mcpServers = lib.mapAttrs (_: server: { exposure = "direct"; } // server) specialist.mcpServers;
+        };
+    in
+    {
+      imports = [
+        self.modules.homeManager.agent-skills
+        self.modules.homeManager.t3code-settings
+      ];
+
+      key = "pi-specialists";
+
+      options.pi.specialists = lib.mkOption {
+        default = { };
+        description = "Specialist agents, each the command `pi-<name>` and a T3 Code provider instance that see only their skill bundle, MCP servers and role prompt from `agents/specialists/<name>.md`.";
+        type = lib.types.attrsOf (
+          lib.types.submodule {
+            options = {
+              displayName = lib.mkOption { type = lib.types.str; };
+              domain = lib.mkOption {
+                type = lib.types.str;
+                description = "The work to hand this specialist, listed in every harness's instructions.";
+              };
+              tools = lib.mkOption {
+                type = lib.types.listOf lib.types.str;
+                default = [
+                  "read"
+                  "write"
+                  "edit"
+                  "bash"
+                ];
+              };
+              mcpServers = lib.mkOption {
+                type = lib.types.attrsOf (lib.types.attrsOf lib.types.anything);
+                default = { };
+                description = "Pi `mcp.json` server entries; tools are declared directly unless an entry sets `exposure`.";
+              };
+              packages = lib.mkOption {
+                type = lib.types.listOf lib.types.package;
+                default = [ ];
+                description = "Executables the specialist's skills call, added to its PATH.";
+              };
+            };
+          }
+        );
+      };
+
+      config = {
+        agents.extraInstructions = lib.mkIf (config.pi.specialists != { }) ''
+          ## Specialists
+
+          Unless you are a subagent or a delegated child, delegate every task in a specialist's domain, test runs included, with `delegate_task` to `providerInstanceId: "pi-<name>"`. A specialist is a Pi agent, not a Claude or Codex child: it runs Claude models (`claude-code/<model>`) or Codex models (`openai-codex/<model>`) with skills and MCP servers that a Claude or Codex child lacks, so only its own instance does its work. It sees only your brief: the goal, input paths, output directory, deliverables and acceptance bar. Name the outcome and leave the design, method and skills to it. Check its deliverables against the brief before you report.
+
+          ${lib.concatStrings (
+            lib.mapAttrsToList (name: specialist: ''
+              - `pi-${name}`: ${specialist.domain}
+            '') config.pi.specialists
+          )}'';
+
+        home = {
+          packages = lib.mapAttrsToList command config.pi.specialists;
+
+          file = lib.concatMapAttrs (
+            name: specialist:
+            {
+              "${agentDir name}/settings.json".source =
+                settingsFormat.generate "pi-${name}-settings.json" claudeProvider;
+              "${agentDir name}/auth.json" = {
+                source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.pi/agent/auth.json";
+                force = true;
+              };
+            }
+            // lib.optionalAttrs (specialist.mcpServers != { }) {
+              "${agentDir name}/mcp.json" = {
+                source = mcpConfig name specialist;
+                force = true;
+              };
+            }
+          ) config.pi.specialists;
+        };
+
+        t3code.providerInstances = lib.mapAttrs' (
+          name: specialist:
+          lib.nameValuePair "pi-${name}" {
+            driver = "pi";
+            inherit (specialist) displayName;
+            enabled = true;
+            config.binaryPath = "pi-${name}";
+          }
+        ) config.pi.specialists;
       };
     };
 }

@@ -17,6 +17,7 @@ in
         sops
       ];
       imports = [
+        self.modules.homeManager.agent-specialists
         self.modules.homeManager.agent-tools
         self.modules.homeManager.bun
         self.modules.homeManager.gh

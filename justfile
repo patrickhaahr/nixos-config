@@ -60,7 +60,7 @@ deploy host target=host action="switch" *args:
       ssh_args=(-i "$HOME/.ssh/id_ed25519_{{ target }}" -o IdentitiesOnly=yes)
       export NIX_SSHOPTS="-i $HOME/.ssh/id_ed25519_{{ target }} -o IdentitiesOnly=yes"
     fi
-    before="$(ssh -q "${ssh_args[@]}" {{ target }} "bash -lc 'readlink -e /run/current-system || true'")"
+    before="$(ssh -nq "${ssh_args[@]}" {{ target }} "bash -lc 'readlink -e /run/current-system || true'")"
 
     nixos-rebuild "{{ action }}" \
       --flake {{ flake }}#{{ host }} \
@@ -71,7 +71,7 @@ deploy host target=host action="switch" *args:
       --ask-elevate-password \
       {{ args }}
 
-    after="$(ssh -q "${ssh_args[@]}" {{ target }} "bash -lc 'readlink -e /run/current-system || true'")"
+    after="$(ssh -nq "${ssh_args[@]}" {{ target }} "bash -lc 'readlink -e /run/current-system || true'")"
     if [[ -n "$before" && -n "$after" && "$before" != "$after" ]]; then
       echo
       echo "===== {{ target }} ({{ action }}) ====="
@@ -206,7 +206,7 @@ update-flake *inputs:
     export NIX_CONFIG="${NIX_CONFIG}"$'\n'"extra-access-tokens = github.com=$token"
     exec nix flake update "$@" --flake {{ flake }}
 
-# Pin the skill repos in agents/skill-sources/sources.nix to their default
+# Pin the skill repos in agents/skill-sources/{sources,bundles}.nix to their default
 # branch heads and rewrite sources.lock.json. Pass owner/repo slugs to bump only
 # those; other entries keep their pins. Repos no longer listed are dropped.
 [group('dev')]
@@ -217,7 +217,7 @@ update-skills *repos:
     set -euo pipefail
     dir="{{ justfile_directory() }}/agents/skill-sources"
     lock="$dir/sources.lock.json"
-    spec="$(nix eval --json --file "$dir/sources.nix")"
+    spec="$(nix eval --json --impure --expr "import \"$dir/sources.nix\" // import \"$dir/bundles.nix\"")"
     prefetch="$(nix build --no-link --print-out-paths nixpkgs#nix-prefetch-git)/bin/nix-prefetch-git"
     new='{}'
     for slug in $(jq -r 'keys[]' <<<"$spec"); do

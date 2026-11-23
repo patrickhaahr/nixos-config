@@ -21,7 +21,14 @@
           };
           permissions.defaultMode = "bypassPermissions";
           skipDangerousModePermissionPrompt = true;
-          enabledPlugins."cc-plugin-plugin-authoring@builtin" = false;
+          extraKnownMarketplaces.cursor-plugins.source = {
+            source = "github";
+            repo = "cursor/plugins";
+          };
+          enabledPlugins = {
+            "cc-plugin-plugin-authoring@builtin" = false;
+            "pstack@cursor-plugins" = true;
+          };
         }
       );
       managedState = pkgs.writeText "claude-managed-state.json" (

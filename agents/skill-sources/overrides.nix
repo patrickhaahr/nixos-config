@@ -5,35 +5,13 @@ let
   };
 in
 {
-  effect.description = "Invoke when working in TypeScript code that uses Effect.";
-  react-best-practices.description = "Invoke when writing, reviewing or optimizing React or Next.js code.";
   rust-best-practices.description = "Invoke when working in .rs code.";
   test-audit.description = "Invoke when writing, changing or reviewing tests.";
 
-  better-accessibility.disable-model-invocation = true;
-  better-auth-best-practices.disable-model-invocation = true;
-  better-auth-security-best-practices.disable-model-invocation = true;
-  cloudflare.disable-model-invocation = true;
-  wrangler.disable-model-invocation = true;
   install-anti-slop.disable-model-invocation = true;
-  better-colors.disable-model-invocation = true;
-  better-interface.disable-model-invocation = true;
-  better-layout.disable-model-invocation = true;
-  better-typography.disable-model-invocation = true;
-  better-ui.disable-model-invocation = true;
-  better-writing.disable-model-invocation = true;
-
-  better-interface.replace."Load every owning skill below and complete each domain review" =
-    "Each owning skill below is manual-only, so the Skill tool refuses it: read `~/.agents/skills/<name>/SKILL.md` for each and complete its domain review";
-  cloudflare.replace."and load the `wrangler` skill." =
-    "and read `~/.agents/skills/wrangler/SKILL.md` (manual-only, so the Skill tool refuses it).";
-  interface-review.replace."Hand `better-interface` the scope block" =
-    "Read `~/.agents/skills/better-interface/SKILL.md` (manual-only, so the Skill tool refuses it) and hand it the scope block";
 
   ai-seo = manual "Optimize content to be cited in AI answers such as ChatGPT, Perplexity and AI Overviews.";
-  animate = manual "Build a web animation: purpose, properties, curve, duration and interruption.";
-  awwwards = manual "Build an award-caliber portfolio, brand or launch site from a one-line brief.";
-  design-taste-frontend = manual "Design or restyle a marketing or company website to a professional standard.";
+  effect = manual "Write or review TypeScript that uses Effect.";
   diagram-design = manual "Create architecture, flow, sequence and data diagrams as HTML or SVG.";
   improve = manual "Audit a codebase and write self-contained improvement plans for other agents to execute.";
   frontend-slides = manual "Build an animated HTML slide deck, or convert a PPTX to web slides.";

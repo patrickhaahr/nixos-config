@@ -29,7 +29,9 @@ let
     ) "skill-sources: lock for ${slug} is stale; run `just update-skills ${slug}`";
     lib.mapAttrs (_: path: if path == "" then src else src + "/${path}") skills;
 
-  skills = lib.foldl' lib.mergeAttrs { } (lib.mapAttrsToList fetchSkills (import ./sources.nix)) // {
+  fetchAll = sources: lib.foldl' lib.mergeAttrs { } (lib.mapAttrsToList fetchSkills sources);
+
+  skills = fetchAll (import ./sources.nix) // {
     openhome = inputs.openhome + "/skills/openhome";
   };
   overrides = import ./overrides.nix;
@@ -71,6 +73,23 @@ let
     '';
 in
 assert lib.assertMsg (unknown == [ ]) "skill overrides name missing skills: ${toString unknown}";
-lib.mapAttrs (
-  name: src: if overrides ? ${name} then patch name src overrides.${name} else src
-) skills
+{
+  skills = lib.mapAttrs (
+    name: src: if overrides ? ${name} then patch name src overrides.${name} else src
+  ) skills;
+  bundles = lib.mapAttrs (
+    name: srcs:
+    pkgs.runCommand "skill-bundle-${name}" { } ''
+      mkdir $out
+      for src in ${lib.escapeShellArgs srcs}; do
+        for skill in "$src"/*/; do
+          [[ ! -e $out/$(basename "$skill") ]] || { echo "bundle ${name}: duplicate skill $skill" >&2; exit 1; }
+          cp -rL --no-preserve=mode "$skill" $out/
+        done
+      done
+      for skill in $out/*/SKILL.md; do
+        ${patchSkill} "$skill" '{"disable-model-invocation": false}' '{}'
+      done
+    ''
+  ) (lib.zipAttrs (lib.mapAttrsToList fetchSkills (import ./bundles.nix)));
+}
