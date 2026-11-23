@@ -1,9 +1,5 @@
 {
   "apollographql/skills".rust-best-practices = "skills/rust-best-practices";
-  "better-auth/skills" = {
-    better-auth-best-practices = "better-auth/best-practices";
-    better-auth-security-best-practices = "security";
-  };
   "cathrynlavery/diagram-design".diagram-design = "skills/diagram-design";
   "cloudflare/security-audit-skill".security-audit = "skills/security-audit";
   "coreyhaines31/marketingskills" = {
@@ -31,7 +27,6 @@
   };
   "openclaw/openclaw".test-audit = ".agents/skills/test-audit";
   "shadcn/improve".improve = "skills/improve";
-  "vercel-labs/agent-skills".react-best-practices = "skills/react-best-practices";
   "zarazhangrui/frontend-slides".frontend-slides = "";
 
 }

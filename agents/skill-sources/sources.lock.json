@@ -20,14 +20,6 @@
     ],
     "rev": "904f095d8f36a6e72adaebb08d07f884a074743d"
   },
-  "better-auth/skills": {
-    "hash": "sha256-h6LKfIR/bmPdgfWPlaTIOmH1befMh+VtXVmlqT2S0xI=",
-    "paths": [
-      "better-auth/best-practices",
-      "security"
-    ],
-    "rev": "20c9e88a5c007461a703f1c213572b073196113e"
-  },
   "cathrynlavery/diagram-design": {
     "hash": "sha256-71vIi/eX6dT0UNlYZoaL7hclivsd+MJ6Jamz6H9ILHw=",
     "paths": [
@@ -126,13 +118,6 @@
       "skills/improve"
     ],
     "rev": "cac56e1ebd3c279aa9153616cfeac7b174ab90f9"
-  },
-  "vercel-labs/agent-skills": {
-    "hash": "sha256-31iNquTCBCeXU8VK2kuamknzfYvWSNcMTpb4YO1fl90=",
-    "paths": [
-      "skills/react-best-practices"
-    ],
-    "rev": "5a37a6329fbad3666c3207392a6a7c0110e92efb"
   },
   "vercel-labs/ui": {
     "hash": "sha256-XcI3ZfTgSvqJkdvK17mtvJxrc6wGTR7qShgxXDxstVg=",

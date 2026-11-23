@@ -17,7 +17,6 @@ in
       imports = [
         self.modules.homeManager.identity-ph-desktop
         self.modules.homeManager.agent-browser
-        self.modules.homeManager.agent-specialists
         self.modules.homeManager.browse
         self.modules.homeManager.openhome
 
