@@ -33,6 +33,8 @@ in
               resource = "*";
               effect = "allow";
             }
+          ];
+          policies = [
             {
               action = "provider.use";
               resource = "*";
