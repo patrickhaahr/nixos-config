@@ -35,10 +35,21 @@ Your scripts generate every mesh, texture and world: `bpy`, `bmesh`, geometry no
 
 ## Worlds
 
+Past worlds live in `~/dev/blender-projects/<name>/`, each with its brief in `PROMPT.md` and a full pipeline in `scripts/` that rebuilds in seconds. When a brief is close to one, copy its scripts and adapt them.
+
 - Build the heightmap from layered noise with domain warping, then shape it for the style: terraces and soft plateaus read as stylized, eroded ridges as realistic.
 - Model a library of 3 to 5 variants of each plant, tree and rock, then scatter instances of them through the masks: clustered, with Poisson-disk spacing, denser at edges and paths.
 - Keep scatter as instances: never Realize Instances. Export terrain in chunks, scatter with `export_gpu_instances=True`, and write `scatter.json` with each instance's asset name and transform, so the engine instances it.
 - Hold each asset to the brief's triangle budget, and give scattered assets LODs with `lod-pipeline`.
+
+## Blender facts
+
+- The EEVEE engine id is `BLENDER_EEVEE`.
+- `export_gpu_instances=True` exports collection instances as `EXT_mesh_gpu_instancing`.
+- An emission-only material exports as `KHR_materials_unlit`: use it for sky, water and outlines.
+- A sun with energy π makes white diffuse equal N·L, so a cel threshold is an N·L value the engine can reuse.
+- The image reader caches by path: copy a re-rendered sheet to a new name before you read it again.
+- ffmpeg 9 removed `-vsync`.
 
 ## Checking your work
 

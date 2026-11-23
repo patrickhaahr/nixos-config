@@ -140,7 +140,7 @@ in
         agents.extraInstructions = lib.mkIf (config.pi.specialists != { }) ''
           ## Specialists
 
-          In a thread the user started, delegate every task in a specialist's domain, test runs included, to its T3 provider instance `pi-<name>`. It sees only your brief: the goal, input paths, output directory, deliverables and acceptance bar. Check its deliverables against the brief before you report.
+          Unless you are a subagent or a delegated child, delegate every task in a specialist's domain, test runs included, to its T3 provider instance `pi-<name>`. It sees only your brief: the goal, input paths, output directory, deliverables and acceptance bar. Check its deliverables against the brief before you report.
 
           ${lib.concatStrings (
             lib.mapAttrsToList (name: specialist: ''
