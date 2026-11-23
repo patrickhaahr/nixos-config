@@ -22,31 +22,6 @@
       ];
 
       environment.sessionVariables.T3CODE_TELEMETRY_ENABLED = "false";
-      home-manager.sharedModules = [ self.modules.homeManager.t3code ];
     };
 
-  flake.modules.homeManager.t3code =
-    {
-      config,
-      lib,
-      pkgs,
-      ...
-    }:
-    let
-      instances = pkgs.writeText "t3code-provider-instances.json" (
-        builtins.toJSON { providerInstances = config.t3code.providerInstances; }
-      );
-    in
-    {
-      imports = [
-        self.modules.homeManager.agent-mcp
-        self.modules.homeManager.t3code-settings
-      ];
-
-      home.activation.t3codeProviderInstances = lib.mkIf (config.t3code.providerInstances != { }) (
-        lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-          run ${lib.getExe config.lib.agents.mergeJson} ${config.home.homeDirectory}/.t3/userdata/settings.json ${instances}
-        ''
-      );
-    };
 }

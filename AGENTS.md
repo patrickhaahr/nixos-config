@@ -30,4 +30,4 @@
 
 ## Verification
 - After every implementation, run `just verify <host>` from the repository root. It formats, runs Statix and `nix flake check`, and dry-runs the host build. Use `just check` when no host is relevant.
-- Activate changes yourself with `just test` (nika, until reboot) or `just deploy <host>`. `just test` raises a polkit prompt the user answers; for `just deploy`, ask for the password with `request_secret` (`delivery: "file"`) and pass it on stdin: `just deploy <host> < "$file"`. `just switch` stays the user's: hand them the command.
+- Activate changes yourself with `just test` (nika, until reboot) or `just deploy <host>`. Your shell has no terminal, so `run0` cannot prompt: ask for the password with `request_secret` (`delivery: "file"`), pass it on stdin, and delete the file after: `just test nika --ask-elevate-password < "$file"`, `just deploy <host> < "$file"`. `just switch` stays the user's: hand them the command.

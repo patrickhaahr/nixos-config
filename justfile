@@ -60,7 +60,7 @@ deploy host target=host action="switch" *args:
       ssh_args=(-i "$HOME/.ssh/id_ed25519_{{ target }}" -o IdentitiesOnly=yes)
       export NIX_SSHOPTS="-i $HOME/.ssh/id_ed25519_{{ target }} -o IdentitiesOnly=yes"
     fi
-    before="$(ssh -q "${ssh_args[@]}" {{ target }} "bash -lc 'readlink -e /run/current-system || true'")"
+    before="$(ssh -nq "${ssh_args[@]}" {{ target }} "bash -lc 'readlink -e /run/current-system || true'")"
 
     nixos-rebuild "{{ action }}" \
       --flake {{ flake }}#{{ host }} \
@@ -71,7 +71,7 @@ deploy host target=host action="switch" *args:
       --ask-elevate-password \
       {{ args }}
 
-    after="$(ssh -q "${ssh_args[@]}" {{ target }} "bash -lc 'readlink -e /run/current-system || true'")"
+    after="$(ssh -nq "${ssh_args[@]}" {{ target }} "bash -lc 'readlink -e /run/current-system || true'")"
     if [[ -n "$before" && -n "$after" && "$before" != "$after" ]]; then
       echo
       echo "===== {{ target }} ({{ action }}) ====="

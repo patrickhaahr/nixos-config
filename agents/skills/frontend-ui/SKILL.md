@@ -3,18 +3,11 @@ name: frontend-ui
 description: Invoke when working on frontend UI or UX design.
 ---
 
-The skills below are manual-only, so the Skill tool refuses them: read `~/.agents/skills/<name>/SKILL.md` instead. Before starting, read every skill whose row matches the task. When a skill you read names another skill, read that one the same way.
+Design work belongs to the `ui` specialist, which carries the design skills (accessibility, layout, typography, color, polish, copy, motion, interface reviews) and real-site references this session lacks.
 
-| Task | Skill |
-|---|---|
-| Keyboard, focus, ARIA, screen readers, WCAG | `better-accessibility` |
-| Grouping, alignment, spacing, responsive or RTL layout | `better-layout` |
-| Type scale, font features, wrapping, truncation | `better-typography` |
-| Palettes, color tokens, contrast, dark mode | `better-colors` |
-| Radius, shadows, icons, visual polish | `better-ui` |
-| Labels, errors, empty states, confirmations | `better-writing` |
-| Review of a whole screen, flow or interface | `better-interface` |
-| Review of a branch, PR or uncommitted UI change | `interface-review` |
-| Adding or tuning an animation or transition | `animate` |
-| Marketing, company or product site to a professional standard | `design-taste-frontend` |
-| Award-level portfolio, brand or launch site | `awwwards` |
+- Hand it any task that designs, builds, restyles, animates or reviews an interface: in T3 Code, delegate to the provider instance `pi-ui` with the model pinned to `claude-opus-5-5`; elsewhere run `pi-ui -p "<brief>"`.
+- A brief names the project path, the screens or components, the goal, and what done looks like. The specialist sees only the brief.
+- Do code-level UI work yourself (state, data flow, a prop or a bug fix with no design decision), with `react-best-practices` for React.
+- When `pi-ui` is not on PATH, work from the project's existing tokens and components, and say in your report that the design pass was skipped.
+
+Before you report, open the specialist's screenshots and diff and check them against the brief.

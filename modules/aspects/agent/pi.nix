@@ -65,17 +65,21 @@ in
         name: specialist:
         let
           content = config.lib.agents.specialists.${name};
-          mcpTools = map (server: "mcp__${server}__*") (builtins.attrNames specialist.mcpServers);
+          mcpTools = map (server: "mcp__${lib.replaceStrings [ "-" ] [ "_" ] server}__*") (
+            builtins.attrNames specialist.mcpServers
+          );
         in
         pkgs.writeShellApplication {
           name = "pi-${name}";
           runtimeInputs = specialist.packages;
           text = ''
-            export PI_CODING_AGENT_DIR=${config.home.homeDirectory}/${agentDir name}
+            export PI_CODING_AGENT_DIR=${lib.escapeShellArg "${config.home.homeDirectory}/${agentDir name}"}
             if [[ ''${1-} == mcp ]]; then exec ${lib.getExe pi} "$@"; fi
             exec ${lib.getExe pi} \
               --no-skills ${lib.optionalString (content.skills != null) "--skill ${content.skills}"} \
-              --no-context-files --no-prompt-templates ${lib.optionalString (mcpTools == [ ]) "--no-mcp"} \
+              --no-approve --no-context-files --no-prompt-templates ${
+                lib.optionalString (mcpTools == [ ]) "--no-mcp"
+              } \
               --tools ${lib.escapeShellArg (lib.concatStringsSep "," (specialist.tools ++ mcpTools))} \
               --append-system-prompt ${content.instructions} \
               "$@"
@@ -90,7 +94,6 @@ in
     in
     {
       imports = [
-        self.modules.homeManager.agent-mcp
         self.modules.homeManager.agent-skills
         self.modules.homeManager.t3code-settings
       ];
@@ -132,23 +135,19 @@ in
         home = {
           packages = lib.mapAttrsToList command config.pi.specialists;
 
-          file = lib.mapAttrs' (
-            name: _:
-            lib.nameValuePair "${agentDir name}/settings.json" {
-              source = settingsFormat.generate "pi-${name}-settings.json" claudeSettings;
+          file = lib.concatMapAttrs (
+            name: specialist:
+            {
+              "${agentDir name}/settings.json".source =
+                settingsFormat.generate "pi-${name}-settings.json" claudeSettings;
+            }
+            // lib.optionalAttrs (specialist.mcpServers != { }) {
+              "${agentDir name}/mcp.json" = {
+                source = mcpConfig name specialist;
+                force = true;
+              };
             }
           ) config.pi.specialists;
-
-          activation.piSpecialistMcp = lib.hm.dag.entryAfter [ "writeBoundary" ] (
-            lib.concatStrings (
-              lib.mapAttrsToList (
-                name: specialist:
-                lib.optionalString (specialist.mcpServers != { }) ''
-                  run ${lib.getExe config.lib.agents.mergeJson} ${config.home.homeDirectory}/${agentDir name}/mcp.json ${mcpConfig name specialist}
-                ''
-              ) config.pi.specialists
-            )
-          );
         };
 
         t3code.providerInstances = lib.mapAttrs' (
