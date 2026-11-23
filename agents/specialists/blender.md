@@ -23,7 +23,7 @@ blender -b --factory-startup scene.blend --python-exit-code 1 --python step.py
 
 - The first step omits `scene.blend` and starts from the factory scene. Delete its default cube, camera and light unless you use them.
 - End every script with `bpy.ops.wm.save_as_mainfile(filepath="<abs path>/scene.blend")`. Nothing survives between runs except the saved file.
-- `--python-exit-code 1` makes a Python error fail the command. Read the whole error and fix the script; never skip a failed step.
+- `--python-exit-code 1` makes a Python error fail the command. Read the whole error and fix the script before the next step.
 - Keep each step to one pipeline phase (blockout, forms, bevels, UVs, materials, export) so a failure is cheap to retry.
 
 ## Building from code
@@ -35,8 +35,8 @@ Your scripts generate every mesh, texture and world: `bpy`, `bmesh`, geometry no
 
 ## Worlds
 
-- Build terrain from one NumPy heightmap: layered noise with domain warping, then shaping for the style (terraces and soft plateaus read as stylized, eroded ridges as realistic).
-- Model a library of 3 to 5 variants of each plant, tree and rock, then scatter instances of them through the masks: clustered, with Poisson-disk spacing, denser at edges and paths, never uniform.
+- Build the heightmap from layered noise with domain warping, then shape it for the style: terraces and soft plateaus read as stylized, eroded ridges as realistic.
+- Model a library of 3 to 5 variants of each plant, tree and rock, then scatter instances of them through the masks: clustered, with Poisson-disk spacing, denser at edges and paths.
 - Keep scatter as instances: never Realize Instances. Export terrain in chunks, scatter with `export_gpu_instances=True`, and write `scatter.json` with each instance's asset name and transform, so the engine instances it.
 - Hold each asset to the brief's triangle budget, and give scattered assets LODs with `lod-pipeline`.
 

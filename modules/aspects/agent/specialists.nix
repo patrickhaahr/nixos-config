@@ -19,7 +19,7 @@
         };
         ui = {
           displayName = "Pi UI";
-          domain = "Interface design, restyling, motion and design reviews.";
+          domain = "Interface design decisions: layout, restyling, motion, design reviews. Code-level UI work with no design decision stays with you.";
           mcpServers.inspo.url = "https://inspomcp.dev/api/mcp";
         };
         qa = {

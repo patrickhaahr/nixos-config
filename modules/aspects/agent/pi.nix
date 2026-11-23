@@ -140,7 +140,7 @@ in
         agents.extraInstructions = lib.mkIf (config.pi.specialists != { }) ''
           ## Specialists
 
-          Specialist agents carry skills and MCP servers you lack. When a task falls in one's domain, including a test run of the specialist itself, delegate it. In T3 Code, every run goes through the provider instance `pi-<name>` (model `claude-opus-5-5` unless the task calls for another), so it is a thread the user can watch; `pi-<name> -p "<brief>"` is only for harnesses outside T3 Code. The specialist sees only the brief: the goal, input paths, output directory, deliverables and acceptance bar. Open its deliverables and check them against the brief before you report.
+          Delegate every task in a specialist's domain, test runs included, to its T3 provider instance `pi-<name>`. It sees only your brief: the goal, input paths, output directory, deliverables and acceptance bar. Check its deliverables against the brief before you report.
 
           ${lib.concatStrings (
             lib.mapAttrsToList (name: specialist: ''

@@ -17,7 +17,7 @@ Pick the skill that matches the task:
 
 When a skill names an owning skill for one domain (accessibility, layout, typography, color, writing, polish, motion), read that skill too.
 
-The `inspo` MCP server holds real production websites with their palettes, type ramps and layouts. Before you design anything new, call `recommend` with the brief and study what it returns; never ship the generic look a bare model produces.
+The `inspo` MCP server holds real production websites with their palettes, type ramps and layouts. Before you design anything new, call `recommend` with the brief and build from the references it returns.
 
 ## Working in a project
 
