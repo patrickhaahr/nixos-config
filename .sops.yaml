@@ -3,6 +3,7 @@ keys:
   - &nika age1mlnknujmm56sllxfuau457tv4yl8f5p59a5zr4x4jasagsfkwdts2sjyz0
   - &nika-host age1vyh9hyk9f7meyyqxlvjlr5v4h7045skv8nrghw363zzvy9n58uqqka9hug
   - &hermes age1w8kuwqr6qmx2wwfd2djhr52g9m82ut5x7fmm0e47mc4jfxjkg5wqv8twa8
+  - &vivi age1jdjktt9a6u25e7rndepn84w8w74u63a2pglv03u4mpu0ytphssvs27w85p
 
 creation_rules:
   # Hermes bootstrap secrets (SSH keys + the hermes age key itself):
@@ -28,6 +29,12 @@ creation_rules:
       - age:
           - *nika
           - *nika-host
+  # vivi's secrets: decryptable by ph and vivi's host key only.
+  - path_regex: secrets/vivi\.yaml$
+    key_groups:
+      - age:
+          - *nika
+          - *vivi
   - path_regex: secrets/.*\.yaml$
     key_groups:
       - age:

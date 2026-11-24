@@ -8,9 +8,13 @@
     imports = with self.modules.nixos; [
       vivi-hardware
       binary-cache
+      homelab-dns-over-https
+      homelab-proxy
+      homelab-vaultwarden
       identity-ph-vivi
       nix-features
       openssh
+      tailscale
     ];
 
     networking = {

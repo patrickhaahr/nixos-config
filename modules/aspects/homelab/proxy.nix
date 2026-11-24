@@ -2,9 +2,19 @@
 {
 
   flake.modules.nixos.homelab-proxy =
-    { config, lib, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     let
       inherit (config.homelab) domain;
+      propagationWaitFlag =
+        if lib.versionAtLeast pkgs.lego.version "5" then
+          "--dns.propagation.wait"
+        else
+          "--dns.propagation-wait";
     in
     {
       imports = [ self.modules.nixos.sops ];
@@ -36,7 +46,7 @@
             dnsProvider = "cloudflare";
 
             extraLegoFlags = [
-              "--dns.propagation.wait"
+              propagationWaitFlag
               "120s"
             ];
             credentialFiles.CF_DNS_API_TOKEN_FILE = config.sops.secrets.cloudflare_dns_api_token.path;
