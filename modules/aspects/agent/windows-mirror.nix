@@ -9,7 +9,7 @@
     }:
     let
       inherit (config.agents.windows) home;
-      inherit (config.lib.agents) claude codex;
+      inherit (config.lib.agents) claude codex t3code;
       inherit (config.lib.agents) instructions;
       skills = config.home.file.".agents/skills".source;
       rsync = "${lib.getExe pkgs.rsync} -rLt --delete --chmod=u+w";
@@ -50,6 +50,7 @@
         self.modules.homeManager.agent-skills
         self.modules.homeManager.claude-code
         self.modules.homeManager.codex
+        self.modules.homeManager.t3code-environment
       ];
 
       options.agents.windows.home = lib.mkOption {
@@ -87,6 +88,10 @@
           ${lib.concatMapAttrsStringSep "\n" (
             name: hook: "run install -m 644 ${pkgs.writeText name hook.text} ${home}/.config/git/hooks/${name}"
           ) guardrailHooks}
+          ${lib.concatMapAttrsStringSep "\n" (name: value: ''
+            run --quiet /mnt/c/Windows/System32/setx.exe ${name} ${lib.escapeShellArg value} \
+              || warnEcho "Could not set ${name} in the Windows user environment"
+          '') t3code.environment}
         else
           warnEcho "Windows profile ${home} not found; skipping the Windows mirror"
         fi

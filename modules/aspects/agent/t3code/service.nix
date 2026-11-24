@@ -26,12 +26,7 @@
           Wants = [ "network-online.target" ];
         };
         Service = {
-          Environment = [
-
-            "PATH=/run/wrappers/bin:%h/.nix-profile/bin:/etc/profiles/per-user/%u/bin:/run/current-system/sw/bin"
-
-            "T3CODE_TELEMETRY_ENABLED=false"
-          ];
+          Environment = "PATH=/run/wrappers/bin:%h/.nix-profile/bin:/etc/profiles/per-user/%u/bin:/run/current-system/sw/bin";
 
           ExecStart = "${pkgs.t3code}/bin/t3 serve --no-browser --mode web --host 127.0.0.1 --port 3773";
           Restart = "on-failure";
