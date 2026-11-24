@@ -13,11 +13,9 @@ _: {
           Environment = config.systemd.user.services.hermes-agent.Service.Environment ++ [
             "PATH=${lib.makeBinPath [ config.programs.hermes-agent.package ]}:/run/current-system/sw/bin"
             "TALK_IDENTITY_INCLUDE=PERSONA,WORKING"
-            "TALK_TURN_DETECTION=semantic_vad"
-            "TALK_SEMANTIC_EAGERNESS=medium"
-
-            "TALK_NOISE_REDUCTION=far_field"
-            "TALK_LANGUAGES=English, Danish"
+            "TALK_TURN_DETECTION=server_vad"
+            "TALK_NOISE_REDUCTION=off"
+            "TALK_LANGUAGES=English,Danish"
           ];
           WorkingDirectory = config.home.homeDirectory;
           Restart = "always";
