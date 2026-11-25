@@ -1,15 +1,8 @@
 { self, ... }:
 {
-  flake.modules.homeManager.e2e =
-    {
-      config,
-      lib,
-      pkgs,
-      ...
-    }:
+  perSystem =
+    { lib, pkgs, ... }:
     let
-      bun = config.programs.bun.package;
-      nodejs = pkgs.nodejs_22;
       pnpm = pkgs.pnpm_12;
       packages = [
         {
@@ -22,8 +15,9 @@
         }
       ];
       workspaces = [ "@e2e-dev/core" ] ++ map (package: package.name) packages;
-
-      runtime = pkgs.stdenv.mkDerivation (finalAttrs: {
+    in
+    {
+      packages.e2e = pkgs.stdenv.mkDerivation (finalAttrs: {
         pname = "e2e";
         inherit (lib.head packages) version;
         src = pkgs.fetchFromGitHub {
@@ -45,7 +39,7 @@
           hash = "sha256-4rf+h2gu2cuntgoxpxhz/WFXPVty+HInXIALSbBT9R0=";
         };
         nativeBuildInputs = [
-          nodejs
+          pkgs.nodejs_22
           pnpm
           pkgs.pnpmConfigHook
         ];
@@ -61,10 +55,24 @@
           deploy @e2e-dev/web $out/lib/node_modules/e2e/node_modules/@e2e-dev/web
           runHook postInstall
         '';
+        passthru = { inherit packages; };
       });
+    };
 
+  flake.modules.homeManager.e2e =
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
+    let
+      bun = config.programs.bun.package;
+      e2e = self.packages.${pkgs.stdenv.hostPlatform.system}.e2e;
       env = config.lib.playwright.env // {
-        E2E_PACKAGES = lib.concatMapStringsSep " " (package: "${package.name}@${package.version}") packages;
+        E2E_PACKAGES = lib.concatMapStringsSep " " (
+          package: "${package.name}@${package.version}"
+        ) e2e.packages;
       };
     in
     {
@@ -80,14 +88,14 @@
         mcpServers.e2e = {
           command = lib.getExe bun;
           args = [
-            "${runtime}/lib/node_modules/e2e/dist/cli/bin.js"
+            "${e2e}/lib/node_modules/e2e/dist/cli/bin.js"
             "mcp"
           ];
           inherit env;
         };
         packages = [
           bun
-          nodejs
+          pkgs.nodejs_22
         ];
         inherit env;
       };

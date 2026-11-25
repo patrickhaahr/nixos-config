@@ -134,6 +134,7 @@ update *inputs:
     just update-flake
     just update-skills
     just update-browser-use
+    just update-e2e
     just update-hermes
     just update-osu
     just update-kaigen
@@ -192,6 +193,7 @@ update-wazuh:
 update-ai:
     just update-flake llm-agents cliproxyapi
     just update-browser-use
+    just update-e2e
     just update-hermes
     just update-learnharness
 
@@ -254,6 +256,36 @@ update-hermes:
       sed -i "s|hermes-agent/[^\"]*\";|hermes-agent/$latest\";|" flake.nix
       just update-flake hermes-agent
     fi
+
+# Bump e2e to its latest npm release and @e2e-dev/web to the version at the same
+# GitHub tag: rewrites both versions and both hashes in agent/e2e/default.nix.
+[group('dev')]
+[no-exit-message]
+update-e2e:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    aspect="{{ justfile_directory() }}/modules/aspects/agent/e2e/default.nix"
+    latest="$(curl -fsS https://registry.npmjs.org/e2e/latest | jq -r .version)"
+    [[ -n "$latest" ]] || { echo "cannot read latest e2e release" >&2; exit 1; }
+    current="$(nix eval --raw "{{ flake }}#e2e.version")"
+    if [[ "$latest" == "$current" ]]; then
+      echo "e2e $current already latest"
+      exit 0
+    fi
+    tag="e2e%40$latest"
+    web="$(gh api "repos/e2e-inc/e2e/contents/packages/web/package.json?ref=$tag" --jq .content | base64 -d | jq -r .version)"
+    src="$(nix store prefetch-file --name source --unpack --hash-type sha256 --json "https://github.com/e2e-inc/e2e/archive/refs/tags/$tag.tar.gz" | jq -r .hash)"
+    sed -i \
+      -e "/name = \"e2e\";/{n;s|version = \".*\";|version = \"$latest\";|}" \
+      -e "/name = \"@e2e-dev\/web\";/{n;s|version = \".*\";|version = \"$web\";|}" \
+      -e "/tag = \"e2e@/{n;s|hash = \".*\";|hash = \"$src\";|}" \
+      -e "/fetcherVersion = /{n;s|hash = \".*\";|hash = \"\";|}" \
+      "$aspect"
+    deps="$({ nix build --no-link "{{ flake }}#e2e.pnpmDeps" 2>&1 || true; } | sed -n 's/.*got: *//p')"
+    [[ -n "$deps" ]] || { echo "cannot compute e2e pnpm deps hash" >&2; exit 1; }
+    sed -i "/fetcherVersion = /{n;s|hash = \".*\";|hash = \"$deps\";|}" "$aspect"
+    nix build --no-link "{{ flake }}#e2e"
+    echo "e2e $current -> $latest (@e2e-dev/web $web)"
 
 # Bump browser-use to its latest upstream tag: rewrites version + source
 # hash in agent/browser-use/default.nix and regenerates the vendored uv.lock.
