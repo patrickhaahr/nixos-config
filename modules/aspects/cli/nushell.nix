@@ -15,7 +15,10 @@ _: {
           "...." = "cd ../../..";
           e = "nautilus .";
         };
-        environmentVariables.EDITOR = "nvim";
+        environmentVariables = {
+          DO_NOT_TRACK = "1";
+          EDITOR = "nvim";
+        };
         extraConfig = ''
           def --env mkcd [dir: string] {
             mkdir $dir

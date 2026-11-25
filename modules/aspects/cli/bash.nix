@@ -19,7 +19,10 @@ _: {
         ll = "ls -l";
         la = "ls -la";
       };
+      bashrcExtra = "export DO_NOT_TRACK=1";
     };
+
+    home.sessionVariables.DO_NOT_TRACK = "1";
 
     home.file.".bash_profile".text = ''
       [[ -f ~/.bashrc ]] && . ~/.bashrc
