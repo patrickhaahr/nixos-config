@@ -1,5 +1,12 @@
 { inputs, ... }:
+let
+  environment = {
+    T3CODE_TELEMETRY_ENABLED = "false";
+    T3CODE_OTEL_SDK_DISABLED = "true";
+  };
+in
 {
+  flake.modules.homeManager.t3code-environment.lib.agents.t3code.environment = environment;
 
   flake.modules.nixos.t3code-package = {
     nixpkgs.overlays = [
@@ -35,7 +42,11 @@
             (old: {
               postFixup = (old.postFixup or "") + ''
                 for program in "$out/bin"/* "$desktop/bin"/*; do
-                  wrapProgram "$program" --set SHELL "${final.bashInteractive}/bin/bash"
+                  wrapProgram "$program" ${
+                    final.lib.concatMapAttrsStringSep " " (
+                      name: value: "--set ${name} ${final.lib.escapeShellArg value}"
+                    ) (environment // { SHELL = "${final.bashInteractive}/bin/bash"; })
+                  }
                 done
               '';
             });
