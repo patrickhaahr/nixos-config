@@ -59,6 +59,7 @@
         in
         pkgs.writeShellApplication {
           name = "agy";
+          runtimeEnv = specialist.env;
           runtimeInputs = specialist.packages ++ [ pkgs.coreutils ];
           text = ''
             export HOME=${lib.escapeShellArg homeDir}

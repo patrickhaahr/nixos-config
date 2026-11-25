@@ -132,6 +132,7 @@ in
         in
         pkgs.writeShellApplication {
           name = "claude-${name}";
+          runtimeEnv = specialist.env;
           runtimeInputs = specialist.packages ++ [
             pkgs.coreutils
             pkgs.jq

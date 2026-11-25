@@ -56,6 +56,11 @@
                 default = { };
                 description = "MCP server entries, with `url` for a remote server or `command`, `args` and `env` for a local one.";
               };
+              env = lib.mkOption {
+                type = lib.types.attrsOf lib.types.str;
+                default = { };
+                description = "Environment of the specialist's harness and the commands it runs; an MCP server declares its own `env`.";
+              };
               packages = lib.mkOption {
                 type = lib.types.listOf lib.types.package;
                 default = [ ];

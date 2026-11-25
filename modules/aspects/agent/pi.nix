@@ -75,6 +75,7 @@ in
         pkgs.writeShellApplication {
           name = "pi-${name}";
           runtimeInputs = specialist.packages;
+          runtimeEnv = specialist.env;
           text = ''
             export PI_CODING_AGENT_DIR=${lib.escapeShellArg "${config.home.homeDirectory}/${agentDir name}"}
             if [[ ''${1-} == mcp ]]; then exec ${lib.getExe pi} "$@"; fi
