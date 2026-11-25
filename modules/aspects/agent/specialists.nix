@@ -86,7 +86,10 @@
   flake.modules.homeManager.agent-specialists =
     { pkgs, ... }:
     {
-      imports = [ self.modules.homeManager.specialists ];
+      imports = with self.modules.homeManager; [
+        e2e
+        specialists
+      ];
 
       agents.specialists = {
         media = {
@@ -105,19 +108,6 @@
           harnesses = [ "claude" ];
           domain = "Interface design decisions: layout, restyling, motion, design reviews. Code-level UI work with no design decision stays with you.";
           mcpServers.inspo.url = "https://inspomcp.dev/api/mcp";
-        };
-        qa = {
-          displayName = "QA";
-          domain = "Driving web and mobile apps live and writing end-to-end tests.";
-          mcpServers.e2e = {
-            command = "${pkgs.nodejs_22}/bin/npx";
-            args = [
-              "-y"
-              "e2e@0.24.0"
-              "mcp"
-            ];
-          };
-          packages = [ pkgs.nodejs_22 ];
         };
       };
     };
