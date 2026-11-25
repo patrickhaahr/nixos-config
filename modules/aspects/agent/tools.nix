@@ -13,6 +13,7 @@
         claude-code
         opencode
         pi
+        playwright
         nvf
         yazi
         herdr

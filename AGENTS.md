@@ -24,6 +24,7 @@
 - A skill pack or MCP server only one specialist agent uses belongs to that specialist, never to `sources.nix` or `agents.mcpServers`: its skills go in `agents/skill-sources/bundles.nix`, its role prompt in `agents/specialists/<name>.md`, and its MCP servers and tools in an `agents.specialists.<name>` entry in the aspect of the app it drives (`agent-specialists` when there is none); see `docs/adr/0008-specialist-agents-own-their-skills.md`.
 - Before making a skill manual-only in `agents/skill-sources/overrides.nix`, find the skills that load it: rewrite each reference with `<skill>.replace."<exact text>"` so it reads `~/.agents/skills/<name>/SKILL.md` instead, or leave the skill model-invocable.
 - `modules/aspects/agent/browser-use/` vendors a `uv.lock`; regenerate it with `uv lock --python 3.12` when bumping.
+- `modules/aspects/agent/e2e/` builds e2e (`packages.e2e`) from its GitHub release tag; bump it with `just update-e2e` (part of `just update-ai`), never by hand.
 - `nix flake check` warns `unknown flake output 'modules'`; this is expected here.
 - After every implementation, ask: is the dendritic pattern implemented correctly? If not, redo the implementation.
 - References: https://dendrix.oeiuwq.com/Dendritic.html, https://dendrix.oeiuwq.com/Dendrix-Conventions.html
