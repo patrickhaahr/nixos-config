@@ -84,7 +84,62 @@
         bluetooth = {
           enable = true;
           powerOnBoot = true;
+          settings.LE = {
+            MinConnectionInterval = 6;
+            MaxConnectionInterval = 12;
+            ConnectionLatency = 0;
+          };
         };
       };
+      systemd.services.whoop-ble-low-latency =
+        let
+          whoopMac = "CD:D5:1E:35:5D:5A";
+          whoopPath = "/org/bluez/hci0/dev_CD_D5_1E_35_5D_5A";
+          applyScript = pkgs.writeShellApplication {
+            name = "whoop-ble-low-latency";
+            runtimeInputs = [
+              pkgs.bluez
+              pkgs.coreutils
+              pkgs.dbus
+              pkgs.gawk
+            ];
+            text = ''
+              tighten() {
+                local handle
+                handle="$(hcitool con | awk -v mac="${whoopMac}" '$0 ~ mac { for (i = 1; i <= NF; i++) if ($i == "handle") print $(i + 1) }')"
+                if [[ -n "$handle" ]]; then
+                  hcitool lecup --handle "$handle" --min 6 --max 12 --latency 0 --timeout 400 || true
+                fi
+              }
+
+              tighten
+              seen_connected=0
+              dbus-monitor --system "type='signal',interface='org.freedesktop.DBus.Properties',member='PropertiesChanged',path='${whoopPath}'" | while IFS= read -r line; do
+                if [[ "$line" == *'string "Connected"'* ]]; then
+                  seen_connected=1
+                elif ((seen_connected)); then
+                  seen_connected=0
+                  if [[ "$line" == *'boolean true'* ]]; then
+                    (
+                      sleep 2
+                      tighten
+                    ) &
+                  fi
+                fi
+              done
+            '';
+          };
+        in
+        {
+          description = "Keep WHOOP 4.0 BLE connection interval at 7.5-15 ms";
+          after = [ "bluetooth.service" ];
+          requires = [ "bluetooth.service" ];
+          wantedBy = [ "multi-user.target" ];
+          serviceConfig = {
+            ExecStart = lib.getExe applyScript;
+            Restart = "on-failure";
+            RestartSec = 5;
+          };
+        };
     };
 }
