@@ -10,7 +10,16 @@
     services.udev.extraRules = ''
       SUBSYSTEM=="dma_heap", KERNEL=="default_cma_region", SYMLINK+="dma_heap/vidbuf_cached"
     '';
-    environment.systemPackages = [ pkgs.rpi.rpicam-apps ];
+    environment.systemPackages = [
+      (pkgs.rpi.rpicam-apps.override {
+        ffmpeg = pkgs.ffmpeg-headless;
+        withQtPreview = false;
+        withOpenCVPostProc = false;
+        withWaylandPreview = false;
+        withEglPreview = false;
+        withIMX500 = false;
+      })
+    ];
 
     fileSystems."/" = {
       device = "/dev/disk/by-label/NIXOS_SD";

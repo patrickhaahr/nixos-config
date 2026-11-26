@@ -5,6 +5,7 @@ let
   zazaKey = "zaza-cache-1:++x3xekex6IMky+2z5oUYwxEt5F3LGSpYpw7Yspze44=";
 
   nikaKey = "nika-1:dYsHY+f6OIpGr4pe0N97KVIdP8By7Z5w+5G4Om7DUvM=";
+  raspberrypiKey = "nixos-raspberrypi.cachix.org-1:4iMO9LXa8BqhU+Rpg6LQKiGa2lsNh/j2oiYLNOQ5sPI=";
 
   numtide = {
     extra-substituters = [ "https://cache.numtide.com?priority=50" ];
@@ -57,7 +58,10 @@ in
         };
 
         nix.settings = numtide // {
-          extra-trusted-public-keys = numtide.extra-trusted-public-keys ++ [ nikaKey ];
+          extra-trusted-public-keys = numtide.extra-trusted-public-keys ++ [
+            nikaKey
+            raspberrypiKey
+          ];
         };
 
         networking.firewall.interfaces."tailscale0".allowedTCPPorts = [ port ];

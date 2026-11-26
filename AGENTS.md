@@ -5,7 +5,7 @@
 - New files are invisible to `nix flake` evaluation until Git tracks them. Stage a new file with `git add <path>` before `nix eval`, `nix flake check`, or `nix build`.
 - The active config is the dendritic tree under `modules/aspects/`. Each host is one file, `modules/aspects/host/<host>.nix`, declaring both `flake.nixosConfigurations.<host>` and the `<host>` aspect it builds.
 - Decisions the code cannot show live in `docs/adr/`. Before changing an aspect, read the ADRs that name it; record a new constraint as an ADR there (domain-modeling format), never as a comment.
-- Hosts: `nika` is the desktop, `zaza` the headless homelab running Hermes and T3 Code as the `hermes` user, `imu` the WSL host. Use the host relevant to the change, not `nika` by default.
+- Hosts: `nika` is the desktop, `zaza` the headless homelab running Hermes and T3 Code as the `hermes` user, `vivi` the Raspberry Pi 4 holding Vaultwarden with no agent access (ADR 0009), `imu` the WSL host. Use the host relevant to the change, not `nika` by default.
 
 ## Dendritic Rules
 - Keep modules aspect-oriented. Add to an existing aspect before creating a new one.

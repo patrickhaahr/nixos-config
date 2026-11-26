@@ -60,13 +60,6 @@
           IdentitiesOnly yes
           StrictHostKeyChecking accept-new
 
-        Host vivi
-          HostName 10.0.10.203
-          User ph
-          IdentityFile ~/.ssh/id_ed25519_hermes_hosts
-          IdentitiesOnly yes
-          StrictHostKeyChecking accept-new
-
         Host router
           User root
           IdentityFile ~/.ssh/id_ed25519_hermes_hosts
