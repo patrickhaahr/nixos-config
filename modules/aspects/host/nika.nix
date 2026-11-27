@@ -32,6 +32,7 @@
       self.modules.nixos.kaigen-studio
       self.modules.nixos.learnharness
       self.modules.nixos.nautilus
+      self.modules.nixos.noop-gestures
       self.modules.nixos.openhome
       self.modules.nixos.openlinkhub
       self.modules.nixos.obs

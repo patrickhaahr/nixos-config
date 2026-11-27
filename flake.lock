@@ -736,6 +736,26 @@
         "type": "github"
       }
     },
+    "noop-gestures": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1795738935,
+        "narHash": "sha256-5ZZP9uqlw+0CH8zOVW991I7w71HueHwKGLpXYTy30xg=",
+        "owner": "patrickhaahr",
+        "repo": "noop-gestures",
+        "rev": "713b285333b558493d19143a6a2b7402d8a5c109",
+        "type": "github"
+      },
+      "original": {
+        "owner": "patrickhaahr",
+        "repo": "noop-gestures",
+        "type": "github"
+      }
+    },
     "nvf": {
       "inputs": {
         "flake-compat": "flake-compat_4",
@@ -931,6 +951,7 @@
         "nixos-wsl": "nixos-wsl",
         "nixpkgs": "nixpkgs_4",
         "noctalia": "noctalia",
+        "noop-gestures": "noop-gestures",
         "nvf": "nvf",
         "openhome": "openhome",
         "pi-claude-code": "pi-claude-code",
